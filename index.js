@@ -7,17 +7,39 @@ var boardgames = [];
 var geeklists = [];
 var boardgameStats = [];
 var geeklistStats = [];
-var promises = [];
-var bg_promises = [];
+
+var dbURL = "http://127.0.0.1:5984";
+var geeklistURL = 'https://www.boardgamegeek.com/xmlapi/geeklist/';
+var boardgameURL = 'https://www.boardgamegeek.com/xmlapi/boardgame/';
+var boardgameViewURL = dbURL + '/geeklistmon/_design/boardgame/_view/boardgame?include_docs=true&key='
+
+//Tries to implement q promises for requests
+function qrequest(method, url, data){
+	var p = q.defer();
+	
+	if(method.toUpperCase() === "GET"){
+		requests(url, function(error, response, body){
+			if(!error && response.statusCode == 200){
+				p.resolve(body);
+			}else{
+				p.reject(body);	
+			}
+		});
+	}else if(method.toUpperCase() === "PUT"){
+
+	}
+	
+	return p.promise
+}
 
 function getGeeklistData(geeklistId){
-	var url = 'https://www.boardgamegeek.com/xmlapi/geeklist/';
 	var p = q.defer();
 	var promises = [];
-
-	//promises.push(p.promise);
 	
-	request(url + geeklistId, function(error, response, body){
+	//var boardgamesQueue = [];
+
+	
+	request(geeklistURL + geeklistId, function(error, response, body){
 		if(!error && response.statusCode == 200){
 			var $ = cheerio.load(response.body);
 			$('item').each(function(index, element){
@@ -31,6 +53,10 @@ function getGeeklistData(geeklistId){
 						if(bg.length == 0){
 							boardgamesQueue.push({objectid: bgId});
 						}
+
+						//TODO: Add boardgameStats here.
+						//Counts for this geeklist, number of thumbs
+						//and other useful info.
 					}
 				}else if($(this).attr('objecttype') == 'geeklist'){
 						var glId = $(this).attr('id');
@@ -53,7 +79,9 @@ function getGeeklistData(geeklistId){
 			});
 			
 			q.all(promises).then(
-				function(){	
+				function(){
+					//Should be
+					//p.resolve(boardgameQueue);	
 					p.resolve();
 				}
 			);
@@ -66,7 +94,6 @@ function getGeeklistData(geeklistId){
 }
 
 function getBoardgameData(boardgameId){
-	var url = 'https://www.boardgamegeek.com/xmlapi/boardgame/';
 	
 	//Here, we should check the database first
 	//then check if it is complete (if not, reload)
@@ -76,27 +103,38 @@ function getBoardgameData(boardgameId){
 	
 	//TODO: 
 	//Send request to database: if found then resolve, else reject
+	//qrequest(boardgameViewURL + "\"" + boardgameId + "\"").then(
+	//	function(res){
+	//		
+	//	}
+	//).
+
 	
-	request(url + boardgameId, function(error, response, body){
+	request(boardgameURL + boardgameId, function(error, response, body){
 		if(!error && response.statusCode == 200){
 			var bg = {};
 			var $ = cheerio.load(response.body);
+			
+			bg['type'] = "boardgame";
 			bg['objectid'] = boardgameId;
 			bg['yearpublished'] = $('yearpublished').text();
 			bg['minplayers'] = $('minplayers').text();
 			bg['maxplayers'] = $('maxplayers').text();
 			bg['playingtime'] = $('playingtime').text();
+			bg['thumbnail'] = $('thumbnail').text();
+			
 			bg['name'] = [];
 			$('name').each(function(index, elem){
 				bg['name'].push({'name': $(this).text(), 'primary': $(this).attr('primary')});
 			});
-			bg['thumbnail'] = $('thumbnail').text();
+			
 			bg['boardgamecategory'] = [];
 			$('boardgamecategory').each(function(index, elem){
 				var id = $(this).attr('objectid');
 				var val = $(this).text();
 				bg['boardgamecategory'].push({objectid: id, name: val});
 			});
+			
 			bg['boardgamemechanic'] = [];
 			$('boardgamemechanic').each(function(index, elem){
 				var id = $(this).attr('objectid');
@@ -129,15 +167,12 @@ function getBoardgameData(boardgameId){
 	return p.promise
 }
 
-//This needs to be a promise.
-//getGeeklistData(174437);
-
-//q.all(
-//	promises
-//).then(
+/*
+ * Run main algorithm
+ */
 getGeeklistData(174437).then(
+	//TODO: Calculate and save geeklist stats
 	function(){
-		console.log("queue length" + boardgamesQueue.length);
 		var bg_promises = [];
 		
 		boardgamesQueue.forEach(function(bg, idx){
@@ -145,14 +180,30 @@ getGeeklistData(174437).then(
 				function(v){
 					bg = v;
 					boardgames.push(bg);
-					console.log(JSON.stringify(bg));
 				});
 							
 			bg_promises.push(p);
 		});
 			
-		console.log("geeklist promises done!");
 		return q.all(bg_promises)
+	}
+).then(
+	function(){
+		var p = q.defer();
+		var idURL = dbURL + '\\_uuids?count=' + boardgames.length;
+		
+		console.log(idURL);
+		
+		request(idURL, function(error, response, body){
+			if(!error && response.statusCode == 200){
+				p.resolve(JSON.parse(body).uuids);
+			}else{
+				console.log("error: " + response.statusCode);
+				console.log("error: " + body);
+			}
+		});
+		
+		return p.promise
 	}
 ).then(
 	//TODO: Save boardgames to database
@@ -160,19 +211,61 @@ getGeeklistData(174437).then(
 	//TODO: Delete same-date and save boardgameStats to database
   //TODO: Calculate geeklistSnapshotStats (mechanics breakdown, drilldowns).
 	//TODO: Delete and save geeklistSnapshotStats
-	function(){
+	function(uuids){
+		var promises = [];
+		
+		//Use bulk saving instead	
 		boardgames.forEach(function(bg, i){
-			console.log(JSON.stringify(bg));
+			var p = q.defer();
+			var docId = uuids.pop();
+			var docURL = dbURL + "\\geeklistmon\\" + docId;
+			
+			console.log("Saving " + bg.objectid);
+				
+			request(
+				{
+					method: "PUT",
+					uri: docURL,
+					body: JSON.stringify(bg)
+				},
+				function(error, response, body) {
+					if(response.statusCode == 201){
+						console.log("bg saved: "+ docId);
+						var reply = JSON.parse(body);
+						
+						if(reply.ok){
+							bg["_id"] = reply.id;
+							bg["_rev"] = reply.rev;
+							
+							p.resolve();
+						}else{
+							p.reject("DB failed to save");
+						}
+						
+						//p.resolve();
+					}else{
+						console.log("error: " + response.statusCode);
+						console.log("error: " + body);
+						p.reject(body);
+					}
+				}
+			)
+			
+			promises.push(p.promise);
 		});
-		console.log(boardgames.length);
+		
+		return q.all(promises)
 	}
-	
 ).done(
 	function(){
+		boardgames.forEach(function(bg, idx){
+			console.log(bg);
+		});
 		console.log("All done");
 	}
 );
 
+//Classes - just for reference
 geeklist = function(){
 	return {
 		objectid: null,
