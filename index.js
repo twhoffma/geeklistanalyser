@@ -18,15 +18,42 @@ function qrequest(method, url, data){
 	var p = q.defer();
 	
 	if(method.toUpperCase() === "GET"){
-		requests(url, function(error, response, body){
+		request(url, function(error, response, body){
 			if(!error && response.statusCode == 200){
-				p.resolve(body);
+				p.resolve(response.body);
 			}else{
-				p.reject(body);	
+				p.reject(response.body);	
 			}
 		});
 	}else if(method.toUpperCase() === "PUT"){
-
+		request(
+			{
+				method: "PUT",
+				uri: docURL,
+				body: JSON.stringify(bg)
+			},
+			function(error, response, body) {
+				if(response.statusCode == 201){
+					console.log("bg saved: "+ docId);
+					var reply = JSON.parse(body);
+					
+					if(reply.ok){
+						bg["_id"] = reply.id;
+						bg["_rev"] = reply.rev;
+							
+						p.resolve();
+					}else{
+						p.reject("DB failed to save: " + body);
+					}
+						
+					}else{
+						console.log("error: " + response.statusCode);
+						console.log("error: " + body);
+						p.reject(body);
+					}
+				}
+			)
+			
 	}
 	
 	return p.promise
@@ -36,16 +63,93 @@ function getGeeklistData(geeklistId){
 	var p = q.defer();
 	var promises = [];
 	
-	//var boardgamesQueue = [];
+	/*
+	var p = qrequest("GET", geeklistURL + geeklistId, null, null).then(
+		var $ = cheerio.load(response.body);
+			
+		$('item').each(function(index, element){
+			if($(this).attr('objecttype') == 'thing'){
+				if($(this).attr('subtype') == 'boardgame'){
+					var bgId = $(this).attr('objectid');
+					var thumbs = $(this).attr('thumbs');
+					
+					var bg = boardgamesQueue.filter(function(e){
+						return e.objectid == bgId;
+					});
+					
+					if(bg.length == 0){
+						boardgamesQueue.push({objectid: bgId});
+					}
+					
+					var bgStats = boardgameStats.filter(function(e){
+						return e.objectid == bgId && e.geeklistId == geeklistId
+					});
+					
+					var bgStat;
+					
+					if(bgStats.length === 0){
+						bgStat = {
+							objectId: bgId,
+							geeklistId: geeklistId,
+							cnt: 0,
+							thumbs: 0
+						}
+						
+						boardgameStats.push(bgStat);
+					}else{
+						bgStat = bgStats[0];
+					}
 
-	
+					bgStat.cnt++;
+					bgStat.thumbs += thumbs;
+				}
+			}else if($(this).attr('objecttype') == 'geeklist'){
+				var glId = $(this).attr('id');
+				var gl = geeklists.filter(function(e){
+					return e.objectid == geeklistId
+				});
+			
+				if(gl.length == 0){
+					console.log('Loading list: ' + glId);
+					geeklists.push({objectid: glId});
+					
+					var geeklistStats = {
+						objectid: glId,
+						statDate: "2000-12-31",
+						crets: "Now",
+						numLists: 0
+					};
+							
+					promises.push(getGeeklistData(glId).then(
+						function(val){
+							
+						}
+					));
+				}
+						
+				gl["numLists"]++;
+			}
+		});	
+	).allSettled(
+		function(val){
+			//push value to array
+		},
+		function(reason){
+			//push value to rejected array
+		}
+	)
+	*/
+		
 	request(geeklistURL + geeklistId, function(error, response, body){
 		if(!error && response.statusCode == 200){
 			var $ = cheerio.load(response.body);
+			
 			$('item').each(function(index, element){
 				if($(this).attr('objecttype') == 'thing'){
 					if($(this).attr('subtype') == 'boardgame'){
 						var bgId = $(this).attr('objectid');
+						var thumbs = parseInt($(this).attr('thumbs'));
+						
 						var bg = boardgamesQueue.filter(function(e){
 							return e.objectid == bgId;
 						});
@@ -53,10 +157,28 @@ function getGeeklistData(geeklistId){
 						if(bg.length == 0){
 							boardgamesQueue.push({objectid: bgId});
 						}
+					
+						var bgStats = boardgameStats.filter(function(e){
+							return e.objectid == bgId && e.geeklistId == geeklistId
+						});
+					
+						var bgStat;
+					
+						if(bgStats.length === 0){
+							bgStat = {
+								objectId: bgId,
+								geeklistId: geeklistId,
+								cnt: 0,
+								thumbs: 0
+							}
+						
+							boardgameStats.push(bgStat);
+						}else{
+							bgStat = bgStats[0];
+						}
 
-						//TODO: Add boardgameStats here.
-						//Counts for this geeklist, number of thumbs
-						//and other useful info.
+						bgStat.cnt++;
+						bgStat.thumbs += thumbs;
 					}
 				}else if($(this).attr('objecttype') == 'geeklist'){
 						var glId = $(this).attr('id');
@@ -68,13 +190,21 @@ function getGeeklistData(geeklistId){
 							console.log('Loading list: ' + glId);
 							geeklists.push({objectid: glId});
 							
-							promises.push(getGeeklistData(glId));
-						}else{
-							//Load precalculated data
-							//if it exists - if not, it is a 
-							//circular dependency and will be
-							//discarded.
+							var geeklistStats = {
+								objectid: glId,
+								statDate: "2000-12-31",
+								crets: "Now",
+								numLists: 0
+							};
+							
+							promises.push(getGeeklistData(glId).then(
+								function(val){
+									
+								}
+							));
 						}
+						
+						gl["numLists"]++;
 				}
 			});
 			
@@ -94,26 +224,25 @@ function getGeeklistData(geeklistId){
 }
 
 function getBoardgameData(boardgameId){
-	
-	//Here, we should check the database first
-	//then check if it is complete (if not, reload)
-	//If not found, fetch from boardgamegeek
-	
-	var p = q.defer();
-	
-	//TODO: 
-	//Send request to database: if found then resolve, else reject
-	//qrequest(boardgameViewURL + "\"" + boardgameId + "\"").then(
-	//	function(res){
-	//		
-	//	}
-	//).
-
-	
-	request(boardgameURL + boardgameId, function(error, response, body){
-		if(!error && response.statusCode == 200){
+	var p = qrequest("GET", boardgameViewURL + "\"" + boardgameId + "\"", null, null).then(
+		function(val){
+			var data = JSON.parse(val);
+			
+			if(data.rows.length === 0){
+				throw "Not found"
+			}else{
+				return data.rows[0]
+			}
+		}
+	).fail(
+		function(){
+			console.log("Looking up " + boardgameId + " at BGG..");
+			return qrequest("GET", boardgameURL + boardgameId, null, null)
+		}
+	).then(
+		function(val){
 			var bg = {};
-			var $ = cheerio.load(response.body);
+			var $ = cheerio.load(val);
 			
 			bg['type'] = "boardgame";
 			bg['objectid'] = boardgameId;
@@ -158,13 +287,18 @@ function getBoardgameData(boardgameId){
 				var id = $(this).attr('objectid');
 				var val = $(this).text();
 				bg['boardgamepublisher'].push({objectid: id, name: val});
-			});			
-		}
-		
-		return p.resolve(bg)
-	});
+			});
 
-	return p.promise
+			return bg		
+		}
+	).fail(
+		function(val){
+			console.log(val);
+			throw val
+		}
+	)
+	
+	return p
 }
 
 /*
@@ -179,6 +313,9 @@ getGeeklistData(174437).then(
 			var p = getBoardgameData(bg.objectid).then(
 				function(v){
 					bg = v;
+					bg["geeklists"] = [];
+					bg.geeklists.push("174437");
+					
 					boardgames.push(bg);
 				});
 							
@@ -209,7 +346,7 @@ getGeeklistData(174437).then(
 	//TODO: Save boardgames to database
 	//TODO: Delete same-date and save geeklistStats to database
 	//TODO: Delete same-date and save boardgameStats to database
-  //TODO: Calculate geeklistSnapshotStats (mechanics breakdown, drilldowns).
+  	//TODO: Calculate geeklistSnapshotStats (mechanics breakdown, drilldowns).
 	//TODO: Delete and save geeklistSnapshotStats
 	function(uuids){
 		var promises = [];
@@ -258,7 +395,7 @@ getGeeklistData(174437).then(
 	}
 ).done(
 	function(){
-		boardgames.forEach(function(bg, idx){
+		boardgameStats.forEach(function(bg, idx){
 			console.log(bg);
 		});
 		console.log("All done");
