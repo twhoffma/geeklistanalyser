@@ -7,6 +7,7 @@ var boardgames = [];
 var geeklists = [];
 var boardgameStats = [];
 var geeklistStats = [];
+var currentDate = Date(); 
 
 var dbURL = "http://127.0.0.1:5984";
 var geeklistURL = 'https://www.boardgamegeek.com/xmlapi/geeklist/';
@@ -91,6 +92,8 @@ function getGeeklistData(geeklistId){
 						bgStat = {
 							objectId: bgId,
 							geeklistId: geeklistId,
+							analysisDate: currentDate.getFullYear + "-" + currentData.getMonth + "-" + currentDate.getDay,
+							chgts: currentDate.toString(),
 							cnt: 0,
 							thumbs: 0
 						}
@@ -168,6 +171,8 @@ function getGeeklistData(geeklistId){
 							bgStat = {
 								objectId: bgId,
 								geeklistId: geeklistId,
+								analysisDate: currentDate.getFullYear + "-" + currentDate.getMonth + "-" + currentDate.getDay,
+								chgts: currentDate.toString(),
 								cnt: 0,
 								thumbs: 0
 							}
@@ -227,69 +232,73 @@ function getBoardgameData(boardgameId){
 	var p = qrequest("GET", boardgameViewURL + "\"" + boardgameId + "\"", null, null).then(
 		function(val){
 			var data = JSON.parse(val);
-			
 			if(data.rows.length === 0){
 				throw "Not found"
 			}else{
-				return data.rows[0]
+				return data.rows[0].doc
 			}
 		}
 	).fail(
 		function(){
 			console.log("Looking up " + boardgameId + " at BGG..");
-			return qrequest("GET", boardgameURL + boardgameId, null, null)
-		}
-	).then(
-		function(val){
-			var bg = {};
-			var $ = cheerio.load(val);
+			var p = qrequest("GET", boardgameURL + boardgameId, null, null).then(
+				function(val){
+					var bg = {};
+					var $ = cheerio.load(val);
+						
+					bg['type'] = "boardgame";
+					bg['objectid'] = boardgameId;
+					bg['yearpublished'] = $('yearpublished').text();
+					bg['minplayers'] = $('minplayers').text();
+					bg['maxplayers'] = $('maxplayers').text();
+					bg['playingtime'] = $('playingtime').text();
+					bg['thumbnail'] = $('thumbnail').text();
 			
-			bg['type'] = "boardgame";
-			bg['objectid'] = boardgameId;
-			bg['yearpublished'] = $('yearpublished').text();
-			bg['minplayers'] = $('minplayers').text();
-			bg['maxplayers'] = $('maxplayers').text();
-			bg['playingtime'] = $('playingtime').text();
-			bg['thumbnail'] = $('thumbnail').text();
+					bg['name'] = [];
+					$('name').each(function(index, elem){
+						bg['name'].push({'name': $(this).text(), 'primary': $(this).attr('primary')});
+					});
 			
-			bg['name'] = [];
-			$('name').each(function(index, elem){
-				bg['name'].push({'name': $(this).text(), 'primary': $(this).attr('primary')});
-			});
+					bg['boardgamecategory'] = [];
+					$('boardgamecategory').each(function(index, elem){
+						var id = $(this).attr('objectid');
+						var val = $(this).text();
+						bg['boardgamecategory'].push({objectid: id, name: val});
+					});
+				
+					bg['boardgamemechanic'] = [];
+					$('boardgamemechanic').each(function(index, elem){
+						var id = $(this).attr('objectid');
+						var val = $(this).text();
+						bg['boardgamemechanic'].push({objectid: id, name: val});
+					});
+					
+					bg['boardgamedesigner'] = [];
+					$('boardgamedesigner').each(function(index, elem){
+						var id = $(this).attr('objectid');
+						var val = $(this).text();
+						bg['boardgamedesigner'].push({objectid: id, name: val});
+					});
 			
-			bg['boardgamecategory'] = [];
-			$('boardgamecategory').each(function(index, elem){
-				var id = $(this).attr('objectid');
-				var val = $(this).text();
-				bg['boardgamecategory'].push({objectid: id, name: val});
-			});
+					bg['boardgameartist'] = [];
+					$('boardgameartist').each(function(index, elem){
+						var id = $(this).attr('objectid');
+						var val = $(this).text();
+						bg['boardgameartist'].push({objectid: id, name: val});
+					});
 			
-			bg['boardgamemechanic'] = [];
-			$('boardgamemechanic').each(function(index, elem){
-				var id = $(this).attr('objectid');
-				var val = $(this).text();
-				bg['boardgamemechanic'].push({objectid: id, name: val});
-			});
-			bg['boardgamedesigner'] = [];
-			$('boardgamedesigner').each(function(index, elem){
-				var id = $(this).attr('objectid');
-				var val = $(this).text();
-				bg['boardgamedesigner'].push({objectid: id, name: val});
-			});
-			bg['boardgameartist'] = [];
-			$('boardgameartist').each(function(index, elem){
-				var id = $(this).attr('objectid');
-				var val = $(this).text();
-				bg['boardgameartist'].push({objectid: id, name: val});
-			});
-			bg['boardgamepublisher'] = [];
-			$('boardgamepublisher').each(function(index, elem){
-				var id = $(this).attr('objectid');
-				var val = $(this).text();
-				bg['boardgamepublisher'].push({objectid: id, name: val});
-			});
-
-			return bg		
+					bg['boardgamepublisher'] = [];
+					$('boardgamepublisher').each(function(index, elem){
+						var id = $(this).attr('objectid');
+						var val = $(this).text();
+						bg['boardgamepublisher'].push({objectid: id, name: val});
+					});
+					
+					return bg		
+				}
+			);
+			
+			return p
 		}
 	).fail(
 		function(val){
@@ -313,8 +322,8 @@ getGeeklistData(174437).then(
 			var p = getBoardgameData(bg.objectid).then(
 				function(v){
 					bg = v;
-					bg["geeklists"] = [];
-					bg.geeklists.push("174437");
+					//bg["geeklists"] = [];
+					//bg.geeklists.push("174437");
 					
 					boardgames.push(bg);
 				});
@@ -354,10 +363,18 @@ getGeeklistData(174437).then(
 		//Use bulk saving instead	
 		boardgames.forEach(function(bg, i){
 			var p = q.defer();
-			var docId = uuids.pop();
+			var docId;
+			console.log(bg);
+			if(bg._id === undefined){
+				docId = uuids.pop();
+				console.log("Saving " + bg.objectid);
+			}else{
+				docId = bg._id;
+				console.log("Updating " + bg.objectid);
+			}
+			
 			var docURL = dbURL + "\\geeklistmon\\" + docId;
 			
-			console.log("Saving " + bg.objectid);
 				
 			request(
 				{
