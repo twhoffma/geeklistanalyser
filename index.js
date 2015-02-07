@@ -9,12 +9,13 @@ var boardgameStats = [];
 var geeklistStats = [];
 var currentDate = Date(); 
 
-var dbURL = "http://127.0.0.1:5984";
+//var dbURL = "http://127.0.0.1:5984";
 var geeklistURL = 'https://www.boardgamegeek.com/xmlapi/geeklist/';
 var boardgameURL = 'https://www.boardgamegeek.com/xmlapi/boardgame/';
-var boardgameViewURL = dbURL + '/geeklistmon/_design/boardgame/_view/boardgame?include_docs=true&key='
+//var boardgameViewURL = dbURL + '/geeklistmon/_design/boardgame/_view/boardgame?include_docs=true&key='
 
 //Tries to implement q promises for requests
+/*
 function qrequest(method, url, data){
 	var p = q.defer();
 	
@@ -59,6 +60,7 @@ function qrequest(method, url, data){
 	
 	return p.promise
 }
+*/
 
 function getGeeklistData(geeklistId){
 	var p = q.defer();
@@ -335,6 +337,7 @@ getGeeklistData(174437).then(
 	}
 ).then(
 	function(){
+		//return db.saveBoardgames(
 		var p = q.defer();
 		var idURL = dbURL + '\\_uuids?count=' + boardgames.length;
 		
