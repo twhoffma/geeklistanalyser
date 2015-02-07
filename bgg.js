@@ -71,4 +71,4 @@ function getBoardgame(boardgameId){
 }
 
 module.exports.getGeeklist = getGeeklist
-module.exports.getBoadgame = getBoardgame
+module.exports.getBoardgame = getBoardgame

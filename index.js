@@ -1,5 +1,7 @@
 cheerio = require('cheerio');
 q = require('q');
+moment = require('moment');
+
 db = require('./db-couch');
 bgg = require('./bgg.js');
 
@@ -8,13 +10,14 @@ var boardgames = [];
 var geeklists = [];
 var boardgameStats = [];
 var geeklistStats = [];
-var currentDate = Date(); 
+var currentDate = moment().format("YYYY-MM-DD")
+var currentTime = moment().format("YYYY-MM-DD[T]HH:mm:SS")
 
-function getGeeklistData(geeklistId){
+function getGeeklistData(geeklistId, subgeeklistId){
 	var p = q.defer();
 	var promises = [];
 	
-	bgg.getGeeklist(geeklistId).then(
+	bgg.getGeeklist(subgeeklistId).then(
 		function(res){
 			var $ = cheerio.load(res);
 			
@@ -33,7 +36,7 @@ function getGeeklistData(geeklistId){
 						}
 					
 						var bgStats = boardgameStats.filter(function(e){
-							return e.objectid == bgId && e.geeklistId == geeklistId
+							return e.objectId == bgId && e.geeklistId == geeklistId
 						});
 					
 						var bgStat;
@@ -42,40 +45,50 @@ function getGeeklistData(geeklistId){
 							bgStat = {
 								objectId: bgId,
 								geeklistId: geeklistId,
-								analysisDate: currentDate.getFullYear + "-" + currentDate.getMonth + "-" + currentDate.getDay,
-								chgts: currentDate.toString(),
+								analysisDate: currentDate,
+								crets: moment().format("YYYY-MM-DD[T]HH:mm:SS"),
 								cnt: 0,
-								thumbs: 0
+								thumbs: 0,
+								type: "boardgamestat",
+								hist: {} //Histogram based on position
 							}
 						
 							boardgameStats.push(bgStat);
 						}else{
 							bgStat = bgStats[0];
 						}
-
+						
+						//Here we tally all stats.
 						bgStat.cnt++;
 						bgStat.thumbs += thumbs;
 					}
 				}else if($(this).attr('objecttype') == 'geeklist'){
-						var glId = $(this).attr('id');
+						var glId = $(this).attr('objectid');
 						var gl = geeklists.filter(function(e){
-							return e.objectid == geeklistId
+							return e.objectId == geeklistId
 						});
 						
 						if(gl.length == 0){
 							console.log('Loading list: ' + glId);
-							geeklists.push({objectid: glId});
+							geeklists.push({objectId: glId});
 							
 							var geeklistStats = {
 								objectid: glId,
-								statDate: "2000-12-31",
-								crets: "Now",
-								numLists: 0
+								statDate: currentDate,
+								crets: moment().format("YYYY-MM-DD[T]HH:mm:SS"),
+								numLists: 0,
+								type: "geeklistStat",
+								depth: 0,
+								numBoardgames: 0,
+								avgListLength: 0,
+								medListLength: 0,
+								maxListLenth: 0,
+								minListLength: 0
 							};
 							
-							promises.push(getGeeklistData(glId).then(
+							promises.push(getGeeklistData(geeklistId, glId).then(
 								function(val){
-									
+									//Here we need to combine stats from previous run
 								}
 							));
 						}
@@ -113,7 +126,17 @@ function getBoardgameData(boardgameId){
 /*
  * Run main algorithm
  */
-getGeeklistData(174437).then(
+db.getGeeklists().then(
+	function(geeklists){
+		var p = [];
+		
+		geeklists.forEach(function(geeklist, i){
+			p.push(getGeeklistData(geeklist.objectid, geeklist.objectid));
+		});
+		
+		return q.allSettled(p)
+	}
+).then(
 	//TODO: Calculate and save geeklist stats
 	function(){
 		var bg_promises = [];
@@ -135,7 +158,6 @@ getGeeklistData(174437).then(
 	}
 ).then(
 	function(){
-		console.log("now saving..");
 		return db.saveBoardgames(boardgames)
 	}
 
@@ -144,10 +166,14 @@ getGeeklistData(174437).then(
 	//TODO: Delete same-date and save boardgameStats to database
   	//TODO: Calculate geeklistSnapshotStats (mechanics breakdown, drilldowns).
 	//TODO: Delete and save geeklistSnapshotStats
+).fail(
+	function(){
+		console.log("Something went wrong!");
+	}
 ).done(
 	function(){
 		boardgameStats.forEach(function(bg, idx){
-			//console.log(bg);
+			console.log(bg);
 		});
 		console.log("All done");
 	}

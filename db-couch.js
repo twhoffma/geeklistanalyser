@@ -1,10 +1,12 @@
 qrequest = require('./qrequest.js');
 
 var dbURL = "http://127.0.0.1:5984";
-var boardgameViewURL = dbURL + '/geeklistmon/_design/boardgame/_view/boardgame?include_docs=true&key='
 
 function getBoardgame(boardgameId){
-	console.log("Getting " + boardgameId + " from db");
+	var boardgameViewURL = dbURL + '/geeklistmon/_design/boardgame/_view/boardgame?include_docs=true&key='
+	
+	//console.log("Getting " + boardgameId + " from db");
+	
 	return p = qrequest.qrequest("GET", boardgameViewURL + "\"" + boardgameId + "\"", null, null).then(
 		function(val){
 			var data = JSON.parse(val);
@@ -22,8 +24,6 @@ function saveBoardgames(boardgames){
 		function(uuids){
 			var promises = [];
 			
-			console.log("Num games: " + boardgames.length);
-				
 			boardgames.forEach(function(bg, i){
 					var docId;
 					
@@ -32,15 +32,15 @@ function saveBoardgames(boardgames){
 						console.log("Saving " + bg.objectid);
 					}else{
 						docId = bg._id;
-						console.log("Updating " + bg.objectid);
+						//console.log("Updating " + bg.objectid);
 					}
 
-					console.log("Saving " + docId + " to db");
-					
 					var docURL = dbURL + "\\geeklistmon\\" + docId;
 					
 					promises.push(qrequest.qrequest("PUT", docURL, JSON.stringify(bg)).then(
-							function(reply){
+							function(res){
+								var reply = JSON.parse(res);
+								
 								if(reply.ok){
 									bg["_id"] = reply.id;
 									bg["_rev"] = reply.rev;
@@ -52,7 +52,7 @@ function saveBoardgames(boardgames){
 							}
 						).fail(
 							function(){
-								//console.log("FAILED TO SAVE: " + JSON.stringify(bg));
+								console.log("Failed to save boardgame: " + JSON.stringify(bg));
 							}
 						)
 					);
@@ -67,9 +67,28 @@ function saveBoardgames(boardgames){
 function generateUuids(num){
 		var idURL = dbURL + '\\_uuids?count=' + num;
 	
-		console.log(idURL);
-	
 		return qrequest.qrequest("GET", idURL, null, null).then(function(ret){ret.uuids}).fail(function(res){console.log("UUID Failed: " + res.statusCode)})
+}
+
+function getGeeklists(){
+	var geeklistViewURL = dbURL + '/geeklistmon/_design/geeklists/_view/geeklists?include_docs=true'
+	
+	return qrequest.qrequest("GET", geeklistViewURL).then(
+		function(res){
+			var geeklists = [];
+			
+			JSON.parse(res).rows.forEach(function(row, i){
+				if(row.doc.update === true){
+					geeklists.push(row.doc);
+					//console.log("Updating: " + row.doc.name);
+				}else{
+					//console.log("Not updating: " + row.doc.name);
+				}
+			});
+			
+			return geeklists
+		}
+	)
 }
 
 function saveBoardgameStats(boardgameStats){
@@ -82,3 +101,4 @@ function saveGeeklistStats(geeklistStats){
 
 module.exports.saveBoardgames = saveBoardgames
 module.exports.getBoardgame = getBoardgame
+module.exports.getGeeklists = getGeeklists

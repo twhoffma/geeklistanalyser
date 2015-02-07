@@ -21,14 +21,13 @@ function qrequest(method, url, data){
 			},
 			function(error, response, body) {
 				if(response.statusCode == 201){
-					var reply = JSON.parse(body);
 					
-					p.resolve(reply);
+					p.resolve(body);
 				}else{
 					console.log("error: " + response.statusCode);
 					console.log("error: " + body);
 						
-					console.log("Failed data: " + JSON.stringify(data));
+					console.log("Failed data: " + data);
 					
 					p.reject(body);
 				}
