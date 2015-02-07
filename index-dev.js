@@ -135,6 +135,7 @@ getGeeklistData(174437).then(
 	}
 ).then(
 	function(){
+		console.log("now saving..");
 		return db.saveBoardgames(boardgames)
 	}
 
@@ -146,7 +147,7 @@ getGeeklistData(174437).then(
 ).done(
 	function(){
 		boardgameStats.forEach(function(bg, idx){
-			console.log(bg);
+			//console.log(bg);
 		});
 		console.log("All done");
 	}

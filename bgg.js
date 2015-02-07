@@ -5,6 +5,7 @@ var geeklistURL = 'https://www.boardgamegeek.com/xmlapi/geeklist/';
 var boardgameURL = 'https://www.boardgamegeek.com/xmlapi/boardgame/';
 
 function getGeeklist(geeklistId){
+	console.log("Getting geeklist " + geeklistId + " from BGG");
 	return qrequest.qrequest("GET", geeklistURL + geeklistId)
 }
 
@@ -68,3 +69,6 @@ function getBoardgame(boardgameId){
 		}
 	)
 }
+
+module.exports.getGeeklist = getGeeklist
+module.exports.getBoadgame = getBoardgame

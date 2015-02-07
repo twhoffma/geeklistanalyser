@@ -17,7 +17,7 @@ function qrequest(method, url, data){
 			{
 				method: "PUT",
 				uri: url,
-				body: JSON.stringify(data)
+				body: data
 			},
 			function(error, response, body) {
 				if(response.statusCode == 201){
@@ -27,6 +27,9 @@ function qrequest(method, url, data){
 				}else{
 					console.log("error: " + response.statusCode);
 					console.log("error: " + body);
+						
+					console.log("Failed data: " + JSON.stringify(data));
+					
 					p.reject(body);
 				}
 			}
@@ -36,3 +39,5 @@ function qrequest(method, url, data){
 	
 	return p.promise
 }
+
+module.exports.qrequest = qrequest
