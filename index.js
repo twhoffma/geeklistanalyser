@@ -16,6 +16,8 @@ var currentTime = moment().format("YYYY-MM-DD[T]HH:mm:SS")
 function getGeeklistData(geeklistId, subgeeklistId){
 	var p = q.defer();
 	var promises = [];
+	var bgameStats = [];
+	var bgameQueue = [];
 	
 	bgg.getGeeklist(subgeeklistId).then(
 		function(res){
@@ -27,15 +29,18 @@ function getGeeklistData(geeklistId, subgeeklistId){
 						var bgId = $(this).attr('objectid');
 						var thumbs = parseInt($(this).attr('thumbs'));
 						
-						var bg = boardgamesQueue.filter(function(e){
-							return e.objectid == bgId;
+						//var bg = boardgamesQueue.filter(function(e){
+						var bg = bgameQueue.filter(function(e){
+							return e.objectId == bgId;
 						});
 						
 						if(bg.length == 0){
-							boardgamesQueue.push({objectid: bgId});
+							//boardgamesQueue.push({objectid: bgId});
+							bgameQueue.push({objectId: bgId});
+							console.log("New bg: " + bgId);
 						}
 					
-						var bgStats = boardgameStats.filter(function(e){
+						var bgStats = bgameStats.filter(function(e){
 							return e.objectId == bgId && e.geeklistId == geeklistId
 						});
 					
@@ -53,7 +58,7 @@ function getGeeklistData(geeklistId, subgeeklistId){
 								hist: {} //Histogram based on position
 							}
 						
-							boardgameStats.push(bgStat);
+							bgameStats.push(bgStat);
 						}else{
 							bgStat = bgStats[0];
 						}
@@ -64,16 +69,20 @@ function getGeeklistData(geeklistId, subgeeklistId){
 					}
 				}else if($(this).attr('objecttype') == 'geeklist'){
 						var glId = $(this).attr('objectid');
+						
+						//Check if list has already been traversed. This is necessary to prevent 
+						//possible infinite loops
 						var gl = geeklists.filter(function(e){
-							return e.objectId == geeklistId
+							return e.objectId == glId
 						});
 						
 						if(gl.length == 0){
 							console.log('Loading list: ' + glId);
+
 							geeklists.push({objectId: glId});
 							
 							var geeklistStats = {
-								objectid: glId,
+								objectId: glId,
 								statDate: currentDate,
 								crets: moment().format("YYYY-MM-DD[T]HH:mm:SS"),
 								numLists: 0,
@@ -86,9 +95,40 @@ function getGeeklistData(geeklistId, subgeeklistId){
 								minListLength: 0
 							};
 							
+							//TODO: Add geeklistStats array
+							//TODO: When it returns one should combine the stats if they are additive.
+							//TODO: If sublist is equal to geeklist then we are at the top level and should calculate non-additive stats.
+							
 							promises.push(getGeeklistData(geeklistId, glId).then(
 								function(val){
+									val.bgameQueue.forEach(function(v, i){
+										//Add found boardgames to queue for loading stats
+										if(bgameQueue.filter(function(e){ e.objectId === v.objectId	}) === 0){
+											bgameQueue.push(v);
+										}
+										
+									});
+									
+									console.log(val.bgameStats.length);
 									//Here we need to combine stats from previous run
+									val.bgameStats.forEach(function(v, i){
+										var s = bgameStats.filter(function(e){ e.objectId === v.objectId});
+
+										if(s.length > 0){
+											var stat = s[0];
+											
+											console.log("Comb: " + v.objectId);
+											
+											stat.cnt += v.cnt;
+											stat.thumbs += v.thumbs;
+											//TODO: combine stat.hist	
+										}else{
+											bgameStats.push(v);
+											console.log("New: " + v.objectId);
+										}
+									});
+
+									return {bgameQueue: bgameQueue, bgameStats: bgameStats}
 								}
 							));
 						}
@@ -98,12 +138,36 @@ function getGeeklistData(geeklistId, subgeeklistId){
 			});
 			
 			q.all(promises).then(
-				function(){
-					//Should be
-					//p.resolve(boardgameQueue);	
-					p.resolve();
+				function(val){
+					val.forEach(function(res, i){
+						res.bgameQueue.forEach(function(v, i){
+							//Add found boardgames to queue for loading stats
+							if(bgameQueue.filter(function(e){ e.objectId === v.objectId	}) === 0){
+								bgameQueue.push(v);
+							}	
+						});
+										
+						//Here we need to combine stats from previous run
+						res.bgameStats.forEach(function(v, i){
+							var s = bgameStats.filter(function(e){ e.objectId === v.objectId});
+							
+							if(s.length > 0){
+								var stat = s[0];
+								stat.cnt += v.cnt;
+								stat.thumbs += v.thumbs;
+								//TODO: combine stat.hist	
+							}else{
+								bgameStats.push(v);
+							}
+						});
+					});
+					
+					console.log(bgameStats);
+					p.resolve({bgameQueue: bgameQueue, bgameStats: bgameStats});
+					//p.resolve();
 				}
 			);
+
 		}
 	);
 	
