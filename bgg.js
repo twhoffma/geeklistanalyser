@@ -24,7 +24,7 @@ function getBoardgame(boardgameId){
 			bg['maxplayers'] = $('maxplayers').text();
 			bg['playingtime'] = $('playingtime').text();
 			bg['thumbnail'] = $('thumbnail').text();
-	
+			
 			bg['name'] = [];
 			$('name').each(function(index, elem){
 				bg['name'].push({'name': $(this).text(), 'primary': $(this).attr('primary')});

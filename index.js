@@ -13,11 +13,41 @@ var geeklistStats = [];
 var currentDate = moment().format("YYYY-MM-DD")
 var currentTime = moment().format("YYYY-MM-DD[T]HH:mm:SS")
 
-function getGeeklistData(geeklistId, subgeeklistId){
+function getGeeklistData(geeklistid, subgeeklistid){
 	var p = q.defer();
 	var promises = [];
 	
-	bgg.getGeeklist(subgeeklistId).then(
+	//Get the geeklistStats for parent list
+	var geeklistStatList = geeklistStats.filter(function(e){
+		return e.objectid == geeklistid
+	});
+	
+	var geeklistStat;
+	
+	if(geeklistStatList.length === 0){
+		geeklistStat = {
+			objectid: geeklistid,
+			statDate: currentDate,
+			crets: moment().format("YYYY-MM-DD[T]HH:mm:SS"),
+			numLists: 0,
+			type: "geeklistStat",
+			depth: 0,
+			numBoardgames: 0,
+			avgListLength: 0,
+			medListLength: 0,
+			maxListLenth: 0,
+			minListLength: 0
+		};
+		geeklistStats.push(geeklistStat);
+	}else{
+		geeklistStat = geeklistStatList[0];
+	}
+
+	//Populate geeklist stats
+	geeklistStat.depth += 1;
+	
+	//Load the list from BGG
+	bgg.getGeeklist(subgeeklistid).then(
 		function(res){
 			var $ = cheerio.load(res);
 			
@@ -36,15 +66,15 @@ function getGeeklistData(geeklistId, subgeeklistId){
 						}
 					
 						var bgStats = boardgameStats.filter(function(e){
-							return e.objectId == bgId && e.geeklistId == geeklistId
+							return e.objectid == bgId && e.geeklistid == geeklistid
 						});
 					
 						var bgStat;
 					
 						if(bgStats.length === 0){
 							bgStat = {
-								objectId: bgId,
-								geeklistId: geeklistId,
+								objectid: bgId,
+								geeklistid: geeklistid,
 								analysisDate: currentDate,
 								crets: moment().format("YYYY-MM-DD[T]HH:mm:SS"),
 								cnt: 0,
@@ -61,39 +91,28 @@ function getGeeklistData(geeklistId, subgeeklistId){
 						//Here we tally all stats.
 						bgStat.cnt++;
 						bgStat.thumbs += thumbs;
+
+						geeklistStat.numBoardgames++;
 					}
 				}else if($(this).attr('objecttype') == 'geeklist'){
 						var glId = $(this).attr('objectid');
 						var gl = geeklists.filter(function(e){
-							return e.objectId == geeklistId
+							return e.objectid == glId
 						});
 						
+						//Prevent infinite loops by checking where we've been
 						if(gl.length == 0){
 							console.log('Loading list: ' + glId);
-							geeklists.push({objectId: glId});
+							geeklists.push({objectid: glId});
 							
-							var geeklistStats = {
-								objectid: glId,
-								statDate: currentDate,
-								crets: moment().format("YYYY-MM-DD[T]HH:mm:SS"),
-								numLists: 0,
-								type: "geeklistStat",
-								depth: 0,
-								numBoardgames: 0,
-								avgListLength: 0,
-								medListLength: 0,
-								maxListLenth: 0,
-								minListLength: 0
-							};
-							
-							promises.push(getGeeklistData(geeklistId, glId).then(
+							promises.push(getGeeklistData(geeklistid, glId).then(
 								function(val){
 									//Here we need to combine stats from previous run
 								}
 							));
 						}
 						
-						gl["numLists"]++;
+						geeklistStat.numLists++;
 				}
 			});
 			
@@ -145,9 +164,12 @@ db.getGeeklists().then(
 			var p = getBoardgameData(bg.objectid).then(
 				function(v){
 					bg = v;
-					//bg["geeklists"] = [];
-					//bg.geeklists.push("174437");
 					
+					//TODO: Add most recent stats to boardgame
+					boardgameStats.filter(function(e){e.objectid === bg.objectid}).forEach(function(v, i){
+						
+					});
+						
 					boardgames.push(bg);
 				});
 							
@@ -158,23 +180,24 @@ db.getGeeklists().then(
 	}
 ).then(
 	function(){
-		return db.saveBoardgames(boardgames)
+		return db.saveBoardgames(boardgames) //, db.saveBoardgameStats(boardgameStats)]
 	}
 
-	//TODO: Save boardgames to database
 	//TODO: Delete same-date and save geeklistStats to database
 	//TODO: Delete same-date and save boardgameStats to database
   	//TODO: Calculate geeklistSnapshotStats (mechanics breakdown, drilldowns).
 	//TODO: Delete and save geeklistSnapshotStats
-).fail(
-	function(){
-		console.log("Something went wrong!");
-	}
+//).fail(
+//	function(){
+//		console.log("Something went wrong!");
+//	}
 ).done(
 	function(){
 		boardgameStats.forEach(function(bg, idx){
 			console.log(bg);
 		});
+
+		console.log(geeklistStats[0]);
 		console.log("All done");
 	}
 );
