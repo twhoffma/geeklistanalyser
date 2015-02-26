@@ -5,15 +5,15 @@ moment = require('moment');
 db = require('./db-couch');
 bgg = require('./bgg.js');
 
-var boardgamesQueue = [];
-var boardgames = [];
-var geeklists = [];
-var boardgameStats = [];
-var geeklistStats = [];
+//var boardgamesQueue = [];
+//var boardgames = [];
+//var geeklists = [];
+//var boardgameStats = [];
+//var geeklistStats = [];
 var currentDate = moment().format("YYYY-MM-DD")
 var currentTime = moment().format("YYYY-MM-DD[T]HH:mm:SS")
 
-function getGeeklistData(geeklistid, subgeeklistid){
+function getGeeklistData(geeklistid, subgeeklistid, geeklists, boardgameStats, geeklistStats){
 	var p = q.defer();
 	var promises = [];
 	
@@ -57,6 +57,7 @@ function getGeeklistData(geeklistid, subgeeklistid){
 						var bgId = $(this).attr('objectid');
 						var thumbs = parseInt($(this).attr('thumbs'));
 						
+						/*	
 						var bg = boardgamesQueue.filter(function(e){
 							return e.objectid == bgId;
 						});
@@ -64,6 +65,7 @@ function getGeeklistData(geeklistid, subgeeklistid){
 						if(bg.length == 0){
 							boardgamesQueue.push({objectid: bgId});
 						}
+						*/
 					
 						var bgStats = boardgameStats.filter(function(e){
 							return e.objectid == bgId && e.geeklistid == geeklistid
@@ -105,9 +107,11 @@ function getGeeklistData(geeklistid, subgeeklistid){
 							console.log('Loading list: ' + glId);
 							geeklists.push({objectid: glId});
 							
-							promises.push(getGeeklistData(geeklistid, glId).then(
-								function(val){
-									//Here we need to combine stats from previous run
+							//TODO: Is not capturing return values ok? Is it proper form?	
+							promises.push(getGeeklistData(geeklistid, glId, geeklists, boardgameStats, geeklistStats).fail(
+								function(err){ 
+									console.log("Error loading geeklist of geeklist:");
+									console.log(err);
 								}
 							));
 						}
@@ -116,13 +120,25 @@ function getGeeklistData(geeklistid, subgeeklistid){
 				}
 			});
 			
-			q.all(promises).then(
+			q.allSettled(promises).then(
 				function(){
 					//Should be
-					//p.resolve(boardgameQueue);	
-					p.resolve();
+					//p.resolve(boardgameQueue);
+					if(geeklistid === subgeeklistid){
+						//TODO: Do top-level calculations such as average and median list length.
+					}
+					
+					p.resolve({bgStats: boardgameStats, glStats: geeklistStats});
+				},
+				function(err){
+					console.log(err);
+					p.reject(err);
 				}
 			);
+		}
+	).fail(
+		function(err){
+			console.log(err);
 		}
 	);
 	
@@ -150,14 +166,35 @@ db.getGeeklists().then(
 		var p = [];
 		
 		geeklists.forEach(function(geeklist, i){
-			p.push(getGeeklistData(geeklist.objectid, geeklist.objectid));
+			p.push(getGeeklistData(geeklist.objectid, geeklist.objectid, [], [], []));
 		});
 		
 		return q.allSettled(p)
 	}
-).then(
+).spread(
+	function(val){
+		//TODO: Save bgStats
+		console.log(val.value.bgStats);
+
+		//TODO: Save geeklistStats
+		console.log(val.value.glStats);
+
+		//TODO: Look up board game static, update static that is by some criterion incomplete.
+
+		//TODO: Add most recent stats to boardgame object and save.
+
+		
+	},
+	function(err){
+		console.log("Error occurred:");
+		console.log(err);
+	}
+);
+
+/*
+.then(
 	//TODO: Calculate and save geeklist stats
-	function(){
+	function(val){
 		var bg_promises = [];
 		
 		boardgamesQueue.forEach(function(bg, idx){
@@ -201,6 +238,7 @@ db.getGeeklists().then(
 		console.log("All done");
 	}
 );
+*/
 
 //Classes - just for reference
 geeklist = function(){
