@@ -70,7 +70,7 @@ function generateUuids(num){
 		return qrequest.qrequest("GET", idURL, null, null).then(function(ret){ret.uuids}).fail(function(res){console.log("UUID Failed: " + res.statusCode)})
 }
 
-function getGeeklists(){
+function getGeeklists(inclAll){
 	var geeklistViewURL = dbURL + '/geeklistmon/_design/geeklists/_view/geeklists?include_docs=true'
 	
 	return qrequest.qrequest("GET", geeklistViewURL).then(
@@ -78,11 +78,8 @@ function getGeeklists(){
 			var geeklists = [];
 			
 			JSON.parse(res).rows.forEach(function(row, i){
-				if(row.doc.update === true){
+				if(row.doc.update === true || inclAll === true){
 					geeklists.push(row.doc);
-					//console.log("Updating: " + row.doc.name);
-				}else{
-					//console.log("Not updating: " + row.doc.name);
 				}
 			});
 			
