@@ -110,6 +110,12 @@ function saveGeeklistStats(geeklistStats){
 
 }
 
+//Should return allowable ranges for data-dependent filters 
+//such as issuers, designers, publishers, mechanics, categories, publication years, thumbs.
+function getFilerRanges(){
+
+}
+
 module.exports.saveBoardgames = saveBoardgames
 module.exports.getBoardgame = getBoardgame
 module.exports.getGeeklists = getGeeklists
