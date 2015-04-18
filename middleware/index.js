@@ -23,10 +23,26 @@ app.use('/getGeeklists', function(req, res, next){
 });
 
 app.use('/getGeeklist', function(req, res, next){
-	//console.log(qs.parse(req._parsedUrl.query, true));
-	//TODO: Implement a function to get all boardgames for a given geeklistid parameter that is a number. 
-	console.log(req.query);
-	res.end("Logged");
+	var p = qs.parse(req._parsedUrl.query);
+	
+	if(p.geeklistId != undefined){
+		var skip = p.skip || 0;
+		var limit = p.limit || 100;
+		
+		couch.getGeeklist(p.geeklistId, skip, limit).then(
+			function(reply){
+				//console.log("Serving geeklist " + p.geeklistId);
+				res.end(JSON.stringify(reply));
+				//console.log("Served geeklist " + p.geeklistId);
+			}
+		).fail(function(res){
+				console.log("fail: ");
+				console.log(reply);
+				res.end("{}");
+		});
+	}else{
+		res.end("{}");
+	}
 });
 
 http.createServer(app).listen(3000);

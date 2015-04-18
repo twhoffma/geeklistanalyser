@@ -88,6 +88,20 @@ function getGeeklists(inclAll){
 	)
 }
 
+function getGeeklist(geeklistId, skip, num){
+	var url = dbURL + '/geeklistmon/_design/geeklist/_view/geeklist?include_docs=true&reduce=false&key="' + geeklistId + '"';
+	url = url + "&skip=" + (skip || 0) + "&limit=" + (num || 100);
+	
+	return qrequest.qrequest("GET", url).then(
+		function(res){
+			console.log(url);
+			//console.log(res);
+			
+			return JSON.parse(res).rows
+		}
+	);
+}
+
 function saveBoardgameStats(boardgameStats){
 
 }
@@ -99,3 +113,4 @@ function saveGeeklistStats(geeklistStats){
 module.exports.saveBoardgames = saveBoardgames
 module.exports.getBoardgame = getBoardgame
 module.exports.getGeeklists = getGeeklists
+module.exports.getGeeklist = getGeeklist
