@@ -25,6 +25,8 @@ app.use('/getGeeklists', function(req, res, next){
 app.use('/getGeeklist', function(req, res, next){
 	var p = qs.parse(req._parsedUrl.query);
 	
+	res.setHeader("Access-Control-Allow-Origin", "*");
+	
 	if(p.geeklistId != undefined){
 		var skip = p.skip || 0;
 		var limit = p.limit || 100;
