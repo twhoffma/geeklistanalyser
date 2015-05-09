@@ -1,0 +1,80 @@
+--==090b4529ad1f4a44834728ec8826e605==
+Content-ID: _design/_auth
+Content-Length: 282
+Content-MD5: 6yNvROZv4kIb/W5sx1Aolw==
+Content-Type: application/json;charset=utf-8
+ETag: "5-c68e0b267603575b302eaac1ee9ee51f"
+
+{"validate_doc_update": "function(newDoc, oldDoc, userCtx) { if (userCtx.roles.indexOf('_admin') !== -1) { return; } else { throw({forbidden: 'Only admins may edit the database'}); } }", "_rev": "5-c68e0b267603575b302eaac1ee9ee51f", "_id": "_design/_auth", "language": "javascript"}
+--==090b4529ad1f4a44834728ec8826e605==
+Content-ID: _design/boardgame
+Content-Length: 270
+Content-MD5: hiHDhgbF2Pd+HJjzK4R0fg==
+Content-Type: application/json;charset=utf-8
+ETag: "2-f34a9135da1592fdd687193142177d9a"
+
+{"_rev": "2-f34a9135da1592fdd687193142177d9a", "_id": "_design/boardgame", "language": "javascript", "views": {"boardgame": {"map": "function(doc) {\n  if(doc.type = 'boardgame'){\n  \tif(doc.geeklists.length > 0){\n      \t  emit(doc.objectid, null);\n  \t}\n  }\n}"}}}
+--==090b4529ad1f4a44834728ec8826e605==
+Content-ID: _design/boardgamestats
+Content-Length: 284
+Content-MD5: nOywmG5EAZPwTbaDnxS5rw==
+Content-Type: application/json;charset=utf-8
+ETag: "5-7cce514c061ce9449a75acca2b595edf"
+
+{"_rev": "5-7cce514c061ce9449a75acca2b595edf", "_id": "_design/boardgamestats", "language": "javascript", "views": {"boardgamestats": {"map": "function(doc) {\n  if(doc.type === 'boardgamestat'){\n    emit([doc.geeklistid, doc.analysisDate, parseInt(doc.objectid)], null);\n  }\n}"}}}
+--==090b4529ad1f4a44834728ec8826e605==
+Content-ID: _design/cntBoardgamesPerList
+Content-Length: 341
+Content-MD5: hsOC8dgvc6dp8dG4Q9r8xw==
+Content-Type: application/json;charset=utf-8
+ETag: "1-d1be712e6c69aa93598a4081cf8d8fb5"
+
+{"_rev": "1-d1be712e6c69aa93598a4081cf8d8fb5", "_id": "_design/cntBoardgamesPerList", "language": "javascript", "views": {"cntBoardgamesPerList": {"map": "function(doc) {\n  if(doc.type === 'boardgame'){\n    for(i = 0; i < doc.geeklists.length; i++){\n      emit([doc.geeklists[i].id, doc._id], null);\n    }\n  }\n}", "reduce": "_count"}}}
+--==090b4529ad1f4a44834728ec8826e605==
+Content-ID: _design/geeklist
+Content-Length: 294
+Content-MD5: Sb4WLLl5hbGBkMq05tvnig==
+Content-Type: application/json;charset=utf-8
+ETag: "2-ac63236c4f7819f6ea495128605ef30b"
+
+{"_rev": "2-ac63236c4f7819f6ea495128605ef30b", "_id": "_design/geeklist", "language": "javascript", "views": {"geeklist": {"map": "function(doc) {\n  if(doc.geeklists.length > 0){\n\tfor(idx = 0; idx < doc.geeklists.length; idx++){\n      \t  emit(doc.geeklists[idx].id, null);\n\t}\n  }\n}"}}}
+--==090b4529ad1f4a44834728ec8826e605==
+Content-ID: _design/geeklists
+Content-Length: 221
+Content-MD5: yPaiFzN7qzSU6p3PBWvAIw==
+Content-Type: application/json;charset=utf-8
+ETag: "2-9e5fb0f475dee41f2148d3dfe60353c8"
+
+{"_rev": "2-9e5fb0f475dee41f2148d3dfe60353c8", "_id": "_design/geeklists", "language": "javascript", "views": {"geeklists": {"map": "function(doc) {\n  if(doc.type === \"geeklist\"){\n    emit(doc.name, null);\n  }\n}"}}}
+--==090b4529ad1f4a44834728ec8826e605==
+Content-ID: _design/geekliststat
+Content-Length: 247
+Content-MD5: OowXxAclBCx3wI6JLSjdOA==
+Content-Type: application/json;charset=utf-8
+ETag: "1-fe5db17e29996b1d51788fb1b0c1f539"
+
+{"_rev": "1-fe5db17e29996b1d51788fb1b0c1f539", "_id": "_design/geekliststat", "language": "javascript", "views": {"geekliststat": {"map": "function(doc) {\n  if(doc.type === 'geekliststat'){\n    emit([doc.geeklistid, doc.date], null);\n  }\n}"}}}
+--==090b4529ad1f4a44834728ec8826e605==
+Content-ID: _design/geekliststats
+Content-Length: 249
+Content-MD5: khUooC0xd2E23pLLGqx3sw==
+Content-Type: application/json;charset=utf-8
+ETag: "2-1918d62de330394a9b026c78701105f1"
+
+{"_rev": "2-1918d62de330394a9b026c78701105f1", "_id": "_design/geekliststats", "language": "javascript", "views": {"geekliststats": {"map": "function(doc) {\n  if(doc.type === 'geekliststat'){\n    emit([doc.geeklistid, doc.date], null);\n  }\n}"}}}
+--==090b4529ad1f4a44834728ec8826e605==
+Content-ID: _design/mechanics
+Content-Length: 498
+Content-MD5: zcRfTAxBJB48hlqEFo8OAg==
+Content-Type: application/json;charset=utf-8
+ETag: "1-cf7ddcb31f3398ac92866a6ec7c1637d"
+
+{"_rev": "1-cf7ddcb31f3398ac92866a6ec7c1637d", "_id": "_design/mechanics", "language": "javascript", "views": {"boardgamemechanic": {"map": "function(doc) {\n  if(doc.geeklists.length > 0){\n\tfor(idx = 0; idx < doc.geeklists.length; idx++){\n\t  d = [doc.geeklists[idx].id];\n\t  for(j = 0; j < doc.boardgamemechanic.length; j++){\n\t\td.push(doc.boardgamemechanic[j].name);\n      \t  \temit(d, 1);\n\t  }\n\t}\n  }\n}", "reduce": "function (key, values, rereduce) {\n\treturn sum(values);\n}"}}}
+--==090b4529ad1f4a44834728ec8826e605==
+Content-ID: _design/mechanics2
+Content-Length: 568
+Content-MD5: gY+g3UYYFdoPWAgXsEmGyA==
+Content-Type: application/json;charset=utf-8
+ETag: "1-9dfb9e1c14b38b554e761af9fd8f4443"
+
+{"_rev": "1-9dfb9e1c14b38b554e761af9fd8f4443", "_id": "_design/mechanics2", "language": "javascript", "views": {"boardgamemechanic2": {"map": "function(doc) {\n  if(doc.geeklists.length > 0){\n\tfor(idx = 0; idx < doc.geeklists.length; idx++){\n\t  d = [doc.geeklists[idx].id];\n\t  m = []\n\t  for(j = 0; j < doc.boardgamemechanic.length; j++){\n\t\td.push(doc.boardgamemechanic[j].name);\t\n\t\t//emit([doc.geeklists[idx].id, m], 1);\n\t  }\n\t  //d.push(m);\n\t  emit(d, 1);\n\t}\n  }\n}", "reduce": "function (key, values, rereduce) {\n\treturn sum(values);\n}"}}}

@@ -9,6 +9,7 @@ function qrequest(method, url, data){
 			if(!error && response.statusCode == 200){
 				p.resolve(response.body);
 			}else{
+				console.log("failed url: " + url);
 				p.reject(response.body);	
 			}
 		});
@@ -24,8 +25,8 @@ function qrequest(method, url, data){
 					
 					p.resolve(body);
 				}else{
-					console.log("error: " + response.statusCode);
-					console.log("error: " + body);
+					console.log("PUT error: " + response.statusCode);
+					console.log("PUT error: " + body);
 						
 					console.log("Failed data: " + data);
 					
@@ -33,7 +34,28 @@ function qrequest(method, url, data){
 				}
 			}
 		)
-			
+	}else if(method.toUpperCase() === "DELETE"){
+		request(
+			{
+				method: "DELETE",
+				uri: url,
+				body: data
+			},
+			function(error, response, body) {
+				if(response.statusCode == 200){
+					p.resolve(true);
+				}else{
+					console.log("DELETE error: " + response.statusCode);
+					console.log("DELETE error: " + body);
+						
+					console.log("Failed data: " + data);
+					
+					p.reject("ERROR");
+				}
+			}
+		)
+	}else{
+		p.reject("Unknown http verb");
 	}
 	
 	return p.promise

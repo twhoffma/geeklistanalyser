@@ -5,11 +5,6 @@ moment = require('moment');
 db = require('./db-couch');
 bgg = require('./bgg.js');
 
-//var boardgamesQueue = [];
-//var boardgames = [];
-//var geeklists = [];
-//var boardgameStats = [];
-//var geeklistStats = [];
 var currentDate = moment().format("YYYY-MM-DD")
 var currentTime = moment().format("YYYY-MM-DD[T]HH:mm:SS")
 
@@ -24,13 +19,15 @@ function getGeeklistData(geeklistid, subgeeklistid, geeklists, boardgameStats, g
 	
 	var geeklistStat;
 	
+	//XXX: Find out why this is just not passed as a single object to be updated 
 	if(geeklistStatList.length === 0){
 		geeklistStat = {
+			id: geeklistid, //XXX:For compatibility with other old ones in database, 
 			objectid: geeklistid,
 			statDate: currentDate,
 			crets: moment().format("YYYY-MM-DD[T]HH:mm:SS"),
 			numLists: 0,
-			type: "geeklistStat",
+			type: "geekliststat",
 			depth: 0,
 			numBoardgames: 0,
 			avgListLength: 0,
@@ -57,16 +54,6 @@ function getGeeklistData(geeklistid, subgeeklistid, geeklists, boardgameStats, g
 						var bgId = $(this).attr('objectid');
 						var thumbs = parseInt($(this).attr('thumbs'));
 						
-						/*	
-						var bg = boardgamesQueue.filter(function(e){
-							return e.objectid == bgId;
-						});
-						
-						if(bg.length == 0){
-							boardgamesQueue.push({objectid: bgId});
-						}
-						*/
-					
 						var bgStats = boardgameStats.filter(function(e){
 							return e.objectid == bgId && e.geeklistid == geeklistid
 						});
@@ -174,13 +161,37 @@ db.getGeeklists().then(
 ).spread(
 	function(val){
 		//TODO: Save bgStats
-		console.log(val.value.bgStats);
+		console.log("Saving boardgamestats");
+		var geeklistId = val.value.glStats[0].objectid;
+		var analysisDate = val.value.glStats[0].statDate;
+		
+		db.deleteBoardgameStats(geeklistId, analysisDate).then(
+			function(){
+				return db.saveBoardgameStats(val.value.bgStats);
+			}
+		).fail(
+			function(err){
+				console.log("Error saving boardgame stats: " + err);
+			}
+		);
 
+		console.log("Saving geekliststats");
+		db.deleteGeeklistStats(geeklistId, analysisDate).then(
+			function(){
+				console.log(val.value.glStats);
+				return db.saveGeeklistStats(val.value.glStats);
+			}
+		).fail(
+			function(err){
+				console.log("Error saving geeklist stats: " + err);
+			}
+		);
 		//TODO: Save geeklistStats
-		console.log(val.value.glStats);
+		//console.log("Saving geekliststats");
+		//console.log(val.value.glStats);
 
 		//TODO: Look up board game static, update static that is by some criterion incomplete.
-
+		
 		//TODO: Add most recent stats to boardgame object and save.
 
 		
