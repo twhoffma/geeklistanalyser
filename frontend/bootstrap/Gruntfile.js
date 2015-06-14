@@ -8,7 +8,16 @@ module.exports = function(grunt) {
   			main: {
     			files: [
       	  	  // includes files within path
-      	  	  		{expand: true, src: ['css/*', 'bower_components/bootstrap/dist/css/*'], dest: 'public/', filter: 'isFile'},
+      	  	  		{
+						expand: true, 
+						src: [
+							'css/*', 
+							'bower_components/bootstrap/dist/css/*', 
+							'index.html'
+						], 
+						dest: 'public/', 
+						filter: 'isFile'
+					},
 
       	  	  		// includes files within path and its sub-directories
       	  	  		//{expand: true, src: ['path/**'], dest: 'dest/'},
@@ -27,7 +36,7 @@ module.exports = function(grunt) {
       		},
       		js_frontend: {
         		src: [
-        		  	'./bower_components/jquery/jquery.js',
+        		  	'./bower_components/jquery/dist/jquery.js',
        			  	'./bower_components/bootstrap/dist/js/bootstrap.js',
         			'./js/frontend.js'
         		],
