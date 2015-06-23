@@ -61,8 +61,26 @@ function getDocs(viewURL){
 	return qrequest.qrequest("GET", viewURL, null, null).then(
 		function(val){
 			var data = JSON.parse(val);
-				
 			return data.rows
+		},
+		function(){
+			console.log("no doc found!");
+		}
+	).catch(
+		function(){
+			console.log("now what=");
+		}
+	);
+}
+
+function getDoc(viewURL){
+	return getDocs(viewURL).then(
+		function(d){
+			if(d.length > 0){
+				return q(d[0].doc);
+			}else{
+				return q.reject("No doc found!");
+			}
 		}
 	)
 }
@@ -119,8 +137,7 @@ function saveDocs(docs){
 /* --- Boardgame -- */
 function getBoardgame(boardgameId){
 	var boardgameViewURL = getViewURL('boardgame') + '?include_docs=true&key=\"' + boardgameId + "\"";
-	
-	return getDocs(boardgameViewURL)[0].doc
+	return getDoc(boardgameViewURL)
 }
 
 

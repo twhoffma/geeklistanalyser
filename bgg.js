@@ -65,9 +65,46 @@ function getBoardgame(boardgameId){
 				bg['boardgamepublisher'].push({objectid: id, name: val});
 			});
 			
+			bg['boardgameintegration'] = [];
+			$('boardgameintegration').each(function(index, elem){
+				var id = $(this).attr('objectid');
+				var val = $(this).text();
+				
+				if($(this).attr('inbound') === "true"){
+					bg['boardgameintegration'].push({objectid: id, name: val});
+				}
+			});
+			
+			bg['boardgameimplementation'] = [];
+			$('boardgameimplementation').each(function(index, elem){
+				var id = $(this).attr('objectid');
+				var val = $(this).text();
+				
+				if($(this).attr('inbound') === "true"){
+					bg['boardgameimplementation'].push({objectid: id, name: val});
+				}
+			});
+			
 			return bg		
 		}
 	)
+}
+
+function selectorToArray(selector, checkInbound){
+	var a = [];
+	
+	selector.each(function(index, elem){
+		console.log(elem);
+		var id = this.attr('objectid');
+		var val = this.text();
+		var inbound = this.attr('inbound');
+				
+		if(!checkInbound || inbound === "true"){
+			a.push({objectid: id, name: val});
+		}
+	});
+
+	return a
 }
 
 module.exports.getGeeklist = getGeeklist

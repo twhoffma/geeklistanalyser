@@ -133,12 +133,17 @@ function getGeeklistData(geeklistid, subgeeklistid, geeklists, boardgameStats, g
 }
 
 function getBoardgameData(boardgameId){
-	return db.getBoardgame(boardgameId).fail(
+	return db.getBoardgame(boardgameId).then(
+		function(bg){
+			//console.log(bg);
+			return bg
+		},
 		function(){
 			return bgg.getBoardgame(boardgameId) 
 		}
-	).fail(
+	).catch(
 		function(val){
+			console.log("what??");
 			console.log(val);
 			throw val
 		}
@@ -160,12 +165,11 @@ db.getGeeklists().then(
 	}
 ).spread(
 	function(val){
-		//TODO: Save bgStats
 		console.log("Saving boardgamestats");
 		var geeklistId = val.value.glStats[0].objectid;
 		var analysisDate = val.value.glStats[0].statDate;
 		
-		db.deleteBoardgameStats(geeklistId, analysisDate).then(
+		var pBgStats = db.deleteBoardgameStats(geeklistId, analysisDate).then(
 			function(){
 				return db.saveBoardgameStats(val.value.bgStats);
 			}
@@ -174,11 +178,11 @@ db.getGeeklists().then(
 				console.log("Error saving boardgame stats: " + err);
 			}
 		);
-
+		
+		//TODO: Implement median calculation for geeklists
 		console.log("Saving geekliststats");
-		db.deleteGeeklistStats(geeklistId, analysisDate).then(
+		var pGlStats = db.deleteGeeklistStats(geeklistId, analysisDate).then(
 			function(){
-				console.log(val.value.glStats);
 				return db.saveGeeklistStats(val.value.glStats);
 			}
 		).fail(
@@ -186,19 +190,55 @@ db.getGeeklists().then(
 				console.log("Error saving geeklist stats: " + err);
 			}
 		);
-		//TODO: Save geeklistStats
-		//console.log("Saving geekliststats");
-		//console.log(val.value.glStats);
-
+		
+		return q.all([pBgStats, pGlStats]).then(function(){
+				return val.value.bgStats
+			});
 		//TODO: Look up board game static, update static that is by some criterion incomplete.
 		
 		//TODO: Add most recent stats to boardgame object and save.
-
-		
 	},
 	function(err){
 		console.log("Error occurred:");
 		console.log(err);
+	}
+).then(
+	function(val){
+		return q.all(val.map(function(bgStat){
+				return getBoardgameData(bgStat.objectid).then(
+					function(g){
+						//Append latest stats
+						//TODO: Append latestStats array if needed.
+						//TODO: Delete old stats for the same lisy
+						//Append new stats
+						//console.log(g);
+						console.log("Appending latest stats");
+						g['latestStats'] = bgStat;
+						return g;
+					},
+					function(g){
+						console.log("ERROR: Look up bg failed.");
+					}
+				).catch(function(){
+					console.log("ERROR caught in look up");
+				});
+			})
+		).then(
+			function(boardgames){
+				//TODO: Add saving mechanism
+				console.log("[Dummy] Saving all boardgames to DB.");
+				return true
+			}
+		);
+		
+	},
+	function(v){
+		console.log("ERROR: Some stats failed to save!");
+	}
+).then(
+	function(v){
+		console.log("All done!");
+		//console.log(v);
 	}
 );
 
