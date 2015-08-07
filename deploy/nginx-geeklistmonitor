@@ -4,7 +4,8 @@ server {
     
     root /var/www/hoffy.no/;
     error_log /var/log/nginx/hoffy-local.no-error_log;
-    access_log /var/log/nginx/hoffy-local.no-access_log;
+    access_log '/var/log/nginx/hoffy-local.no-access_log' debug;
+    
     
     location /geeklistmonitor/ {
         try_files $uri $uri/ $uri/index.html;
