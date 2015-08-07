@@ -8,7 +8,7 @@ function loadGeeklist(geeklistid, limit, skip){
 	}
 
 	
-	var geeklistURL = "http://127.0.0.1:3000/getGeeklist?geeklistId=" + geeklistid + "&limit=" + limit + "&skip=" + skip;
+	var geeklistURL = "./data/getGeeklist?geeklistId=" + geeklistid + "&limit=" + limit + "&skip=" + skip;
 	
 	jQuery.ajax({
 		url: geeklistURL 
@@ -28,7 +28,7 @@ function loadGeeklist(geeklistid, limit, skip){
 }
 
 function getGeeklists(){
-	var url = "http://127.0.0.1:3000/getGeeklists?";
+	var url = "./data/getGeeklists";
 	
 	jQuery.ajax({
 		url: url 

@@ -15,7 +15,7 @@ module.exports = function(grunt) {
 							'bower_components/bootstrap/dist/css/*', 
 							'index.html'
 						], 
-						dest: 'public/', 
+						dest: '/var/www/hoffy.no/geeklistmonitor/', 
 						filter: 'isFile'
 					},
 
@@ -40,7 +40,7 @@ module.exports = function(grunt) {
        			  	'./bower_components/bootstrap/dist/js/bootstrap.js',
         			'./js/frontend.js'
         		],
-        		dest: './public/js/frontend.js'
+        		dest: '/var/www/hoffy.no/geeklistmonitor/js/frontend.js'
       		},
 		},
         cssmin: {
