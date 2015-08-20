@@ -14,6 +14,20 @@ echo "deb http://packages.elasticsearch.org/logstash/1.5/debian stable main" | s
 sudo apt-get update
 sudo apt-get install elasticsearch logstash
 
+sudo service elasticsearch stop
+
+cd /usr/share/elasticsearch/
+sudo ./bin/plugin --install elasticsearch/elasticsearch-river-couchdb/1.2.0
+
+sudo service start elasticsearch
+
+#Create elastic search index.
+curl -X PUT '127.0.0.1:9200/_river/testdb/_meta' -d '{ "type" : "couchdb", "couchdb" : { "host" : "localhost", "port" : 5984, "db" : "geeklistmon", "filter" : null }, "index" : { "index" : "testdb", "type" : "testdb", "bulk_size" : "100", "bulk_timeout" : "10ms" } }'
+
+
+
+
+
 
 
 #Set services to start on boot - systemd
