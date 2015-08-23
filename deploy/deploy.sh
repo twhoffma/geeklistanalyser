@@ -24,9 +24,8 @@ sudo service start elasticsearch
 #Create elastic search index.
 curl -X PUT '127.0.0.1:9200/_river/testdb/_meta' -d '{ "type" : "couchdb", "couchdb" : { "host" : "localhost", "port" : 5984, "db" : "geeklistmon", "filter" : null }, "index" : { "index" : "testdb", "type" : "testdb", "bulk_size" : "100", "bulk_timeout" : "10ms" } }'
 
-
-
-
+#Install inquisitor for debugging queries
+sudo /usr/share/elasticsearch/bin/plugin -install polyfractal/elasticsearch-inquisitor
 
 
 
