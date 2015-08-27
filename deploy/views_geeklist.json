@@ -1,0 +1,9 @@
+{
+  "_id": "_design/geeklist",
+  "language": "javascript",
+  "views": {
+    "geeklist": {
+      "map": "function(doc) {\n  if(doc.geeklists.length > 0){\n\tfor(idx = 0; idx < doc.geeklists.length; idx++){\n      \t  emit(doc.geeklists[idx], null);\n\t}\n  }\n}"
+    }
+  }
+}

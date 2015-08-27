@@ -19,10 +19,11 @@ sudo service elasticsearch stop
 cd /usr/share/elasticsearch/
 sudo ./bin/plugin --install elasticsearch/elasticsearch-river-couchdb/1.2.0
 
+sudo service start logstash
 sudo service start elasticsearch
 
 #Create elastic search index.
-curl -X PUT '127.0.0.1:9200/_river/testdb/_meta' -d '{ "type" : "couchdb", "couchdb" : { "host" : "localhost", "port" : 5984, "db" : "geeklistmon", "filter" : null }, "index" : { "index" : "testdb", "type" : "testdb", "bulk_size" : "100", "bulk_timeout" : "10ms" } }'
+curl -X PUT '127.0.0.1:9200/_river/boardgames/_meta' -d @elasticsearch.json
 
 #Install inquisitor for debugging queries
 sudo /usr/share/elasticsearch/bin/plugin -install polyfractal/elasticsearch-inquisitor
@@ -31,4 +32,4 @@ sudo /usr/share/elasticsearch/bin/plugin -install polyfractal/elasticsearch-inqu
 
 #Set services to start on boot - systemd
 sudo /bin/systemctl daemon-reload
-sudo /bin/systemctl enable elasticsearch.service 
+sudo /bin/systemctl enable elasticsearch.service

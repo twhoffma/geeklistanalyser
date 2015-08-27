@@ -1,7 +1,7 @@
 qrequest = require('./qrequest.js');
 
 var dbURL = "http://127.0.0.1:5984";
-var dbName = "geeklistmon";
+var dbName = "geeklistdb";
 
 /* --- Generic functions --- */
 function getViewURL(view){

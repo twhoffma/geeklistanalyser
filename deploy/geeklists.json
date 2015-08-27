@@ -1,0 +1,319 @@
+{
+  "docs": [
+    {
+      "_id": "21782",
+      "type": "geeklist",
+      "name": "Essen 2000 Canonical List",
+      "group": "Essen",
+      "year": 2000,
+      "update": false,
+      "objectid": 21782
+    },
+    {
+      "_id": "187",
+      "type": "geeklist",
+      "name": "Essen 2002 Releases",
+      "group": "Essen",
+      "year": 2002,
+      "update": false,
+      "objectid": 187
+    },
+    {
+      "_id": "1689",
+      "type": "geeklist",
+      "name": "Essen 2003 Canonical List",
+      "group": "Essen",
+      "year": 2003,
+      "update": false,
+      "objectid": 1689
+    },
+    {
+      "_id": "3867",
+      "type": "geeklist",
+      "name": "Essen 2004 Canonical List",
+      "group": "Essen",
+      "year": 2004,
+      "update": false,
+      "objectid": 3867
+    },
+    {
+      "_id": "9465",
+      "type": "geeklist",
+      "name": "Essen 2005 Canonical List",
+      "group": "Essen",
+      "year": 2005,
+      "update": false,
+      "objectid": 9465
+    },
+    {
+      "_id": "14995",
+      "type": "geeklist",
+      "name": "Essen 2006 Canonical List",
+      "group": "Essen",
+      "year": 2006,
+      "update": false,
+      "objectid": 14995
+    },
+    {
+      "_id": "22498",
+      "type": "geeklist",
+      "name": "Essen 2007 Canonical List",
+      "group": "Essen",
+      "year": 2007,
+      "update": false,
+      "objectid": 22498
+    },
+    {
+      "_id": "32448",
+      "type": "geeklist",
+      "name": "Essen 2008 Canonical List",
+      "group": "Essen",
+      "year": 2008,
+      "update": false,
+      "objectid": 32448
+    },
+    {
+      "_id": "42635",
+      "type": "geeklist",
+      "name": "Essen 2009 Canonical List",
+      "group": "Essen",
+      "year": 2009,
+      "update": false,
+      "objectid": 42635
+    },
+    {
+      "_id": "55855",
+      "type": "geeklist",
+      "name": "Essen 2010 Canonical List",
+      "group": "Essen",
+      "year": 2010,
+      "update": false,
+      "objectid": 55855
+    },
+    {
+      "_id": "70021",
+      "type": "geeklist",
+      "name": "Essen 2011 Canonical List",
+      "group": "Essen",
+      "year": 2011,
+      "update": false,
+      "objectid": 70021
+    },
+    {
+      "_id": "142246",
+      "type": "geeklist",
+      "name": "Spiel 2012 Preview",
+      "group": "Essen",
+      "year": 2012,
+      "update": false,
+      "objectid": 142246
+    },
+    {
+      "_id": "152350",
+      "type": "geeklist",
+      "name": "Spiel 2013 Preview",
+      "group": "Essen",
+      "year": 2013,
+      "update": false,
+      "objectid": 152350
+    },
+    {
+      "_id": "180262",
+      "type": "geeklist",
+      "name": "Essen 2014 Preview",
+      "group": "Essen",
+      "year": 2014,
+      "update": false,
+      "objectid": 180262
+    },
+    {
+      "_id": "174654",
+      "type": "geeklist",
+      "name": "Essen 2015 Preview",
+      "group": "Essen",
+      "year": 2015,
+      "update": false,
+      "objectid": 174654
+    },
+    {
+      "_id": "630",
+      "type": "geeklist",
+      "name": "Nürnberg 2002 Canonical List",
+      "group": "Nürnberg",
+      "year": 2002,
+      "update": false,
+      "objectid": 630
+    },
+    {
+      "_id": "546",
+      "type": "geeklist",
+      "name": "Nürnberg 2003 releases",
+      "group": "Nürnberg",
+      "year": 2003,
+      "update": false,
+      "objectid": 546
+    },
+    {
+      "_id": "1947",
+      "type": "geeklist",
+      "name": "Nürnberg 2004 Canonical List",
+      "group": "Nürnberg",
+      "year": 2004,
+      "update": false,
+      "objectid": 1947
+    },
+    {
+      "_id": "6345",
+      "type": "geeklist",
+      "name": "Nürnberg 2005 Canonical List",
+      "group": "Nürnberg",
+      "year": 2005,
+      "update": false,
+      "objectid": 6345
+    },
+    {
+      "_id": "12926",
+      "type": "geeklist",
+      "name": "2006 Nürnberg Canonical List",
+      "group": "Nürnberg",
+      "year": 2006,
+      "update": false,
+      "objectid": 12926
+    },
+    {
+      "_id": "18752",
+      "type": "geeklist",
+      "name": "2007 Nuremberg Canonical List",
+      "group": "Nürnberg",
+      "year": 2007,
+      "update": false,
+      "objectid": 18752
+    },
+    {
+      "_id": "27932",
+      "type": "geeklist",
+      "name": "Nürnberg 2008 Canonical List",
+      "group": "Nürnberg",
+      "year": 2008,
+      "update": false,
+      "objectid": 27932
+    },
+    {
+      "_id": "38646",
+      "type": "geeklist",
+      "name": "Nürnberg 2009 Canonical List",
+      "group": "Nürnberg",
+      "year": 2009,
+      "update": false,
+      "objectid": 38646
+    },
+    {
+      "_id": "62803",
+      "type": "geeklist",
+      "name": "Nürnberg 2011 Canonical List",
+      "group": "Nürnberg",
+      "year": 2011,
+      "update": false,
+      "objectid": 62803
+    },
+    {
+      "_id": "78288",
+      "type": "geeklist",
+      "name": "Nürnberg 2012 Preview",
+      "group": "Nürnberg",
+      "year": 2012,
+      "update": false,
+      "objectid": 78288
+    },
+    {
+      "_id": "151567",
+      "type": "geeklist",
+      "name": "Nürnberg 2013 Preview",
+      "group": "Nürnberg",
+      "year": 2013,
+      "update": false,
+      "objectid": 151567
+    },
+    {
+      "_id": "164782",
+      "type": "geeklist",
+      "name": "Nürnberg/New York 2014 Preview",
+      "group": "Nürnberg",
+      "year": 2014,
+      "update": false,
+      "objectid": 164782
+    },
+    {
+      "_id": "184754",
+      "type": "geeklist",
+      "name": "Nürnberg/New York 2015 Preview ",
+      "group": "Nürnberg",
+      "year": 2015,
+      "update": false,
+      "objectid": 184754
+    },
+    {
+      "_id": "142245",
+      "type": "geeklist",
+      "name": "Gen Con 2012 Preview",
+      "group": "Gen Con",
+      "year": 2012,
+      "update": false,
+      "objectid": 142245
+    },
+    {
+      "_id": "153611",
+      "type": "geeklist",
+      "name": "Gen Con 2013 Preview",
+      "group": "Gen Con",
+      "year": 2013,
+      "update": false,
+      "objectid": 153611
+    },
+    {
+      "_id": "161427",
+      "type": "geeklist",
+      "name": "Gen Con 2014 Preview",
+      "group": "Gen Con",
+      "year": 2014,
+      "update": false,
+      "objectid": 161427
+    },
+    {
+      "_id": "184821",
+      "type": "geeklist",
+      "name": "Gen Con 2015 Preview",
+      "group": "Gen Con",
+      "year": 2015,
+      "update": false,
+      "objectid": 184821
+    },
+    {
+      "_id": "190037",
+      "type": "geeklist",
+      "name": "Tokyo Game Market Preview - May 2015 ",
+      "group": "Tokyo Game Market",
+      "year": 2015,
+      "update": false,
+      "objectid": 190037
+    },
+    {
+      "_id": "191207",
+      "type": "geeklist",
+      "name": "Origins Game Fair 2015 Preview",
+      "group": "Origins",
+      "year": 2015,
+      "update": false,
+      "objectid": 191207
+    },
+    {
+      "_id": "191095",
+      "type": "geeklist",
+      "name": "XMLAPI Test 2",
+      "group": "Test",
+      "year": 2015,
+      "update": true,
+      "objectid": 191095
+    }
+  ]
+}

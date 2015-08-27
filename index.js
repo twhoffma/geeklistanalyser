@@ -206,34 +206,36 @@ db.getGeeklists().then(
 	function(val){
 		return q.all(val.map(function(bgStat){
 				return getBoardgameData(bgStat.objectid).then(
-					function(g){
-						//Append latest stats
-						//TODO: Append latestStats array if needed.
-						//TODO: Delete old stats for the same lisy
-						//Append new stats
-						//console.log(g);
+					function(boardgame){
 						console.log("Appending latest stats");
-						g['latestStats'] = bgStat;
-						return g;
+						//TODO: Need to append to geeklist array as well or change the model.. 
+						boardgame['latestStats'] = bgStat;
+						boardgame['geeklists'].push(bgStat.geeklistid);
+						
+						return boardgame
 					},
 					function(g){
 						console.log("ERROR: Look up bg failed.");
+						
+						return false
 					}
-				).catch(function(){
-					console.log("ERROR caught in look up");
+				).catch(function(e){
+					console.log("ERROR caught in look up" + e);
 				});
 			})
 		).then(
 			function(boardgames){
-				//TODO: Add saving mechanism
-				console.log("[Dummy] Saving all boardgames to DB.");
-				return true
+				console.log("Saving all boardgames to DB.");
+				
+				return db.saveBoardgames(boardgames)
 			}
 		);
 		
 	},
 	function(v){
 		console.log("ERROR: Some stats failed to save!");
+		
+		return false
 	}
 ).then(
 	function(v){

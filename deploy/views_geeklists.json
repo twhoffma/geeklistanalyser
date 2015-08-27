@@ -1,0 +1,9 @@
+{
+  "_id": "_design/geeklists",
+  "language": "javascript",
+  "views": {
+    "geeklists": {
+      "map": "function(doc) {\n  if(doc.type === \"geeklist\"){\n    emit(doc.name, null);\n  }\n}"
+    }
+  }
+}
