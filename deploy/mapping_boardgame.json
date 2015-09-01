@@ -1,0 +1,139 @@
+{
+    "mappings": {
+      "boardgame": {
+        "properties": {
+          "_rev": {
+            "type": "string"
+          },
+          "boardgameartist": {
+            "type": "nested",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "objectid": {
+                "type": "string"
+              }
+            }
+          },
+          "boardgamedesigner": {
+            "type": "nested",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "objectid": {
+                "type": "string"
+              }
+            }
+          },
+          "boardgamemechanic": {
+            "type": "nested",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "objectid": {
+                "type": "string"
+              }
+            }
+          },
+          "name": {
+            "type": "nested",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "primary": {
+                "type": "boolean"
+              }
+            }
+          },
+          "boardgamepublisher": {
+            "type": "nested",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "objectid": {
+                "type": "string"
+              }
+            }
+          },
+          "cnt": {
+            "type": "long"
+          },
+          "crets": {
+            "type": "date",
+            "format": "dateOptionalTime"
+          },
+          "geeklists": {
+            "type": "nested",
+            "properties": {
+              "latest": {
+                "type": "nested",
+                "properties": {
+                  "_id": {
+                    "type": "string"
+                  },
+                  "_rev": {
+                    "type": "string"
+                  },
+                  "analysisDate": {
+                    "type": "date",
+                    "format": "dateOptionalTime"
+                  },
+                  "cnt": {
+                    "type": "long"
+                  },
+                  "crets": {
+                    "type": "date",
+                    "format": "dateOptionalTime"
+                  },
+                  "geeklistid": {
+                    "type": "long"
+                  },
+                  "hist": {
+                    "type": "object"
+                  },
+                  "objectid": {
+                    "type": "string"
+                  },
+                  "thumbs": {
+                    "type": "long"
+                  },
+                  "type": {
+                    "type": "string"
+                  }
+                }
+              },
+              "objectid": {
+                "type": "long"
+              }
+            }
+          },
+          "maxplayers": {
+            "type": "string"
+          },
+          "minplayers": {
+            "type": "string"
+          },
+          "objectid": {
+            "type": "long"
+          },
+          "playingtime": {
+            "type": "string"
+          },
+          "thumbnail": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "yearpublished": {
+            "type": "string"
+          }
+        }
+      }
+    }
+}

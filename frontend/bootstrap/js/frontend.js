@@ -21,7 +21,8 @@ function loadGeeklist(geeklistid, limit, skip){
 		}
 		
 		for(i = 0; i < r.length; i++){
-			list.append("<tr class=\"gameline\"><td>" + r[i].doc.name + "</td><td class=\"hidden-xs\">1</td></tr>");
+			var n = r[i].doc.name.filter(function(e){return e.primary === "true"})[0].name  || r[i].doc.name[0].name;
+			list.append("<tr class=\"gameline\"><td>" + n + "</td><td class=\"hidden-xs\">1</td></tr>");
 			
 		}
 	});	

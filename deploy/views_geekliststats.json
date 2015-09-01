@@ -1,0 +1,9 @@
+{
+  "_id": "_design/geekliststats",
+  "language": "javascript",
+  "views": {
+    "geekliststats": {
+      "map": "function(doc) {\n  if(doc.type === 'geekliststat'){\n    emit([doc.objectid, doc.statDate], null);\n  }\n}"
+    }
+  }
+}

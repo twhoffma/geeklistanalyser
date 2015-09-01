@@ -171,7 +171,7 @@ function getGeeklists(inclAll){
 
 //Gets the content of the geeklist
 function getGeeklist(geeklistId, skip, num){
-	var url = getViewURL('geeklist') + '?include_docs=true&reduce=false&key="' + geeklistId + '"';
+	var url = getViewURL('geeklist') + '?include_docs=true&reduce=false&key=' + geeklistId + '';
 	url = url + "&skip=" + (skip || 0) + "&limit=" + (num || 100);
 	
 	return getDocs(url)

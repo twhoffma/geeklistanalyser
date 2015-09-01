@@ -1,0 +1,9 @@
+{
+  "_id": "_design/boardgamestats",
+  "language": "javascript",
+  "views": {
+    "boardgamestats": {
+      "map": "function(doc) {\n  if(doc.type === 'boardgamestat'){\n    emit([doc.geeklistid, doc.analysisDate, parseInt(doc.objectid)], null);\n  }\n}"
+    }
+  }
+}

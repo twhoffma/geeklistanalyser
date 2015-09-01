@@ -32,7 +32,7 @@ function getGeeklistData(geeklistid, subgeeklistid, geeklists, boardgameStats, g
 			numBoardgames: 0,
 			avgListLength: 0,
 			medListLength: 0,
-			maxListLenth: 0,
+			maxListLength: 0,
 			minListLength: 0
 		};
 		geeklistStats.push(geeklistStat);
@@ -208,9 +208,15 @@ db.getGeeklists().then(
 				return getBoardgameData(bgStat.objectid).then(
 					function(boardgame){
 						console.log("Appending latest stats");
-						//TODO: Need to append to geeklist array as well or change the model.. 
-						boardgame['latestStats'] = bgStat;
-						boardgame['geeklists'].push(bgStat.geeklistid);
+						//TODO: Need to append to geeklist array as well or change the model..
+						var geeklist = boardgame.geeklists.filter(function(e){return e.objectid === bgStat.geeklistid});
+						console.log(bgStat);	
+						if(geeklist.length === 0){
+							geeklist = {'objectid': bgStat.geeklistid, 'latest': bgStat};
+							boardgame['geeklists'].push(geeklist);
+						}else{
+							geeklist.latestStats = bgStat;
+						}
 						
 						return boardgame
 					},
