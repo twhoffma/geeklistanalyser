@@ -1,0 +1,22 @@
+{
+"query":
+{
+    "filtered" : {
+        "query" : { "match_all" : {} },
+        "filter" : {
+            "nested" : {
+                "path" : "name",
+                "filter" : {
+                    "bool" : {
+                        "should" : [
+                            {
+                                "term" : {"name.name" : "Codenames"}
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}
+}

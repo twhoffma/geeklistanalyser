@@ -23,7 +23,8 @@ sudo service start logstash
 sudo service start elasticsearch
 
 #Create elastic search index.
-curl -X PUT '127.0.0.1:9200/_river/boardgames/_meta' -d @elasticsearch.json
+#XXX: This is absolutely depreciated.. Use initelastic.sh instead..
+#curl -X PUT '127.0.0.1:9200/_river/boardgames/_meta' -d @elasticsearch.json
 
 #Install inquisitor for debugging queries
 sudo /usr/share/elasticsearch/bin/plugin -install polyfractal/elasticsearch-inquisitor
@@ -33,3 +34,8 @@ sudo /usr/share/elasticsearch/bin/plugin -install polyfractal/elasticsearch-inqu
 #Set services to start on boot - systemd
 sudo /bin/systemctl daemon-reload
 sudo /bin/systemctl enable elasticsearch.service
+sudo /bin/systemctl enable logstash.service
+
+#XXX:
+#We have problems running couchdb as a service on Debian 8 since we built it..
+sudo couchdb -b
