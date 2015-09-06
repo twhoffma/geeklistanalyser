@@ -1,0 +1,22 @@
+{
+  "query": {
+    "filtered": {
+      "filter": {
+        "nested": {
+          "path": "boardgamecategory",
+          "filter": {
+            "bool": {
+              "must": [
+                {
+                  "term": {
+                    "boardgamecategory.objectid": "1035"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

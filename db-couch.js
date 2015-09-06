@@ -3,7 +3,15 @@ qrequest = require('./qrequest.js');
 var dbURL = "http://127.0.0.1:5984";
 var dbName = "geeklistdb";
 
+var srchURL = "http://127.0.0.1:9200";
+var srchIndex = "boardgames";
+var srchType = "boardgame";
+
 /* --- Generic functions --- */
+function getSrchURL(){
+	return srchURL + "/" + srchIndex + "/" + srchType + "/search" 
+}
+
 function getViewURL(view){
 	return dbURL + '/' + dbName + '/_design/' + view + '/_view/' + view
 }
@@ -219,6 +227,67 @@ function getFilerRanges(){
 
 }
 
+//Search by filtering and sort result
+function srchBoardgames(filters, sortby, skip, lim){
+	var q = {};
+	var geeklistid;
+
+	geeklistid = filters['geeklistid'];
+	
+	//Number of items to skip during incremental loading
+	if(skip != 0){
+		q['from'] = skip;	
+	}
+	
+	//Set the number results to return
+	q['size'] = lim;
+	
+	//Filtering
+	//TODO: Make this less stupid.
+	q['query'] = {};
+	q['query']['filtered'] = {};
+	q['query']['filtered']['nested'] = {};
+	q['query']['filtered']['nested']['path'] = "geeklists";
+	q['query']['filtered']['nested']['filter'] = {};
+	q['query']['filtered']['nested']['filter']['bool'] = {};
+	q['query']['filtered']['nested']['filter']['bool']['must'] = [];
+	
+	var m = q['query']['filtered']['nested']['filter']['bool']['must'];
+	m.push({'term': {'geeklists.objectid': geeklistid}});
+	
+	
+	//Sorting
+	if(sortby != undefined){
+		var orderby;
+		var s;
+		
+		if(sortby.orderby === "desc"){
+			orderby = "desc";
+		}else{
+			orderby = "asc";	
+		}
+		
+		q['sort'] = [];
+		
+    	if(sortby.name === "name"){
+			s = {"name.name": {"order": orderby, "nested_filter": {"term": {"name.primary": "true"}}}};	
+		}else if(sortby.name === "yearpublished"){
+			s = {"yearpublished": {"order": orderby}}
+		}else if(sortby.name === "thumbs"){
+			s = {"geeklist.latest.thumbs": {"order": orderby, "nested_path": "geeklists.latest", "nested_filter": {"term": {"geeklists.latest.objectid": geeklistid}}}}
+		}else if(sortby.name === "geeklist_addts"){
+			s = {"geeklists.latest.crets": {"order": orderby, "nested_path": "geeklists.latest", "nested_filter": {"term": {"geeklists.lastest.objectid": geeklistid}}}}	
+		}
+		
+		q['sort'].push(s);
+	}
+	
+	var json_query = JSON.stringify({"query": q});
+	console.log(json_query);
+	
+	return qrequest.qrequest("POST", getSrchURL(), json_query);
+}
+
 module.exports.saveBoardgames = saveBoardgames
 module.exports.getBoardgame = getBoardgame
 module.exports.getGeeklists = getGeeklists
@@ -227,3 +296,4 @@ module.exports.saveBoardgameStats = saveBoardgameStats
 module.exports.deleteBoardgameStats = deleteBoardgameStats
 module.exports.saveGeeklistStats = saveGeeklistStats
 module.exports.deleteGeeklistStats = deleteGeeklistStats
+module.exports.srchBoardgames = srchBoardgames

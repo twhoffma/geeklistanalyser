@@ -30,12 +30,14 @@ app.use(uri + '/getGeeklists', function(req, res, next){
 				
 				console.log("Asked database about" + u);	
 				
+				cacheResponse(u, r);
+				/*	
 				mc.add(u, r, 10, function (err) { 
 					if(err != undefined){
 						console.log("Memcache storing of " + u + " failed: " + err);
 					}
 				});
-					
+				*/	
 				res.end(r);
     		}
 		).fail(
@@ -54,30 +56,66 @@ app.use(uri + '/getGeeklist', function(req, res, next){
 		var skip = p.skip || 0;
 		var limit = p.limit || 100;
 		
-		db.getGeeklist(p.geeklistId, skip, limit).then(
-			function(reply){
-				//XXX: Add logging
-				var u = req._parsedUrl.href;
-				var r = JSON.stringify(reply);
-				
-				console.log("Asked about: " + u);
-				
-				mc.set(u, r, 10, function (err) { 
-					if(err){
-						console.log("Memcache storing of " + u + " failed:" + err);
-					}
-				});
-				
-				res.end(r);
-			}
-		).fail(function(res){
-				console.log("fail: " + res);
-				console.log(reply);
-				res.end("{}");
-		});
+		if(p.filters != undefined){
+			console.log("Using filters");
+			
+			var filters = JSON.parse(p.filters);
+			var sortby = JSON.parse(p.sortby);
+
+			filters['geeklistid'] = p.geeklistId;
+			
+			
+			db.srchBoardgames(filters, sortby, skip, limit).then(
+				function(reply){
+					console.log(reply);
+					
+					cacheResponse(req._parsedUrl.href, reply);
+					res.end(reply);
+				}
+			).fail(
+				function(res){
+					console.log("srch fail: " + res);
+					console.log(res);
+					res.end("{'error': 'Search failed'}");
+				}
+			);
+		}else{
+			db.getGeeklist(p.geeklistId, skip, limit).then(
+				function(reply){
+					//XXX: Add logging
+					var u = req._parsedUrl.href;
+					var r = JSON.stringify(reply);
+					
+					console.log("Asked about: " + u);
+
+					cacheResponse(u, r);
+					
+					/*
+					mc.set(u, r, 10, function (err) { 
+						if(err){
+							console.log("Memcache storing of " + u + " failed:" + err);
+						}
+					});
+					*/
+					res.end(r);
+				}
+			).fail(function(res){
+					console.log("fail: " + res);
+					console.log(res);
+					res.end("{'error': 'Geeklist not found/no games in list'}");
+			});
+		}
 	}else{
-		res.end("{}");
+		res.end("{'error': 'Geeklist not found!'}");
 	}
 });
+
+function cacheResponse(cachekey, val){
+	mc.set(cachekey, val, 10, function (err) { 
+		if(err){
+			console.log("Memcache storing of " + cachekey + " failed:" + err);
+		}
+	});
+}
 
 http.createServer(app).listen(3000);

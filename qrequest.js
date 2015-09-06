@@ -4,7 +4,9 @@ q = require('q');
 function qrequest(method, url, data){
 	var p = q.defer();
 	
-	if(method.toUpperCase() === "GET"){
+	method = method.toUpperCase();
+	
+	if(method === "GET"){
 		request(url, function(error, response, body){
 			if(!error && response.statusCode == 200){
 				p.resolve(response.body);
@@ -13,20 +15,22 @@ function qrequest(method, url, data){
 				p.reject(response.body);	
 			}
 		});
-	}else if(method.toUpperCase() === "PUT"){
+	}else if(method === "PUT" || method === "POST"){
+		
 		request(
 			{
-				method: "PUT",
+				method: method,
 				uri: url,
 				body: data
 			},
 			function(error, response, body) {
-				if(response.statusCode == 201){
-					
+				var sc = response.statusCode;
+				
+				if((sc == 201 && method === "PUT") || (sc == 200 && method === "POST")){		
 					p.resolve(body);
 				}else{
-					console.log("PUT error: " + response.statusCode);
-					console.log("PUT error: " + body);
+					console.log(method.toUpperCase() + " error: " + response.statusCode);
+					console.log(method.toUpperCase() + " error: " + body);
 						
 					console.log("Failed data: " + data);
 					

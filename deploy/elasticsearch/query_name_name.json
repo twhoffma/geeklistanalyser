@@ -1,0 +1,22 @@
+{
+  "query": {
+    "filtered": {
+      "filter": {
+        "nested": {
+          "path": "name",
+          "filter": {
+            "bool": {
+              "must": [
+                {
+                  "term": {
+                    "name.name": "Dominion"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

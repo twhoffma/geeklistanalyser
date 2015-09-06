@@ -1,0 +1,35 @@
+{
+  "query": {
+    "filtered": {
+      "filter": {
+        "nested": {
+          "path": "geeklists",
+          "filter": {
+            "bool": {
+              "must": [
+                {
+                  "term": {
+                    "geeklists.objectid": "191095"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "sort": [
+    {
+      "geeklists.latest.thumbs": {
+        "order": "asc",
+        "nested_path": "geeklists.latest",
+        "nested_filter": {
+          "term": {
+            "geeklists.latest.geeklistid": "191095"
+          }
+        }
+      }
+    }
+  ]
+}

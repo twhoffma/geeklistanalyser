@@ -1,0 +1,14 @@
+{
+  "sort": [
+    {
+      "name.name": {
+        "order": "desc",
+        "nested_filter": {
+          "term": {
+            "name.primary": "true"
+          }
+        }
+      }
+    }
+  ]
+}
