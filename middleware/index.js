@@ -55,24 +55,33 @@ app.use(uri + '/getGeeklist', function(req, res, next){
 	if(p.geeklistId != undefined){
 		var skip = p.skip || 0;
 		var limit = p.limit || 100;
-		
-		if(p.filters != undefined){
+		console.log(p.filters);	
+		if(p.filters != undefined || p.sortby != undefined){
 			console.log("Using filters");
+				
+			var filters = {};
+			var sortby; 
+			if(p.filters){
+				filters = JSON.parse(p.filters);
+			}
 			
-			var filters = JSON.parse(p.filters);
-			var sortby = JSON.parse(p.sortby);
+			if(!p.sortby){
+				sortby = {'orderby': 'asc', 'name': 'thumbs'};
+			}else{
+				sortby = JSON.parse(p.sortby);
+			}
 
 			filters['geeklistid'] = p.geeklistId;
 			
 			
 			db.srchBoardgames(filters, sortby, skip, limit).then(
 				function(reply){
-					console.log(reply);
+					//console.log(reply);
 					
 					cacheResponse(req._parsedUrl.href, reply);
 					res.end(reply);
 				}
-			).fail(
+			).catch(
 				function(res){
 					console.log("srch fail: " + res);
 					console.log(res);
@@ -80,6 +89,8 @@ app.use(uri + '/getGeeklist', function(req, res, next){
 				}
 			);
 		}else{
+			console.log('using non-filtered');
+			
 			db.getGeeklist(p.geeklistId, skip, limit).then(
 				function(reply){
 					//XXX: Add logging

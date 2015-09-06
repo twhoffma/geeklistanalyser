@@ -9,7 +9,7 @@ var srchType = "boardgame";
 
 /* --- Generic functions --- */
 function getSrchURL(){
-	return srchURL + "/" + srchIndex + "/" + srchType + "/search" 
+	return srchURL + "/" + srchIndex + "/" + srchType + "/_search" 
 }
 
 function getViewURL(view){
@@ -246,13 +246,14 @@ function srchBoardgames(filters, sortby, skip, lim){
 	//TODO: Make this less stupid.
 	q['query'] = {};
 	q['query']['filtered'] = {};
-	q['query']['filtered']['nested'] = {};
-	q['query']['filtered']['nested']['path'] = "geeklists";
-	q['query']['filtered']['nested']['filter'] = {};
-	q['query']['filtered']['nested']['filter']['bool'] = {};
-	q['query']['filtered']['nested']['filter']['bool']['must'] = [];
+	q['query']['filtered']['filter'] = {};
+	q['query']['filtered']['filter']['nested'] = {};
+	q['query']['filtered']['filter']['nested']['path'] = "geeklists";
+	q['query']['filtered']['filter']['nested']['filter'] = {};
+	q['query']['filtered']['filter']['nested']['filter']['bool'] = {};
+	q['query']['filtered']['filter']['nested']['filter']['bool']['must'] = [];
 	
-	var m = q['query']['filtered']['nested']['filter']['bool']['must'];
+	var m = q['query']['filtered']['filter']['nested']['filter']['bool']['must'];
 	m.push({'term': {'geeklists.objectid': geeklistid}});
 	
 	
@@ -274,16 +275,18 @@ function srchBoardgames(filters, sortby, skip, lim){
 		}else if(sortby.name === "yearpublished"){
 			s = {"yearpublished": {"order": orderby}}
 		}else if(sortby.name === "thumbs"){
-			s = {"geeklist.latest.thumbs": {"order": orderby, "nested_path": "geeklists.latest", "nested_filter": {"term": {"geeklists.latest.objectid": geeklistid}}}}
+			s = {"geeklists.latest.thumbs": {"order": orderby, "nested_path": "geeklists.latest", "nested_filter": {"term": {"geeklists.latest.geeklistid": geeklistid}}}}
 		}else if(sortby.name === "geeklist_addts"){
-			s = {"geeklists.latest.crets": {"order": orderby, "nested_path": "geeklists.latest", "nested_filter": {"term": {"geeklists.lastest.objectid": geeklistid}}}}	
+			s = {"geeklists.latest.crets": {"order": orderby, "nested_path": "geeklists.latest", "nested_filter": {"term": {"geeklists.lastest.geeklistid": geeklistid}}}}	
+		}else{
+			console.log("WARN: no sorting...")	
 		}
 		
 		q['sort'].push(s);
 	}
 	
-	var json_query = JSON.stringify({"query": q});
-	console.log(json_query);
+	var json_query = JSON.stringify(q);
+	//console.log("this is q:\n" + json_query);
 	
 	return qrequest.qrequest("POST", getSrchURL(), json_query);
 }
