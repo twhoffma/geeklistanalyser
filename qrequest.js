@@ -16,7 +16,6 @@ function qrequest(method, url, data){
 			}
 		});
 	}else if(method === "PUT" || method === "POST"){
-		
 		request(
 			{
 				method: method,
@@ -27,7 +26,9 @@ function qrequest(method, url, data){
 				var sc = response.statusCode;
 				
 				if((sc == 201 && method === "PUT") || (sc == 200 && method === "POST")){		
+					//console.log(body);
 					p.resolve(body);
+					
 				}else{
 					console.log(method.toUpperCase() + " error: " + response.statusCode);
 					console.log(method.toUpperCase() + " error: " + body);

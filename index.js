@@ -210,12 +210,13 @@ db.getGeeklists().then(
 						console.log("Appending latest stats");
 						//TODO: Need to append to geeklist array as well or change the model..
 						var geeklist = boardgame.geeklists.filter(function(e){return e.objectid === bgStat.geeklistid});
-						console.log(bgStat);	
+						
 						if(geeklist.length === 0){
 							geeklist = {'objectid': bgStat.geeklistid, 'latest': bgStat};
 							boardgame['geeklists'].push(geeklist);
 						}else{
-							geeklist.latestStats = bgStat;
+							//There is only one latest per geeklist
+							geeklist[0].latest = bgStat;
 						}
 						
 						return boardgame
@@ -232,8 +233,13 @@ db.getGeeklists().then(
 		).then(
 			function(boardgames){
 				console.log("Saving all boardgames to DB.");
-				
+				console.log(boardgames[0].latest);	
 				return db.saveBoardgames(boardgames)
+			}
+		).catch(
+			function(err){
+				console.log("Uh-oh: ");
+				console.log(err);
 			}
 		);
 		

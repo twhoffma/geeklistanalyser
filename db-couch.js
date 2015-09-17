@@ -105,9 +105,9 @@ function saveDocs(docs){
 						docId = uuids.pop();
 					}else{
 						docId = doc._id;
-						//console.log("Updating " + bg.objectid);
+						console.log("Updating " + doc.objectid);
 					}
-
+					console.log(JSON.stringify(doc));	
 					var docURL = dbURL + "\\" + dbName + "\\" + docId;
 					
 					promises.push(qrequest.qrequest("PUT", docURL, JSON.stringify(doc)).then(
@@ -123,7 +123,7 @@ function saveDocs(docs){
 									throw "DB failed to save"
 								}
 							}
-						).fail(
+						).catch(
 							function(){
 								console.log("Failed to save doc: " + JSON.stringify(doc));
 							}
@@ -194,7 +194,7 @@ function deleteBoardgameStats(geeklistId, analysisDate){
 	return deleteDocs(url)
 }
 
-function getBoardgameStats(geeklistId, analysisDate){
+function getBoardgameStats(geeklistId, boardgameId){
 	//TODO: Cannot be done the way 'boardgamestats' is set up. Need couch-lucene.
 }
 

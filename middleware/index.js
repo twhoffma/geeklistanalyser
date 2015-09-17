@@ -77,9 +77,16 @@ app.use(uri + '/getGeeklist', function(req, res, next){
 			db.srchBoardgames(filters, sortby, skip, limit).then(
 				function(reply){
 					//console.log(reply);
+					//XXX: Decide whether functions are returning JSON before this step or not..
 					
-					cacheResponse(req._parsedUrl.href, reply);
-					res.end(reply);
+					var docs = JSON.parse(reply).hits.hits.map(function(o){
+						return o._source
+					});
+
+					var r = JSON.stringify(docs);
+						
+					cacheResponse(req._parsedUrl.href, r);
+					res.end(r);
 				}
 			).catch(
 				function(res){
@@ -95,7 +102,12 @@ app.use(uri + '/getGeeklist', function(req, res, next){
 				function(reply){
 					//XXX: Add logging
 					var u = req._parsedUrl.href;
-					var r = JSON.stringify(reply);
+
+					var docs = reply.map(function(v){
+						return v.doc
+					});
+					
+					var r = JSON.stringify(docs);
 					
 					console.log("Asked about: " + u);
 

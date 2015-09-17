@@ -83,8 +83,9 @@
         			<li class="dropdown">
           				<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Sorting<span class="caret"></span></a>
           				<ul class="dropdown-menu selects" role="menu" id="sort">
+							<form>
             				<li>
-								<select>
+								<select id="ddSort">
 									<option value="Name">Name</option>
 									<option value="Count">Count</option>
 									<option value="Thumbs">Thumbs</option>
@@ -92,10 +93,14 @@
 									<option value="Publisher">Publisher</option>
 								</select>
 							</li>
+							
 							<li>
 								<input type="radio" name="sort" value="asc" checked>Ascending</input>
 								<input type="radio" name="sort" value="desc">Descending</input>
 							</li>
+							
+							<input type="button">Sort!</input>
+							</form>
           				</ul>
         			</li>
         			<li class="dropdown" id="filters">
