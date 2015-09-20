@@ -55,8 +55,12 @@ app.use(uri + '/getGeeklist', function(req, res, next){
 	if(p.geeklistId != undefined){
 		var skip = p.skip || 0;
 		var limit = p.limit || 100;
-		console.log(p.filters);	
-		if(p.filters != undefined || p.sortby != undefined){
+		
+		var sortby = p.sortby || 'crets';
+		var sortby_asc = p.sortby_asc || 0;
+		var filter = p.filters || 0;		
+
+		if(filter != 0 || sortby != 'crets'){
 			console.log("Using filters");
 				
 			var filters = {};
@@ -98,7 +102,7 @@ app.use(uri + '/getGeeklist', function(req, res, next){
 		}else{
 			console.log('using non-filtered');
 			
-			db.getGeeklist(p.geeklistId, skip, limit).then(
+			db.getGeeklist(p.geeklistId, skip, limit, sortby_asc).then(
 				function(reply){
 					//XXX: Add logging
 					var u = req._parsedUrl.href;

@@ -66,7 +66,7 @@
     		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
      			<ul class="nav navbar-nav">
         			<li class="dropdown" id="geeklists">
-          				<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Geeklists<span class="caret"></span></a>
+          				<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="glyphicon glyphicon-list">Geeklists</span><span class="caret"></span></a>
           				<ul class="dropdown-menu" role="menu">
           				</ul>
         			</li>
@@ -80,44 +80,77 @@
       			</form>
 				-->
       			<ul class="nav navbar-nav navbar-right">
-        			<li class="dropdown">
-          				<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Sorting<span class="caret"></span></a>
-          				<ul class="dropdown-menu selects" role="menu" id="sort">
-							<form>
-            				<li>
-								<select id="ddSort">
-									<option value="Name">Name</option>
-									<option value="Count">Count</option>
-									<option value="Thumbs">Thumbs</option>
-									<option value="Year">Year</option>
-									<option value="Publisher">Publisher</option>
-								</select>
-							</li>
-							
-							<li>
-								<input type="radio" name="sort" value="asc" checked>Ascending</input>
-								<input type="radio" name="sort" value="desc">Descending</input>
-							</li>
-							
-							<input type="button">Sort!</input>
-							</form>
-          				</ul>
-        			</li>
-        			<li class="dropdown" id="filters">
-          				<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Filters<span class="caret"></span></a>
-          				<ul class="dropdown-menu" role="menu">
-            				<li><a href="#">Action</a></li>
-            				<li><a href="#">Another action</a></li>
-            				<li><a href="#">Something else here</a></li>
-            				<li class="divider"></li>
-            				<li><a href="#">Separated link</a></li>
-          				</ul>
-        			</li>
-        			<li><a href="#">Graphs</a></li>
+					<button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#sortingModal"><span class="glyphicon glyphicon-sort-by-attributes"></span>Sorting</button>
+					<button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#filteringModal"><span class="glyphicon glyphicon-filter">Filters</span></button>
+					<button type="button" class="btn btn-info btn-lg"><span class="glyphicon glyphicon-stats">Graphs</span></button>
+					
       			</ul>
     		</div><!-- /.navbar-collapse -->
   		</div><!-- /.container-fluid -->
 	</nav>
+	<div id="sortingModal" class="modal fade" role="dialog">
+ 		<div class="modal-dialog">
+
+    		<!-- Modal content-->
+    		<div class="modal-content">
+      			<div class="modal-header">
+        			<button type="button" class="close" data-dismiss="modal">&times;</button>
+        			<h4 class="modal-title">Sorting</h4>
+      			</div>
+      			<div class="modal-body">
+					<form>
+            			<li>
+							<select id="sortby">
+								<option value="Name">Name</option>
+								<option value="Count">Count</option>
+								<option value="Thumbs">Thumbs</option>
+								<option value="Year">Year</option>
+							</select>
+						</li>	
+						<li>
+							<input type="radio" name="sortby_asc" value="asc" checked>Ascending</input>
+							<input type="radio" name="sortby_asc" value="desc">Descending</input>
+						</li>
+					</form>
+      			</div>
+      			<div class="modal-footer">
+        			<button type="button" class="btn btn-default" data-dismiss="modal">Sort</button>
+      			</div>
+			</div>
+		</div>
+	</div>
+	<div id="filteringModal" class="modal fade" role="dialog">
+ 		<div class="modal-dialog">
+
+    		<!-- Modal content-->
+    		<div class="modal-content">
+      			<div class="modal-header">
+        			<button type="button" class="close" data-dismiss="modal">&times;</button>
+        			<h4 class="modal-title">Filters</h4>
+      			</div>
+      			<div class="modal-body">
+					<form>
+            			<li>
+							<label for="filter_publisher">Publisher</label>
+							<select id="f_publishers">
+								<option value="Name">Name</option>
+								<option value="Count">Count</option>
+								<option value="Thumbs">Thumbs</option>
+								<option value="Year">Year</option>
+							</select>
+						</li>	
+						<li>
+							<input type="radio" name="sortby_asc" value="asc" checked>Ascending</input>
+							<input type="radio" name="sortby_asc" value="desc">Descending</input>
+						</li>
+					</form>
+      			</div>
+      			<div class="modal-footer">
+        			<button type="button" class="btn btn-default" data-dismiss="modal">Filter</button>
+      			</div>
+			</div>
+		</div>
+	</div>
 	<div id="geeklist">
 		<table class="table-striped">
 			<thead>

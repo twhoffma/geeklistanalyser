@@ -107,7 +107,7 @@ function saveDocs(docs){
 						docId = doc._id;
 						console.log("Updating " + doc.objectid);
 					}
-					console.log(JSON.stringify(doc));	
+					
 					var docURL = dbURL + "\\" + dbName + "\\" + docId;
 					
 					promises.push(qrequest.qrequest("PUT", docURL, JSON.stringify(doc)).then(
@@ -178,9 +178,13 @@ function getGeeklists(inclAll){
 }
 
 //Gets the content of the geeklist
-function getGeeklist(geeklistId, skip, num){
+function getGeeklist(geeklistId, skip, num, asc){
 	var url = getViewURL('geeklist') + '?include_docs=true&reduce=false&key=' + geeklistId + '';
 	url = url + "&skip=" + (skip || 0) + "&limit=" + (num || 100);
+	
+	if(asc){
+		url = url + "&descending=true"
+	}
 	
 	return getDocs(url)
 }

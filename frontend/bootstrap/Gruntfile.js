@@ -13,6 +13,7 @@ module.exports = function(grunt) {
 						src: [
 							'css/*', 
 							'bower_components/bootstrap/dist/css/*', 
+							'bower_components/bootstrap/dist/fonts/*', 
 							'index.html'
 						], 
 						dest: '/var/www/hoffy.no/geeklistmonitor/', 
