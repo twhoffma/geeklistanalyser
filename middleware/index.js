@@ -19,6 +19,31 @@ var mc = new Memcached(memcached_uri, {'maxKeySize': 200});
 app.use(compression());
 app.use(bodyParser.urlencoded({extended: true}));
 
+app.use(uri + '/getGeeklistFilters', function(req, res, next){
+	var p = qs.parse(req._parsedUrl.query);
+	
+	res.setHeader("Access-Control-Allow-Origin", "*");
+	
+	//TODO: Needs to clean incoming data.
+	
+	if(p.geeklistid != undefined){
+		db.getGeeklistFilters(p.geeklistid).then(
+			function(val){
+				var r = JSON.stringify(val);
+				
+				cacheResponse(req._parsedUrl.href, r);
+					
+				res.end(r);
+			}
+		).catch(function(e){
+			console.log("Error!");
+			console.log(e);
+		});
+	}else{
+		res.end("{\"msgtype\": \"error\", \"msg\": \"No filters found!\"}");
+	}
+});
+
 app.use(uri + '/getGeeklists', function(req, res, next){
 	res.setHeader("Access-Control-Allow-Origin", "*");
 	
@@ -31,13 +56,6 @@ app.use(uri + '/getGeeklists', function(req, res, next){
 				console.log("Asked database about" + u);	
 				
 				cacheResponse(u, r);
-				/*	
-				mc.add(u, r, 10, function (err) { 
-					if(err != undefined){
-						console.log("Memcache storing of " + u + " failed: " + err);
-					}
-				});
-				*/	
 				res.end(r);
     		}
 		).fail(
@@ -59,8 +77,10 @@ app.use(uri + '/getGeeklist', function(req, res, next){
 		var sortby = p.sortby || 'crets';
 		var sortby_asc = p.sortby_asc || 0;
 		var filter = p.filters || 0;		
-
-		if(filter != 0 || sortby != 'crets'){
+		
+		//TODO: Add cleaning of data before moving on.
+		
+		if(filter != 0){
 			console.log("Using filters");
 			console.log(filter);
 			console.log(sortby);
@@ -104,7 +124,7 @@ app.use(uri + '/getGeeklist', function(req, res, next){
 		}else{
 			console.log('using non-filtered');
 			
-			db.getGeeklist(p.geeklistId, skip, limit, sortby_asc).then(
+			db.getGeeklist(p.geeklistId, skip, limit, sortby, sortby_asc).then(
 				function(reply){
 					//XXX: Add logging
 					var u = req._parsedUrl.href;
@@ -118,14 +138,6 @@ app.use(uri + '/getGeeklist', function(req, res, next){
 					console.log("Asked about: " + u);
 
 					cacheResponse(u, r);
-					
-					/*
-					mc.set(u, r, 10, function (err) { 
-						if(err){
-							console.log("Memcache storing of " + u + " failed:" + err);
-						}
-					});
-					*/
 					res.end(r);
 				}
 			).fail(function(res){

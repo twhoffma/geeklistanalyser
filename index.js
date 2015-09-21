@@ -6,7 +6,44 @@ db = require('./db-couch');
 bgg = require('./bgg.js');
 
 var currentDate = moment().format("YYYY-MM-DD")
-var currentTime = moment().format("YYYY-MM-DD[T]HH:mm:SS")
+var currentTime = moment().format("YYYY-MM-DD[T]HH:mm:ss")
+
+function FilterValue(analysisDate, geeklistId){
+	this.type = 'filtervalue';
+	this.analysisDate = analysisDate;
+	this.objectid = geeklistId;
+	this.maxplaytime = -Infinity; 
+	this.minplaytime = Infinity;
+	this.boardgamedesigner = []; 
+	this.boardgameartist = [];
+	this.boardgamecategory = []; 
+	this.boardgamemechanic = [];
+}
+
+function GeeklistStat(geeklistid, statDate){
+	this.objectid = geeklistid;
+	this.statDate = statDate;
+	this.crets = moment().format("YYYY-MM-DD[T]HH:mm:ss");
+	this.numLists =0;
+	this.type = "geekliststat";
+	this.depth = 0;
+	this.numBoardgames = 0;
+	this.avgListLength = 0;
+	this.medListLength = 0;
+	this.maxListLength = 0;
+	this.minListLength = 0;
+};
+
+function BoardgameStat(boardgameid, geeklistid, analysisdate){
+	this.objectid = boardgameid;
+	this.geeklistid = geeklistid;
+	this.analysisDate = analysisdate;
+	this.crets = moment().format("YYYY-MM-DD[T]HH:mm:ss");
+	this.cnt = 0;
+	this.thumbs = 0;
+	this.type = "boardgamestat";
+	this.hist = {}; //Histogram based on position
+}
 
 function getGeeklistData(geeklistid, subgeeklistid, geeklists, boardgameStats, geeklistStats){
 	var p = q.defer();
@@ -21,6 +58,7 @@ function getGeeklistData(geeklistid, subgeeklistid, geeklists, boardgameStats, g
 	
 	//XXX: Find out why this is just not passed as a single object to be updated 
 	if(geeklistStatList.length === 0){
+		/*
 		geeklistStat = {
 			id: geeklistid, //XXX:For compatibility with other old ones in database, 
 			objectid: geeklistid,
@@ -35,6 +73,8 @@ function getGeeklistData(geeklistid, subgeeklistid, geeklists, boardgameStats, g
 			maxListLength: 0,
 			minListLength: 0
 		};
+		*/
+		geeklistStat = new GeeklistStat(geeklistid, currentDate);
 		geeklistStats.push(geeklistStat);
 	}else{
 		geeklistStat = geeklistStatList[0];
@@ -61,17 +101,19 @@ function getGeeklistData(geeklistid, subgeeklistid, geeklists, boardgameStats, g
 						var bgStat;
 					
 						if(bgStats.length === 0){
+							/*
 							bgStat = {
 								objectid: bgId,
 								geeklistid: geeklistid,
 								analysisDate: currentDate,
-								crets: moment().format("YYYY-MM-DD[T]HH:mm:SS"),
+								crets: moment().format("YYYY-MM-DD[T]HH:mm:ss"),
 								cnt: 0,
 								thumbs: 0,
 								type: "boardgamestat",
 								hist: {} //Histogram based on position
 							}
-						
+							*/
+							bgStat = new BoardgameStat(bgId, geeklistid, currentDate);
 							boardgameStats.push(bgStat);
 						}else{
 							bgStat = bgStats[0];
@@ -212,7 +254,7 @@ db.getGeeklists().then(
 						var geeklist = boardgame.geeklists.filter(function(e){return e.objectid === bgStat.geeklistid});
 						
 						if(geeklist.length === 0){
-							geeklist = {'objectid': bgStat.geeklistid, 'crets': moment().format("YYYY-MM-DD[T]HH:mm:SS"), 'latest': bgStat};
+							geeklist = {'objectid': bgStat.geeklistid, 'crets': moment().format("YYYY-MM-DD[T]HH:mm:ss"), 'latest': bgStat};
 							boardgame['geeklists'].push(geeklist);
 						}else{
 							//There is only one latest per geeklist
@@ -243,12 +285,11 @@ db.getGeeklists().then(
 						var filterValue;
 						
 						if(fv.length === 0){
-							filterValue =  {'type': 'filtervalue', 'analysisDate': currentDate, 'objectid': geeklistid, 'maxplaytime': -Infinity, 'minplaytime': Infinity, 'boardgamedesigner': [], 'boardgameartist': [], 'boardgamecategory': [], 'boardgamemechanic': []};
+							//filterValue =  {'type': 'filtervalue', 'analysisDate': currentDate, 'objectid': geeklistid, 'maxplaytime': -Infinity, 'minplaytime': Infinity, 'boardgamedesigner': [], 'boardgameartist': [], 'boardgamecategory': [], 'boardgamemechanic': []};
+							filterValue = new FilterValue(currentDate, geeklistid);
 							filterValues.push(filterValue);
-							console.log("created");
 						}else{
 							filterValue = fv[0];
-							console.log("created");
 						}
 						
 						filterValue.boardgameartist = boardgame.boardgameartist.reduce(function(prev, curr){
@@ -272,13 +313,9 @@ db.getGeeklists().then(
 							if(prev.filter(function(e){return e.objectid === curr.objectid}).length === 0){return prev.concat(curr)}else{return prev}
 						}, filterValue.boardgamecategory);
 						
-						filterValue['maxplaytime'] = Math.max(filterValue['maxplaytime'], boardgame.maxplaytime || -Infinity);
-						filterValue['maxplaytime'] = Math.max(filterValue['maxplaytime'], boardgame.playingtime || -Infinity);
-						filterValue['minplaytime'] = Math.min(filterValue['minplaytime'], boardgame.minplaytime || Infinity);
-						filterValue['minplaytime'] = Math.min(filterValue['minplaytime'], boardgame.playingtime || Infinity);
+						filterValue.maxplaytime = Math.max(filterValue.maxplaytime, boardgame.maxplaytime || -Infinity, boardgame.playingtime || -Infinity);
+						filterValue.minplaytime = Math.min(filterValue.minplaytime, boardgame.minplaytime || Infinity, boardgame.playingtime || Infinity);
 					}
-
-					//console.log(filterValue);
 				}
 				
 				return db.deleteFilterRanges(geeklistid, currentDate).then(function() {return db.saveFilterRanges(filterValues)}).then(function() { return boardgames});	

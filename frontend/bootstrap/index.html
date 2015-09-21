@@ -38,7 +38,8 @@
 			
 			$('.dropdown-menu').on("click", ".geeklist-menu-item", function(){
 				selectedGeeklist = this.dataset.geeklistid;
-				loadGeeklist(selectedGeeklist, 10, 0);	
+				loadGeeklist(selectedGeeklist, 10, 0);
+				loadGeeklistFilters(selectedGeeklist);	
 			});
 
 			$('.selects').on("click", function(e){
@@ -106,10 +107,10 @@
             			<li>
 							<select id="sortby">
 								<option value="crets" selected>Addition time</option>
-								<option value="Name">Name</option>
-								<option value="Count">Count</option>
-								<option value="Thumbs">Thumbs</option>
-								<option value="Year">Year</option>
+								<option value="name">Name</option>
+								<option value="cnt">Count</option>
+								<option value="thumbs">Thumbs</option>
+								<option value="year">Year</option>
 							</select>
 						</li>	
 						<li>
@@ -136,18 +137,10 @@
       			<div class="modal-body">
 					<form>
             			<li>
-							<label for="filter_publisher">Publisher</label>
-							<select id="f_publishers">
-								<option value="Name">Name</option>
-								<option value="Count">Count</option>
-								<option value="Thumbs">Thumbs</option>
-								<option value="Year">Year</option>
+							<label for="boardgameartist">Artist</label>
+							<select id="boardgameartist">
 							</select>
 						</li>	
-						<li>
-							<input type="radio" name="sortby_asc" value="asc" checked>Ascending</input>
-							<input type="radio" name="sortby_asc" value="desc">Descending</input>
-						</li>
 					</form>
       			</div>
       			<div class="modal-footer">
@@ -156,12 +149,25 @@
 			</div>
 		</div>
 	</div>
+	<!-- This is the BGG attribution and should be visible on each page load-->
+	<div class="alert alert-warning alert-dismissible" role="alert">
+  		<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  		All this beautiful data is provided by BoardGameGeek and their BGG XML API. You may not use this data or system for commercial purposes or modify the data in any way. Please be nice and respect it ;)
+	</div>
+	<!-- The actual list -->
 	<div id="geeklist">
 		<table class="table-striped">
 			<thead>
 				<tr>
 					<th>Name</th>
+					<th class="hidden-xs">Year Published</th>
+					<th class="hidden-xs">Min players</th>
+					<th class="hidden-xs">Max players</th>
+					<th class="hidden-xs">Playing time</th>
+					<th class="hidden-xs">Min playingtime</th>
+					<th class="hidden-xs">Max playingtime</th>
 					<th class="hidden-xs">Thumbs</th>
+					<th class="hidden-xs">Count</th>
 				</tr>	
 			</thead>
 			<tbody id="games"></tbody>		

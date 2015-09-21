@@ -1,6 +1,5 @@
 {
   "_id": "_design/geeklistfilters",
-  "_rev": "5-32b225efbd17b8f3491d9d5553c2a238",
   "language": "javascript",
   "views": {
     "geeklistfilters": {

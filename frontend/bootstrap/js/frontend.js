@@ -1,3 +1,21 @@
+function loadGeeklistFilters(geeklistid){
+	var url = "./data/getGeeklistFilters?geeklistid=" + geeklistid;
+
+	jQuery.ajax({
+		url: url 
+	}).done(function(data){
+		var r = jQuery.parseJSON(data);
+		var boardgameartist = $('#boardgameartist');
+		var doc = r[0].doc;
+			
+		boardgameartist.find('option').remove();
+		
+		for(var i = 0; i < doc.boardgameartist.length; i++){
+			boardgameartist.append('<option val="' + doc.boardgameartist[i].objectid + '">' + doc.boardgameartist[i].name + '</option>');
+		}
+	});
+}
+
 function loadGeeklist(geeklistid, limit, skip, filter, sort){
 	if(limit === undefined){
 		limit = 10;
@@ -15,7 +33,7 @@ function loadGeeklist(geeklistid, limit, skip, filter, sort){
 	var sortby_asc = $("input[name='sortby_asc']:checked").val();
 	
 	geeklistURL += "&sortby=" + sortby + "&sortby_asc=" + sortby_asc;	
-	alert(sortby + " " + sortby_asc);
+	console.log(sortby + " " + sortby_asc);
 	
 	jQuery.ajax({
 		url: geeklistURL 
@@ -37,17 +55,18 @@ function loadGeeklist(geeklistid, limit, skip, filter, sort){
 						}
 					)[0].name  || r[i].name[0].name;
 			
-			if(sortby.name === "name"){
+			var boardgamestat = r[i].geeklists.filter(function(o){
+									return o.objectid == geeklistid
+								})[0].latest; 
+				
+			if(sortby === "name"){
 				currentTerm = n.substring(0,1);
-			}else if(sortby.name === "thumbs"){
-				currentTerm = r[i].geeklists.filter(function(o){
-						return o.objectid
-					}
-				)[0].thumbs;
+			}else if(sortby === "thumbs"){
+				currentTerm = boardgamestat.thumbs;
 			}
 			
 			if($('.subheader[data-subheader="' + currentTerm + '"]').length === 0){
-					list.append("<tr class=\"subheader\" data-subheader=\"" + currentTerm + "\"><td colspan=\"4\">" + currentTerm + "</td></tr>");
+					list.append("<tr class=\"subheader\" data-subheader=\"" + currentTerm + "\"><td colspan=\"8\">" + currentTerm + "</td></tr>");
 			}
 			
 			prevSortTerm = currentTerm;
@@ -57,6 +76,11 @@ function loadGeeklist(geeklistid, limit, skip, filter, sort){
 			l += "<td class=\"hidden-xs\">" + r[i].minplayers  + "</td>";
 			l += "<td class=\"hidden-xs\">" + r[i].maxplayers  + "</td>";
 			l += "<td class=\"hidden-xs\">" + r[i].playingtime  + "</td>";
+			l += "<td class=\"hidden-xs\">" + r[i].minplaytime  + "</td>";
+			l += "<td class=\"hidden-xs\">" + r[i].maxplaytime  + "</td>";
+			l += "<td class=\"hidden-xs\">" + boardgamestat.thumbs  + "</td>";
+			l += "<td class=\"hidden-xs\">" + boardgamestat.cnt  + "</td>";
+			
 			l += "</tr>";
 				
 			list.append(l);

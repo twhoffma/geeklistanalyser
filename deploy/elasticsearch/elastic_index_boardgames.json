@@ -126,7 +126,8 @@
                 "type": "long"
               },
               "crets": {
-                "type": "dateOptionalTime"
+                "type": "date",
+				"format": "dateOptionalTime"
               } 
             }
           },

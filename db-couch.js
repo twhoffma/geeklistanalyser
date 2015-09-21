@@ -12,8 +12,8 @@ function getSrchURL(){
 	return srchURL + "/" + srchIndex + "/" + srchType + "/_search" 
 }
 
-function getViewURL(view){
-	return dbURL + '/' + dbName + '/_design/' + view + '/_view/' + view
+function getViewURL(dsndoc, view){
+	return dbURL + '/' + dbName + '/_design/' + dsndoc + '/_view/' + view
 }
 
 function generateUuids(num){
@@ -144,7 +144,7 @@ function saveDocs(docs){
 
 /* --- Boardgame -- */
 function getBoardgame(boardgameId){
-	var boardgameViewURL = getViewURL('boardgame') + '?include_docs=true&key=\"' + boardgameId + "\"";
+	var boardgameViewURL = getViewURL('boardgame', 'boardgame') + '?include_docs=true&key=\"' + boardgameId + "\"";
 	return getDoc(boardgameViewURL)
 }
 
@@ -156,7 +156,7 @@ function saveBoardgames(boardgames){
 
 /* --- Geeklist --- */
 function getGeeklists(inclAll){
-	var url = getViewURL('geeklists') + '?include_docs=true'
+	var url = getViewURL('geeklists', 'geeklists') + '?include_docs=true'
 	
 	return getDocs(url).then(
 		function(rows){
@@ -178,12 +178,38 @@ function getGeeklists(inclAll){
 }
 
 //Gets the content of the geeklist
-function getGeeklist(geeklistId, skip, num, asc){
-	var url = getViewURL('geeklist') + '?include_docs=true&reduce=false&key=' + geeklistId + '';
+function getGeeklist(geeklistId, skip, num, sortby, asc){
+	var viewname;
+	
+	switch(sortby){
+		case 'name':
+			viewname = 'geeklist_by_name';
+			break;
+		case 'year':
+			viewname = 'geeklist_by_year';
+			break;
+		case 'thumbs': 
+			viewname = 'geeklist_by_thumbs';
+			break;
+		case 'cnt':
+			viewname = 'geeklist_by_cnt';
+			break;
+		default:
+			viewname = 'geeklist_by_crets';
+	}	
+
+	var startkey = '[' + geeklistId + ']';
+	var endkey = '[' + geeklistId + ', {}]'
+	var url = getViewURL('geeklist', viewname) + '?include_docs=true&reduce=false';
 	url = url + "&skip=" + (skip || 0) + "&limit=" + (num || 100);
 	
-	if(asc){
+	if(asc == 0){
+		url = url + '&start_key=' + endkey;
+		url = url + '&end_key=' + startkey;
 		url = url + "&descending=true"
+	}else{
+		url = url + '&start_key=' + startkey;
+		url = url + '&end_key=' + endkey;
 	}
 	
 	return getDocs(url)
@@ -191,7 +217,7 @@ function getGeeklist(geeklistId, skip, num, asc){
 
 /* --- Boardgame statistics --- */
 function deleteBoardgameStats(geeklistId, analysisDate){
-	var url = getViewURL('boardgamestats')+'?startkey=[{id}, \"{date}\"]&endkey=[{id}, \"{date}\", {}]&include_docs=true';
+	var url = getViewURL('boardgamestats', 'boardgamestats')+'?startkey=[{id}, \"{date}\"]&endkey=[{id}, \"{date}\", {}]&include_docs=true';
 	url = url.replace(/\{id\}/g, geeklistId);
 	url = url.replace(/\{date\}/g, analysisDate);
 	
@@ -208,7 +234,7 @@ function saveBoardgameStats(boardgameStats){
 
 /* --- Geeklist statistics --- */
 function deleteGeeklistStats(geeklistId, analysisDate){
-	var url = getViewURL('geekliststats')+'?key=[{id}, \"{date}\"]&include_docs=true';
+	var url = getViewURL('geekliststats', 'geekliststats')+'?key=[{id}, \"{date}\"]&include_docs=true';
 	url = url.replace(/\{id\}/g, geeklistId);
 	url = url.replace(/\{date\}/g, analysisDate);
 	
@@ -228,11 +254,11 @@ function saveGeeklistStats(geeklistStats){
 //Should return allowable ranges for data-dependent filters 
 //such as issuers, designers, publishers, mechanics, categories, publication years, thumbs.
 function getFilterRanges(){
-
+		
 }
 
 function deleteFilterRanges(geeklistId, analysisDate){
-	var url = getViewURL('geeklistfilters')+'?key=[{id}, \"{date}\"]&include_docs=true';
+	var url = getViewURL('geeklistfilters', 'geeklistfilters')+'?key=[{id}, \"{date}\"]&include_docs=true';
 	url = url.replace(/\{id\}/g, geeklistId);
 	url = url.replace(/\{date\}/g, analysisDate);
 	console.log("Deleting filter range");
@@ -242,6 +268,13 @@ function deleteFilterRanges(geeklistId, analysisDate){
 
 function saveFilterRanges(filterValue){
 	return saveDocs(filterValue)
+}
+
+function getGeeklistFilters(geeklistid){
+	var url = getViewURL('geeklistfilters', 'geeklistfilters')+'?start_key=[{id}, {}]&end_key=[{id}]&include_docs=true&descending=true';
+	url = url.replace(/\{id\}/g, geeklistid);
+	
+	return getDocs(url)	
 }
 
 //Search by filtering and sort result
@@ -319,3 +352,4 @@ module.exports.deleteGeeklistStats = deleteGeeklistStats
 module.exports.srchBoardgames = srchBoardgames
 module.exports.saveFilterRanges = saveFilterRanges
 module.exports.deleteFilterRanges = deleteFilterRanges
+module.exports.getGeeklistFilters = getGeeklistFilters
