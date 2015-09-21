@@ -109,7 +109,7 @@ function saveDocs(docs){
 					}
 					
 					var docURL = dbURL + "\\" + dbName + "\\" + docId;
-					
+						
 					promises.push(qrequest.qrequest("PUT", docURL, JSON.stringify(doc)).then(
 							function(res){
 								var reply = JSON.parse(res);
@@ -227,8 +227,21 @@ function saveGeeklistStats(geeklistStats){
 
 //Should return allowable ranges for data-dependent filters 
 //such as issuers, designers, publishers, mechanics, categories, publication years, thumbs.
-function getFilerRanges(){
+function getFilterRanges(){
 
+}
+
+function deleteFilterRanges(geeklistId, analysisDate){
+	var url = getViewURL('geeklistfilters')+'?key=[{id}, \"{date}\"]&include_docs=true';
+	url = url.replace(/\{id\}/g, geeklistId);
+	url = url.replace(/\{date\}/g, analysisDate);
+	console.log("Deleting filter range");
+	console.log(url);	
+	return deleteDocs(url)
+}
+
+function saveFilterRanges(filterValue){
+	return saveDocs(filterValue)
 }
 
 //Search by filtering and sort result
@@ -304,3 +317,5 @@ module.exports.deleteBoardgameStats = deleteBoardgameStats
 module.exports.saveGeeklistStats = saveGeeklistStats
 module.exports.deleteGeeklistStats = deleteGeeklistStats
 module.exports.srchBoardgames = srchBoardgames
+module.exports.saveFilterRanges = saveFilterRanges
+module.exports.deleteFilterRanges = deleteFilterRanges

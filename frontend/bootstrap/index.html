@@ -32,7 +32,7 @@
 			getGeeklists();
 			loadGeeklist(selectedGeeklist, 10, 0);
 			
-			$('button').on("click", function(){
+			$('#loadmore').on("click", function(){
 				loadGeeklist(selectedGeeklist, 10, $('.gameline').length);
 			});
 			
@@ -44,6 +44,10 @@
 			$('.selects').on("click", function(e){
 				//e.preventDefault();
 				e.stopPropagation();
+			});
+			
+			$('button#sort').on("click", function(){
+				loadGeeklist(selectedGeeklist, 10, 0);
 			});
 		});
 		
@@ -101,6 +105,7 @@
 					<form>
             			<li>
 							<select id="sortby">
+								<option value="crets" selected>Addition time</option>
 								<option value="Name">Name</option>
 								<option value="Count">Count</option>
 								<option value="Thumbs">Thumbs</option>
@@ -108,13 +113,13 @@
 							</select>
 						</li>	
 						<li>
-							<input type="radio" name="sortby_asc" value="asc" checked>Ascending</input>
-							<input type="radio" name="sortby_asc" value="desc">Descending</input>
+							<input type="radio" name="sortby_asc" value="1">Ascending</input>
+							<input type="radio" name="sortby_asc" value="0" checked="checked">Descending</input>
 						</li>
 					</form>
       			</div>
       			<div class="modal-footer">
-        			<button type="button" class="btn btn-default" data-dismiss="modal">Sort</button>
+        			<button type="button" class="btn btn-default" data-dismiss="modal" id="sort">Sort</button>
       			</div>
 			</div>
 		</div>
@@ -146,7 +151,7 @@
 					</form>
       			</div>
       			<div class="modal-footer">
-        			<button type="button" class="btn btn-default" data-dismiss="modal">Filter</button>
+        			<button type="button" class="btn btn-default" data-dismiss="modal" id="filter">Filter</button>
       			</div>
 			</div>
 		</div>

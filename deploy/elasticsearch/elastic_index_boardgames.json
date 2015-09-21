@@ -124,7 +124,10 @@
               },
               "objectid": {
                 "type": "long"
-              }
+              },
+              "crets": {
+                "type": "dateOptionalTime"
+              } 
             }
           },
           "maxplayers": {
@@ -150,7 +153,13 @@
             "type": "string"
           },
           "playingtime": {
-            "type": "string"
+            "type": "long"
+          },
+          "minplaytime": {
+            "type": "long"
+          },
+          "maxplaytime": {
+            "type": "long"
           },
           "thumbnail": {
             "type": "string"
@@ -159,7 +168,7 @@
             "type": "string"
           },
           "yearpublished": {
-            "type": "string"
+            "type": "long"
           }
         }
       },

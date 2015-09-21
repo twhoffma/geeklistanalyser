@@ -10,25 +10,12 @@ function loadGeeklist(geeklistid, limit, skip, filter, sort){
 	
 	var geeklistURL = "./data/getGeeklist?geeklistId=" + geeklistid + "&limit=" + limit + "&skip=" + skip;
 	
-	var sortby;
 	var filterby;
+	var sortby = $("#sortby").val();
+	var sortby_asc = $("input[name='sortby_asc']:checked").val();
 	
-	if(filter != undefined){
-		geeklistURL += filter;	
-		
-		filterby = {"type": "xxx"};
-	}else{
-		filterby = {"type": "none"};
-	}
-	
-	
-	if(sort != undefined){
-		geeklistURL += sort;
-		
-		sortby = {"orderby": sort.orderby, "name": sort.name};
-	}else{
-		sortby = {"orderby": "desc", "name": "name"};
-	}
+	geeklistURL += "&sortby=" + sortby + "&sortby_asc=" + sortby_asc;	
+	alert(sortby + " " + sortby_asc);
 	
 	jQuery.ajax({
 		url: geeklistURL 
@@ -59,15 +46,17 @@ function loadGeeklist(geeklistid, limit, skip, filter, sort){
 				)[0].thumbs;
 			}
 			
-			//TODO: Fix bug where header is repeated when incrementally loading..	
 			if($('.subheader[data-subheader="' + currentTerm + '"]').length === 0){
-					list.append("<tr class=\"subheader\" data-subheader=\"" + currentTerm + "\"><td>" + currentTerm + "</td></tr>");
+					list.append("<tr class=\"subheader\" data-subheader=\"" + currentTerm + "\"><td colspan=\"4\">" + currentTerm + "</td></tr>");
 			}
 			
 			prevSortTerm = currentTerm;
 			
 			var l = "<tr class=\"gameline\"><td>" + n + "</td>";
-			//l += "<td class=\"hidden-xs\">" +   + "</td>;
+			l += "<td class=\"hidden-xs\">" + r[i].yearpublished  + "</td>";
+			l += "<td class=\"hidden-xs\">" + r[i].minplayers  + "</td>";
+			l += "<td class=\"hidden-xs\">" + r[i].maxplayers  + "</td>";
+			l += "<td class=\"hidden-xs\">" + r[i].playingtime  + "</td>";
 			l += "</tr>";
 				
 			list.append(l);

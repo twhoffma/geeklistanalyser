@@ -212,7 +212,7 @@ db.getGeeklists().then(
 						var geeklist = boardgame.geeklists.filter(function(e){return e.objectid === bgStat.geeklistid});
 						
 						if(geeklist.length === 0){
-							geeklist = {'objectid': bgStat.geeklistid, 'latest': bgStat};
+							geeklist = {'objectid': bgStat.geeklistid, 'crets': moment().format("YYYY-MM-DD[T]HH:mm:SS"), 'latest': bgStat};
 							boardgame['geeklists'].push(geeklist);
 						}else{
 							//There is only one latest per geeklist
@@ -232,8 +232,61 @@ db.getGeeklists().then(
 			})
 		).then(
 			function(boardgames){
+				var filterValues = [];
+
+				for(var i = 0; i < boardgames.length; i++){
+					var boardgame = boardgames[i];
+					
+					for(var j=0; j < boardgame.geeklists.length; j++){
+						var geeklistid = boardgame.geeklists[j].objectid;
+						var fv = filterValues.filter(function(e){return e.objectid === geeklistid});
+						var filterValue;
+						
+						if(fv.length === 0){
+							filterValue =  {'type': 'filtervalue', 'analysisDate': currentDate, 'objectid': geeklistid, 'maxplaytime': -Infinity, 'minplaytime': Infinity, 'boardgamedesigner': [], 'boardgameartist': [], 'boardgamecategory': [], 'boardgamemechanic': []};
+							filterValues.push(filterValue);
+							console.log("created");
+						}else{
+							filterValue = fv[0];
+							console.log("created");
+						}
+						
+						filterValue.boardgameartist = boardgame.boardgameartist.reduce(function(prev, curr){
+							console.log(curr);
+							if(prev.filter(function(e){return e.objectid === curr.objectid}).length === 0){
+								return prev.concat(curr)
+							}else{
+								return prev
+							}
+						}, filterValue.boardgameartist);
+						
+						filterValue.boardgamedesigner = boardgame.boardgamedesigner.reduce(function(prev, curr){
+							if(prev.filter(function(e){return e.objectid === curr.objectid}).length === 0){return prev.concat(curr)}else{return prev}
+						}, filterValue.boardgamedesigner);
+						
+						filterValue.boardgamemechanic = boardgame.boardgamemechanic.reduce(function(prev, curr){
+							if(prev.filter(function(e){return e.objectid === curr.objectid}).length === 0){return prev.concat(curr)}else{return prev}
+						}, filterValue.boardgamemechanic);
+						
+						filterValue.boardgamecategory = boardgame.boardgamecategory.reduce(function(prev, curr){
+							if(prev.filter(function(e){return e.objectid === curr.objectid}).length === 0){return prev.concat(curr)}else{return prev}
+						}, filterValue.boardgamecategory);
+						
+						filterValue['maxplaytime'] = Math.max(filterValue['maxplaytime'], boardgame.maxplaytime || -Infinity);
+						filterValue['maxplaytime'] = Math.max(filterValue['maxplaytime'], boardgame.playingtime || -Infinity);
+						filterValue['minplaytime'] = Math.min(filterValue['minplaytime'], boardgame.minplaytime || Infinity);
+						filterValue['minplaytime'] = Math.min(filterValue['minplaytime'], boardgame.playingtime || Infinity);
+					}
+
+					//console.log(filterValue);
+				}
+				
+				return db.deleteFilterRanges(geeklistid, currentDate).then(function() {return db.saveFilterRanges(filterValues)}).then(function() { return boardgames});	
+			}
+		).then(
+			function(boardgames){
 				console.log("Saving all boardgames to DB.");
-				console.log(boardgames[0].latest);	
+					
 				return db.saveBoardgames(boardgames)
 			}
 		).catch(

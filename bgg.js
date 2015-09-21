@@ -23,6 +23,8 @@ function getBoardgame(boardgameId){
 			bg['minplayers'] = $('minplayers').text();
 			bg['maxplayers'] = $('maxplayers').text();
 			bg['playingtime'] = $('playingtime').text();
+			bg['minplaytime'] = $('minplaytime').text();
+			bg['maxplaytime'] = $('maxplaytime').text();
 			bg['thumbnail'] = $('thumbnail').text();
 			bg['geeklists'] = [];
 				

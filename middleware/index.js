@@ -62,6 +62,8 @@ app.use(uri + '/getGeeklist', function(req, res, next){
 
 		if(filter != 0 || sortby != 'crets'){
 			console.log("Using filters");
+			console.log(filter);
+			console.log(sortby);
 				
 			var filters = {};
 			var sortby; 
