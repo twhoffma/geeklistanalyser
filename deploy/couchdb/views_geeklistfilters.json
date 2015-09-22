@@ -3,7 +3,7 @@
   "language": "javascript",
   "views": {
     "geeklistfilters": {
-      "map": "function(doc) {\n  if(doc.type === 'filtervalue'){\n\temit([doc.objectid, doc.analysisDate], null);\n  }\n}"
+      "map": "function(doc) {\n  if(doc.type === 'filtervalue'){\n\temit([doc.objectid, Date.parse(doc.analysisDate)], null);\n  }\n}"
     }
   }
 }

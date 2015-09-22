@@ -76,31 +76,19 @@ app.use(uri + '/getGeeklist', function(req, res, next){
 		
 		var sortby = p.sortby || 'crets';
 		var sortby_asc = p.sortby_asc || 0;
-		var filter = p.filters || 0;		
+		var filterJSON = p.filters || '';		
 		
 		//TODO: Add cleaning of data before moving on.
 		
-		if(filter != 0){
+		if(filterJSON != ''){
 			console.log("Using filters");
-			console.log(filter);
+			console.log(filterJSON);
 			console.log(sortby);
 				
-			var filters = {};
-			var sortby; 
-			if(p.filters){
-				filters = JSON.parse(p.filters);
-			}
+			//TODO: You need to use try/catch here..
+			var filters = JSON.parse(p.filters);
 			
-			if(!p.sortby){
-				sortby = {'orderby': 'asc', 'name': 'thumbs'};
-			}else{
-				sortby = JSON.parse(p.sortby);
-			}
-
-			filters['geeklistid'] = p.geeklistId;
-			
-			
-			db.srchBoardgames(filters, sortby, skip, limit).then(
+			db.srchBoardgames(p.geeklistId, filters, sortby, sortby_asc, skip, limit).then(
 				function(reply){
 					//console.log(reply);
 					//XXX: Decide whether functions are returning JSON before this step or not..

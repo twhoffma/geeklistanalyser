@@ -6,7 +6,7 @@
       "map": "function(doc) {\n  if(doc.geeklists.length > 0){\n\tfor(idx = 0; idx < doc.geeklists.length; idx++){\n      \t  emit(doc.geeklists[idx].objectid, null);\n\t}\n  }\n}"
     },
     "geeklist_by_crets": {
-      "map": "function(doc) {\n  if(doc.geeklists.length > 0){\n\tfor(idx = 0; idx < doc.geeklists.length; idx++){\n      \t  emit([doc.geeklists[idx].objectid, doc.geeklists[idx].crets], null);\n\t}\n  }\n}"
+      "map": "function(doc) {\n  if(doc.geeklists.length > 0){\n\tfor(idx = 0; idx < doc.geeklists.length; idx++){\n      \t  emit([doc.geeklists[idx].objectid, Date.parse(doc.geeklists[idx].crets)], null);\n\t}\n  }\n}"
     },
     "geeklist_by_thumbs": {
       "map": "function(doc) {\n  if(doc.geeklists.length > 0){\n\tfor(idx = 0; idx < doc.geeklists.length; idx++){\n      \t  emit([doc.geeklists[idx].objectid, parseInt(doc.geeklists[idx].latest.thumbs)], null);\n\t}\n  }\n}"

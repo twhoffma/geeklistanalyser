@@ -278,11 +278,8 @@ function getGeeklistFilters(geeklistid){
 }
 
 //Search by filtering and sort result
-function srchBoardgames(filters, sortby, skip, lim){
+function srchBoardgames(geeklistid, filters, sortby, sortby_asc, skip, lim){
 	var q = {};
-	var geeklistid;
-
-	geeklistid = filters['geeklistid'];
 	
 	//Number of items to skip during incremental loading
 	if(skip != 0){
@@ -294,6 +291,7 @@ function srchBoardgames(filters, sortby, skip, lim){
 	
 	//Filtering
 	//TODO: Make this less stupid.
+	/*
 	q['query'] = {};
 	q['query']['filtered'] = {};
 	q['query']['filtered']['filter'] = {};
@@ -302,43 +300,87 @@ function srchBoardgames(filters, sortby, skip, lim){
 	q['query']['filtered']['filter']['nested']['filter'] = {};
 	q['query']['filtered']['filter']['nested']['filter']['bool'] = {};
 	q['query']['filtered']['filter']['nested']['filter']['bool']['must'] = [];
-	
+		
 	var m = q['query']['filtered']['filter']['nested']['filter']['bool']['must'];
 	m.push({'term': {'geeklists.objectid': geeklistid}});
+	*/
 	
+	q['query'] = {};
+	q['query']['bool'] = {};
+	q['query']['bool']['must'] = [];
 	
-	//Sorting
-	if(sortby != undefined){
-		var orderby;
-		var s;
-		
-		if(sortby.orderby === "desc"){
-			orderby = "desc";
-		}else{
-			orderby = "asc";	
-		}
-		
-		q['sort'] = [];
-		
-    	if(sortby.name === "name"){
-			s = {"name.name": {"order": orderby, "nested_filter": {"term": {"name.primary": "true"}}}};	
-		}else if(sortby.name === "yearpublished"){
-			s = {"yearpublished": {"order": orderby}}
-		}else if(sortby.name === "thumbs"){
-			s = {"geeklists.latest.thumbs": {"order": orderby, "nested_path": "geeklists.latest", "nested_filter": {"term": {"geeklists.latest.geeklistid": geeklistid}}}}
-		}else if(sortby.name === "geeklist_addts"){
-			s = {"geeklists.latest.crets": {"order": orderby, "nested_path": "geeklists.latest", "nested_filter": {"term": {"geeklists.lastest.geeklistid": geeklistid}}}}	
-		}else{
-			console.log("WARN: no sorting...")	
-		}
-		
-		q['sort'].push(s);
+	q['query']['bool']['must'].push(filterGeeklistId(geeklistid));	
+	
+	if(filters.boardgamedesigner != undefined){ 
+		q['query']['bool']['must'].push(filterManyToMany("boardgamedesigner", filters.boardgamedesigner));
 	}
+		
+	//Sorting
+	var orderby;
+	var s;
+	
+	if(sortby_asc === 0){
+		orderby = "desc";
+	}else{
+		orderby = "asc";	
+	}
+		
+	q['sort'] = [];
+	
+    if(sortby === "name"){
+		s = {"name.name": {"order": orderby, "nested_filter": {"term": {"name.primary": "true"}}}};	
+	}else if(sortby === "yearpublished"){
+		s = {"yearpublished": {"order": orderby}}
+	}else if(sortby === "thumbs"){
+		s = {"geeklists.latest.thumbs": {"order": orderby, "nested_path": "geeklists.latest", "nested_filter": {"term": {"geeklists.latest.geeklistid": geeklistid}}}}
+	}else if(sortby === "cnt"){
+		s = {"geeklists.latest.crets": {"order": orderby, "nested_path": "geeklists.latest", "nested_filter": {"term": {"geeklists.lastest.geeklistid": geeklistid}}}}	
+	}else{
+		s = {"geeklists.crets": {"order": orderby, "nested_path": "geeklists", "nested_filter": {"term": {"geeklists.objectid": geeklistid}}}}	
+	}
+		
+	q['sort'].push(s);
 	
 	var json_query = JSON.stringify(q);
-	//console.log("this is q:\n" + json_query);
+	console.log("this is q:\n" + json_query);
 	
 	return qrequest.qrequest("POST", getSrchURL(), json_query);
+}
+
+function filterGeeklistId(geeklistid){
+	var q = {};
+	q['filtered'] = {};
+	q['filtered']['filter'] = {};
+	q['filtered']['filter']['nested'] = {};
+	q['filtered']['filter']['nested']['path'] = "geeklists";
+	q['filtered']['filter']['nested']['filter'] = {};
+	q['filtered']['filter']['nested']['filter']['bool'] = {};
+	q['filtered']['filter']['nested']['filter']['bool']['must'] = [];
+		
+	var m = q['filtered']['filter']['nested']['filter']['bool']['must'];
+	m.push({'term': {'geeklists.objectid': geeklistid}});
+
+	return q
+}
+
+function filterManyToMany(nameM2M, objectid){
+	var q = {};
+	q['filtered'] = {};
+	q['filtered']['filter'] = {};
+	q['filtered']['filter']['nested'] = {};
+	q['filtered']['filter']['nested']['path'] = nameM2M;
+	q['filtered']['filter']['nested']['filter'] = {};
+	q['filtered']['filter']['nested']['filter']['bool'] = {};
+	q['filtered']['filter']['nested']['filter']['bool']['must'] = [];
+		
+	var m = q['filtered']['filter']['nested']['filter']['bool']['must'];
+	var t = {};
+	t['term'] = {};
+	t['term'][nameM2M + '.objectid'] = objectid;
+	m.push(t);
+	//m.push({'term': {nameM2M + '.objectid': objectid}});
+
+	return q
 }
 
 module.exports.saveBoardgames = saveBoardgames

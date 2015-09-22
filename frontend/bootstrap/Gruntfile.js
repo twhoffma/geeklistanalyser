@@ -12,14 +12,30 @@ module.exports = function(grunt) {
 						expand: true, 
 						src: [
 							'css/*', 
-							'bower_components/bootstrap/dist/css/*', 
-							'bower_components/bootstrap/dist/fonts/*', 
+							'img/*', 
 							'index.html'
 						], 
 						dest: '/var/www/hoffy.no/geeklistmonitor/', 
 						filter: 'isFile'
 					},
-
+      	  	  		{
+						expand: true,
+						flatten: true, 
+						src: [
+							'bower_components/bootstrap/dist/css/*', 
+						], 
+						dest: '/var/www/hoffy.no/geeklistmonitor/css/', 
+						filter: 'isFile'
+					},
+      	  	  		{
+						expand: true,
+						flatten: true, 
+						src: [
+							'bower_components/bootstrap/dist/fonts/*', 
+						], 
+						dest: '/var/www/hoffy.no/geeklistmonitor/fonts/', 
+						filter: 'isFile'
+					},
       	  	  		// includes files within path and its sub-directories
       	  	  		//{expand: true, src: ['path/**'], dest: 'dest/'},
 

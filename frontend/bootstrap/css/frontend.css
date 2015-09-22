@@ -1,3 +1,7 @@
 #floatinglabel {
 	z-index: 3200;
 }
+
+.modal li {
+	list-style-type: none;
+}

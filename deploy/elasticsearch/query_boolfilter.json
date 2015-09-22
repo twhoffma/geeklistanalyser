@@ -1,0 +1,49 @@
+{
+  "query": {
+    "bool": {
+    "must": [
+     {
+    "filtered": {
+      "filter": {
+        "nested": {
+          "path": "boardgamecategory",
+          "filter": {
+            "bool": {
+              "must": [
+                {
+                  "term": {
+                    "boardgamecategory.objectid": "1035"
+                  }
+                }
+              ]
+            }
+          }
+         
+        }
+      }
+    }
+  },
+  {
+    "filtered": {
+      "filter": {
+        "nested": {
+          "path": "geeklists",
+          "filter": {
+            "bool": {
+              "must": [
+                {
+                  "term": {
+                    "geeklists.objectid": 191095
+                  }
+                }
+              ]
+            }
+          }
+         
+        }
+      }
+    }
+  }
+  ]
+  }}
+}
