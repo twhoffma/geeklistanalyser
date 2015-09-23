@@ -290,29 +290,28 @@ function srchBoardgames(geeklistid, filters, sortby, sortby_asc, skip, lim){
 	q['size'] = lim;
 	
 	//Filtering
-	//TODO: Make this less stupid.
-	/*
-	q['query'] = {};
-	q['query']['filtered'] = {};
-	q['query']['filtered']['filter'] = {};
-	q['query']['filtered']['filter']['nested'] = {};
-	q['query']['filtered']['filter']['nested']['path'] = "geeklists";
-	q['query']['filtered']['filter']['nested']['filter'] = {};
-	q['query']['filtered']['filter']['nested']['filter']['bool'] = {};
-	q['query']['filtered']['filter']['nested']['filter']['bool']['must'] = [];
-		
-	var m = q['query']['filtered']['filter']['nested']['filter']['bool']['must'];
-	m.push({'term': {'geeklists.objectid': geeklistid}});
-	*/
-	
 	q['query'] = {};
 	q['query']['bool'] = {};
 	q['query']['bool']['must'] = [];
 	
 	q['query']['bool']['must'].push(filterGeeklistId(geeklistid));	
 	
-	if(filters.boardgamedesigner != undefined){ 
-		q['query']['bool']['must'].push(filterManyToMany("boardgamedesigner", filters.boardgamedesigner));
+	['boardgamedesigner', 'boardgameartist', 'boardgamemechanic', 'boardgamecategory'].forEach(function(e){	
+		if(filters[e] != undefined){ 
+			q['query']['bool']['must'].push(filterManyToMany(e, filters[e]));
+		}
+	});
+
+	if(filters["releasetype"] != undefined){
+		switch(filters["releasetype"]){
+			case 'boardgame':
+				q['query']['bool']['must'].push(filterIsExpansion());
+				break;
+			case 'expansion':
+				q['query']['bool']['must_not'] = [];	
+				q['query']['bool']['must_not'].push(filterIsExpansion());
+				break;
+		}
 	}
 		
 	//Sorting
@@ -379,6 +378,16 @@ function filterManyToMany(nameM2M, objectid){
 	t['term'][nameM2M + '.objectid'] = objectid;
 	m.push(t);
 	//m.push({'term': {nameM2M + '.objectid': objectid}});
+
+	return q
+}
+
+function filterIsExpansion(){
+	var q = {};
+	q['filtered'] = {};
+	q['filtered']['filter'] = {};
+	q['filtered']['filter']['missing'] = {};
+	q['filtered']['filter']['missing']['field'] = 'expands';
 
 	return q
 }

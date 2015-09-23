@@ -17,6 +17,7 @@
       <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
+	
   </head>
   <body>
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
@@ -24,7 +25,6 @@
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <!--<script src="js/bootstrap.min.js"></script>-->
 	<script src="js/frontend.js"></script>
-	
 	<script>
 		var selectedGeeklist = 0;
 		
@@ -146,17 +146,35 @@
       			<div class="modal-body">
 					<form>
             			<li>
-							<label for="boardgameartist">Artist</label>
-							<ul><select id="boardgameartist"></select></ul>
+							<ul><label for="boardgameartist">Artist</label>
+							<select id="boardgameartist"></select></ul>
 							
-							<label for="boardgamedesigner">Designer</label>
-							<ul><select id="boardgamedesigner"></select></ul>
+							<ul><label for="boardgamedesigner">Designer</label>
+							<select id="boardgamedesigner"></select></ul>
 							
-							<label for="boardgamemechanic">Mechanic</label>
-							<ul><select id="boardgamemechanic"></select></ul>
+							<ul><label for="boardgamemechanic">Mechanic</label>
+							<select id="boardgamemechanic"></select></ul>
 							
-							<label for="boardgamecategory">Category</label>
-							<ul><select id="boardgamecategory"></select></ul>
+							<ul><label for="boardgamecategory">Category</label>
+							<select id="boardgamecategory"></select></ul>
+
+							<ul>
+								<label for="releasetype">
+								<select id="releasetype">
+									<option value="">All</option>
+									<option value="boardgame">Boardgames</option>
+									<option value="expansion">Expansions</option>
+									<option value="collection">Collections</option>
+								</select>
+							</ul>
+							<ul>
+								<div data-role="rangeslider">
+  									<label for="range-1a">Rangeslider:</label>
+								 	<input name="range-1a" id="range-1a" min="0" max="100" value="0" type="range" />
+  									<label for="range-1b">Rangeslider:</label>
+  									<input name="range-1b" id="range-1b" min="0" max="100" value="100" type="range" />
+								</div>
+							</ul>
 						</li>	
 					</form>
       			</div>

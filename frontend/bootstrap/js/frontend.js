@@ -45,13 +45,23 @@ function loadGeeklist(geeklistid, limit, skip, filter, sort){
 	list.append("<tr id=\"spinner\"><td colspan=\"9\"><img src=\"img/spiffygif_30x30.gif\"</td></tr>");
 	
 	//Filters
-	if($('#boardgamedesigner').val() !== null && $('#boardgamedesigner').val() !== ''){
-		filterby['boardgamedesigner'] = $('#boardgamedesigner').val();
-		console.log($('#boardgamedesigner').val());
+	['boardgamedesigner', 'boardgameartist', 'boardgamemechanic', 'boardgamecategory'].forEach(function(e){
+		if($('#'+e).val() !== null && $('#'+e).val() !== ''){
+			filterby[e] = $('#'+e).val();
+			
+			console.log($('#'+e).val());
 
-		//Actual adding of filter should be somewhere else to keep it DRY
+    	}
+	});
+
+	if($('#releasetype').val() !== null && $('#releasetype').val() !== ''){
+		filterby['releasetype'] = $('#releasetype').val();
+	}
+	
+	//Actual adding of filter should be somewhere else to keep it DRY
+	if(Object.keys(filterby).length !== 0){
 		geeklistURL += "&filters=" + JSON.stringify(filterby);
-    }
+	}
 
 	//Sorting
 	geeklistURL += "&sortby=" + sortby + "&sortby_asc=" + sortby_asc;	
