@@ -45,11 +45,14 @@
 				enableMenuButtons(false);
 				
 				selectedGeeklist = this.dataset.geeklistid;
-				loadGeeklist(selectedGeeklist, 10, 0);
 				loadGeeklistFilters(selectedGeeklist);	
-				
+				resetFilters();
+				resetSorting();
+				loadGeeklist(selectedGeeklist, 10, 0);
+			
+				$('#listname').html($(this).text());
 				enableMenuButtons(true);
-				
+				setLoadButtonState(true);
 			});
 
 			$('.selects').on("click", function(e){
@@ -59,6 +62,22 @@
 			
 			$('button#sort,button#filter').on("click", function(){
 				loadGeeklist(selectedGeeklist, 10, 0);
+			});
+
+			$('#sortingModal').on('change', 'input,select', function(e){
+				$('.glyphicon-sort-by-attributes').css('color', isDefaultSorting() ? 'black' : 'red');
+			});
+			
+			$('#filteringModal').on('change', 'input,select', function(e){
+				$('.glyphicon-filter').css('color', isDefaultFilters() ? 'black' : 'red');
+			});
+
+			$('#resetSorting').on('click', function(){
+				resetSorting();
+			});
+			
+			$('#resetFilters').on('click', function(){
+				resetFilters();
 			});
 		});
 	</script>
@@ -84,6 +103,9 @@
           				<ul class="dropdown-menu" role="menu">
           				</ul>
         			</li>
+					<li>
+						<h4 id="listname"></h4>
+					<li>
       			</ul>
       			<!--	
 				<form class="navbar-form navbar-left" role="search">
@@ -95,9 +117,9 @@
 				-->
       			<ul class="nav navbar-nav navbar-right">
 					<button type="button" class="btn btn-link btn-sm" data-toggle="modal" data-target="#sortingModal" id="menuBtnSort"><span class="glyphicon glyphicon-sort-by-attributes"></span>Sorting</button>
-					<button type="button" class="btn btn-link btn-sm" data-toggle="modal" data-target="#filteringModal" id="menuBtnFilter"><span class="glyphicon glyphicon-filter">Filters</span></button>
-					<button type="button" class="btn btn-link btn-sm" data-toggle="modal" data-target="#infoModal" id="menuBtnInfo"><span class="glyphicon glyphicon-info-sign">Info</span></button>
-					<button type="button" class="btn btn-link btn-sm"><span class="glyphicon glyphicon-stats">Graphs</span></button>
+					<button type="button" class="btn btn-link btn-sm" data-toggle="modal" data-target="#filteringModal" id="menuBtnFilter"><span class="glyphicon glyphicon-filter"></span>Filters</button>
+					<button type="button" class="btn btn-link btn-sm" data-toggle="modal" data-target="#infoModal" id="menuBtnInfo"><span class="glyphicon glyphicon-info-sign"></span>Info</button>
+					<button type="button" class="btn btn-link btn-sm"><span class="glyphicon glyphicon-stats"></span>Graphs</button>
       			</ul>
     		</div><!-- /.navbar-collapse -->
   		</div><!-- /.container-fluid -->
@@ -110,6 +132,7 @@
       			<div class="modal-header">
         			<button type="button" class="close" data-dismiss="modal">&times;</button>
         			<h4 class="modal-title">Sorting</h4>
+					<button type="button" class="btn btn-link btn-sm" id="resetSorting"><span class="glyphicon glyphicon-refresh"></span>Reset</button>
       			</div>
       			<div class="modal-body">
 					<form>
@@ -144,21 +167,29 @@
         			<h4 class="modal-title">Filters</h4>
       			</div>
       			<div class="modal-body">
+					<button type="button" class="btn btn-link btn-sm" style="float:right;" id="resetFilters"><span class="glyphicon glyphicon-refresh"></span>Reset</button>
 					<form>
-            			<li>
-							<ul><label for="boardgameartist">Artist</label>
-							<select id="boardgameartist"></select></ul>
-							
-							<ul><label for="boardgamedesigner">Designer</label>
-							<select id="boardgamedesigner"></select></ul>
-							
-							<ul><label for="boardgamemechanic">Mechanic</label>
-							<select id="boardgamemechanic"></select></ul>
-							
-							<ul><label for="boardgamecategory">Category</label>
-							<select id="boardgamecategory"></select></ul>
-
-							<ul>
+						<div class="form-group">
+							<label for="boardgamedesigner">Designer</label>
+							<select id="boardgamedesigner" class="form-control"></select>
+						</div>
+						<div class="form-group">
+							<label for="boardgamepublisher">Publisher</label>
+							<select id="boardgamepublisher" class="form-control"></select>
+						</div>
+						<div class="form-group">
+							<label for="boardgameartist">Artist</label>
+							<select id="boardgameartist" class="form-control"></select>
+						</div>
+						<div class="form-group">
+							<label for="boardgamemechanic">Mechanic</label>
+							<select id="boardgamemechanic" class="form-control"></select>
+						</div>
+						<div class="form-group">
+							<label for="boardgamecategory">Category</label>
+							<select id="boardgamecategory" class="form-control"></select>
+						</div>
+						<div class="form-group">
 								<label for="releasetype">
 								<select id="releasetype">
 									<option value="">All</option>
@@ -166,16 +197,15 @@
 									<option value="expansion">Expansions</option>
 									<option value="collection">Collections</option>
 								</select>
-							</ul>
-							<ul>
-								<div data-role="rangeslider">
-  									<label for="range-1a">Rangeslider:</label>
-								 	<input name="range-1a" id="range-1a" min="0" max="100" value="0" type="range" />
-  									<label for="range-1b">Rangeslider:</label>
-  									<input name="range-1b" id="range-1b" min="0" max="100" value="100" type="range" />
-								</div>
-							</ul>
-						</li>	
+						</div>
+						<div class="form-group">
+							<div data-role="rangeslider">
+  								<label for="range-1a">Rangeslider:</label>
+							 	<input name="range-1a" id="range-1a" min="0" max="100" value="0" type="range" />
+  								<label for="range-1b">Rangeslider:</label>
+  								<input name="range-1b" id="range-1b" min="0" max="100" value="100" type="range" />
+							</div>
+						</div>
 					</form>
       			</div>
       			<div class="modal-footer">
@@ -228,7 +258,7 @@
 			</thead>
 			<tbody id="games"></tbody>		
 		</table>
-		<button id="loadmore">Load more</button>
+		<button id="loadmore" class="btn btn-default">Load more</button>
 	</div>
   </body>
 </html>

@@ -16,6 +16,10 @@ function getViewURL(dsndoc, view){
 	return dbURL + '/' + dbName + '/_design/' + dsndoc + '/_view/' + view
 }
 
+function getCompactURL(){
+	return dbURL + '/' + dbName + '/_compact'
+}
+
 function generateUuids(num){
 		var idURL = dbURL + '/_uuids?count=' + num;
 	
@@ -155,7 +159,7 @@ function saveBoardgames(boardgames){
 
 
 /* --- Geeklist --- */
-function getGeeklists(inclAll){
+function getGeeklists(updateable, visible){
 	var url = getViewURL('geeklists', 'geeklists') + '?include_docs=true'
 	
 	return getDocs(url).then(
@@ -163,7 +167,7 @@ function getGeeklists(inclAll){
 			var geeklists = [];
 			
 			rows.forEach(function(row, i){
-				if(row.doc.update === true || inclAll === true){
+				if((row.doc.update === true && updateable === true) || (row.doc.visible === true && visible === true)){
 					geeklists.push(row.doc);
 				}
 			});
@@ -250,19 +254,11 @@ function saveGeeklistStats(geeklistStats){
 }
 
 //General function for saving to couchDB
-
-//Should return allowable ranges for data-dependent filters 
-//such as issuers, designers, publishers, mechanics, categories, publication years, thumbs.
-function getFilterRanges(){
-		
-}
-
 function deleteFilterRanges(geeklistId, analysisDate){
 	var url = getViewURL('geeklistfilters', 'geeklistfilters')+'?key=[{id}, \"{date}\"]&include_docs=true';
 	url = url.replace(/\{id\}/g, geeklistId);
 	url = url.replace(/\{date\}/g, analysisDate);
-	console.log("Deleting filter range");
-	console.log(url);	
+	
 	return deleteDocs(url)
 }
 
@@ -275,6 +271,12 @@ function getGeeklistFilters(geeklistid){
 	url = url.replace(/\{id\}/g, geeklistid);
 	
 	return getDocs(url)	
+}
+
+function finalizeDb(){
+	var url = getCompactURL();
+	
+	return qrequest.qrequest("POST", url, null, {"Content-Type": "application/json"})
 }
 
 //Search by filtering and sort result
@@ -296,7 +298,7 @@ function srchBoardgames(geeklistid, filters, sortby, sortby_asc, skip, lim){
 	
 	q['query']['bool']['must'].push(filterGeeklistId(geeklistid));	
 	
-	['boardgamedesigner', 'boardgameartist', 'boardgamemechanic', 'boardgamecategory'].forEach(function(e){	
+	['boardgamedesigner', 'boardgameartist', 'boardgamemechanic', 'boardgamecategory', 'boardgamepublisher'].forEach(function(e){	
 		if(filters[e] != undefined){ 
 			q['query']['bool']['must'].push(filterManyToMany(e, filters[e]));
 		}
@@ -404,3 +406,4 @@ module.exports.srchBoardgames = srchBoardgames
 module.exports.saveFilterRanges = saveFilterRanges
 module.exports.deleteFilterRanges = deleteFilterRanges
 module.exports.getGeeklistFilters = getGeeklistFilters
+module.exports.finalizeDb = finalizeDb

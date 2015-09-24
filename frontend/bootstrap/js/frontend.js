@@ -1,3 +1,53 @@
+var filterDropdownIds = ['boardgameartist', 'boardgamedesigner', 'boardgamemechanic', 'boardgamecategory', 'releasetype', 'boardgamepublisher'];
+
+function setLoadButtonState(enabled){
+	if(enabled === true){
+		$("#loadmore").html("Load more");
+		$("#loadmore").prop('disabled', false);
+	}else{
+		$("#loadmore").html("That's it!");
+		$("#loadmore").prop('disabled', true);
+	}
+}
+
+function isDefaultFilters(){
+	var isDefaultValues = true;
+	
+	filterDropdownIds.forEach(function(v){
+		var e = $('#' + v);
+		
+		if(e.val() !== ""){
+			isDefaultValues = false;
+		}
+	});
+	
+	return isDefaultValues
+}
+
+function isDefaultSorting(){
+	var isDefaultValues = true;
+
+	isDefaultValues = ($('#sortby').val() === 'crets');
+	isDefaultValues = ($('input[name="sortby_asc"]:checked').val() === "0");
+	
+	return isDefaultValues
+}
+
+function resetFilters(){
+	filterDropdownIds.forEach(function(v){
+		var e = $('#' + v);
+		
+		e.val("");
+	});
+
+	$('.glyphicon-filter').css('color', 'black');
+}
+
+function resetSorting(){
+	$('#sortby').val('crets');
+	$('.glyphicon-sort-by-attributes').css('color', 'black');
+}
+
 function loadGeeklistFilters(geeklistid){
 	var url = "./data/getGeeklistFilters?geeklistid=" + geeklistid;
 
@@ -5,32 +55,37 @@ function loadGeeklistFilters(geeklistid){
 		url: url 
 	}).done(function(data){
 		var r = jQuery.parseJSON(data);
-		var doc = r[0].doc;
-		
-		['boardgameartist', 'boardgamedesigner', 'boardgamemechanic', 'boardgamecategory'].forEach(function(v){
-			var e = $('#' + v);
-			e.find('option').remove();
-		
-			e.append('<option value="">Any</option>');
+		if(r.length > 0){
+			var doc = r[0].doc;
 			
-			for(var i = 0; i < doc[v].length; i++){
-				e.append('<option value="' + doc[v][i].objectid + '">' + doc[v][i].name + '</option>');
-			}
-		});	
+			['boardgameartist', 'boardgamedesigner', 'boardgamemechanic', 'boardgamecategory', 'boardgamepublisher'].forEach(function(v){
+				var e = $('#' + v);
+				e.find('option').remove();
+			
+				e.append('<option value="">Any</option>');
+				
+				for(var i = 0; i < doc[v].length; i++){
+					e.append('<option value="' + doc[v][i].objectid + '">' + doc[v][i].name + '</option>');
+				}
+			});
+		}	
 	});
 }
 
 function loadGeeklist(geeklistid, limit, skip, filter, sort){
+	/*
 	if(limit === undefined){
 		limit = 10;
 	}
+	*/
 
 	if(skip === undefined){
 		skip = 0;
 	}
 
 	
-	var geeklistURL = "./data/getGeeklist?geeklistId=" + geeklistid + "&limit=" + limit + "&skip=" + skip;
+	//var geeklistURL = "./data/getGeeklist?geeklistId=" + geeklistid + "&limit=" + limit + "&skip=" + skip;
+	var geeklistURL = "./data/getGeeklist?geeklistId=" + geeklistid + "&skip=" + skip;
 	
 	var filterby = {};
 	var sortby = $("#sortby").val();
@@ -45,7 +100,7 @@ function loadGeeklist(geeklistid, limit, skip, filter, sort){
 	list.append("<tr id=\"spinner\"><td colspan=\"9\"><img src=\"img/spiffygif_30x30.gif\"</td></tr>");
 	
 	//Filters
-	['boardgamedesigner', 'boardgameartist', 'boardgamemechanic', 'boardgamecategory'].forEach(function(e){
+	['boardgamedesigner', 'boardgameartist', 'boardgamemechanic', 'boardgamecategory', 'boardgamepublisher'].forEach(function(e){
 		if($('#'+e).val() !== null && $('#'+e).val() !== ''){
 			filterby[e] = $('#'+e).val();
 			
@@ -74,6 +129,10 @@ function loadGeeklist(geeklistid, limit, skip, filter, sort){
 		var currentTerm = "";
 		
 		$("#spinner").remove();
+		
+		if(r.length === 0){
+			setLoadButtonState(false);
+		}
 			
 		for(i = 0; i < r.length; i++){
 			var n = r[i].name.filter(function(e){

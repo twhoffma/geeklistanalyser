@@ -7,7 +7,8 @@
       "group": "Essen",
       "year": 2000,
       "update": false,
-      "objectid": 21782
+      "objectid": 21782,
+      "visible": false
     },
     {
       "_id": "187",
@@ -16,7 +17,8 @@
       "group": "Essen",
       "year": 2002,
       "update": false,
-      "objectid": 187
+      "objectid": 187,
+      "visible": false
     },
     {
       "_id": "1689",
@@ -25,7 +27,8 @@
       "group": "Essen",
       "year": 2003,
       "update": false,
-      "objectid": 1689
+      "objectid": 1689,
+      "visible": false
     },
     {
       "_id": "3867",
@@ -34,7 +37,8 @@
       "group": "Essen",
       "year": 2004,
       "update": false,
-      "objectid": 3867
+      "objectid": 3867,
+      "visible": false
     },
     {
       "_id": "9465",
@@ -43,7 +47,8 @@
       "group": "Essen",
       "year": 2005,
       "update": false,
-      "objectid": 9465
+      "objectid": 9465,
+      "visible": false
     },
     {
       "_id": "14995",
@@ -52,7 +57,8 @@
       "group": "Essen",
       "year": 2006,
       "update": false,
-      "objectid": 14995
+      "objectid": 14995,
+      "visible": false
     },
     {
       "_id": "22498",
@@ -61,7 +67,8 @@
       "group": "Essen",
       "year": 2007,
       "update": false,
-      "objectid": 22498
+      "objectid": 22498,
+      "visible": false
     },
     {
       "_id": "32448",
@@ -70,7 +77,8 @@
       "group": "Essen",
       "year": 2008,
       "update": false,
-      "objectid": 32448
+      "objectid": 32448,
+      "visible": false
     },
     {
       "_id": "42635",
@@ -79,7 +87,8 @@
       "group": "Essen",
       "year": 2009,
       "update": false,
-      "objectid": 42635
+      "objectid": 42635,
+      "visible": false
     },
     {
       "_id": "55855",
@@ -88,7 +97,8 @@
       "group": "Essen",
       "year": 2010,
       "update": false,
-      "objectid": 55855
+      "objectid": 55855,
+      "visible": false
     },
     {
       "_id": "70021",
@@ -97,7 +107,8 @@
       "group": "Essen",
       "year": 2011,
       "update": false,
-      "objectid": 70021
+      "objectid": 70021,
+      "visible": false
     },
     {
       "_id": "142246",
@@ -106,7 +117,8 @@
       "group": "Essen",
       "year": 2012,
       "update": false,
-      "objectid": 142246
+      "objectid": 142246,
+      "visible": false
     },
     {
       "_id": "152350",
@@ -115,7 +127,8 @@
       "group": "Essen",
       "year": 2013,
       "update": false,
-      "objectid": 152350
+      "objectid": 152350,
+      "visible": false
     },
     {
       "_id": "180262",
@@ -124,7 +137,8 @@
       "group": "Essen",
       "year": 2014,
       "update": false,
-      "objectid": 180262
+      "objectid": 180262,
+      "visible": false
     },
     {
       "_id": "174654",
@@ -133,7 +147,8 @@
       "group": "Essen",
       "year": 2015,
       "update": false,
-      "objectid": 174654
+      "objectid": 174654,
+      "visible": true
     },
     {
       "_id": "630",
@@ -142,7 +157,8 @@
       "group": "Nürnberg",
       "year": 2002,
       "update": false,
-      "objectid": 630
+      "objectid": 630,
+      "visible": false
     },
     {
       "_id": "546",
@@ -151,7 +167,8 @@
       "group": "Nürnberg",
       "year": 2003,
       "update": false,
-      "objectid": 546
+      "objectid": 546,
+      "visible": false
     },
     {
       "_id": "1947",
@@ -160,7 +177,8 @@
       "group": "Nürnberg",
       "year": 2004,
       "update": false,
-      "objectid": 1947
+      "objectid": 1947,
+      "visible": false
     },
     {
       "_id": "6345",
@@ -169,7 +187,8 @@
       "group": "Nürnberg",
       "year": 2005,
       "update": false,
-      "objectid": 6345
+      "objectid": 6345,
+      "visible": false
     },
     {
       "_id": "12926",
@@ -178,7 +197,8 @@
       "group": "Nürnberg",
       "year": 2006,
       "update": false,
-      "objectid": 12926
+      "objectid": 12926,
+      "visible": false
     },
     {
       "_id": "18752",
@@ -187,7 +207,8 @@
       "group": "Nürnberg",
       "year": 2007,
       "update": false,
-      "objectid": 18752
+      "objectid": 18752,
+      "visible": false
     },
     {
       "_id": "27932",
@@ -196,7 +217,8 @@
       "group": "Nürnberg",
       "year": 2008,
       "update": false,
-      "objectid": 27932
+      "objectid": 27932,
+      "visible": false
     },
     {
       "_id": "38646",
@@ -205,7 +227,8 @@
       "group": "Nürnberg",
       "year": 2009,
       "update": false,
-      "objectid": 38646
+      "objectid": 38646,
+      "visible": false
     },
     {
       "_id": "62803",
@@ -214,7 +237,8 @@
       "group": "Nürnberg",
       "year": 2011,
       "update": false,
-      "objectid": 62803
+      "objectid": 62803,
+      "visible": false
     },
     {
       "_id": "78288",
@@ -223,7 +247,8 @@
       "group": "Nürnberg",
       "year": 2012,
       "update": false,
-      "objectid": 78288
+      "objectid": 78288,
+      "visible": false
     },
     {
       "_id": "151567",
@@ -232,7 +257,8 @@
       "group": "Nürnberg",
       "year": 2013,
       "update": false,
-      "objectid": 151567
+      "objectid": 151567,
+      "visible": false
     },
     {
       "_id": "164782",
@@ -241,7 +267,8 @@
       "group": "Nürnberg",
       "year": 2014,
       "update": false,
-      "objectid": 164782
+      "objectid": 164782,
+      "visible": false
     },
     {
       "_id": "184754",
@@ -250,7 +277,8 @@
       "group": "Nürnberg",
       "year": 2015,
       "update": false,
-      "objectid": 184754
+      "objectid": 184754,
+      "visible": false
     },
     {
       "_id": "142245",
@@ -259,7 +287,8 @@
       "group": "Gen Con",
       "year": 2012,
       "update": false,
-      "objectid": 142245
+      "objectid": 142245,
+      "visible": false
     },
     {
       "_id": "153611",
@@ -268,7 +297,8 @@
       "group": "Gen Con",
       "year": 2013,
       "update": false,
-      "objectid": 153611
+      "objectid": 153611,
+      "visible": false
     },
     {
       "_id": "161427",
@@ -277,7 +307,8 @@
       "group": "Gen Con",
       "year": 2014,
       "update": false,
-      "objectid": 161427
+      "objectid": 161427,
+      "visible": false
     },
     {
       "_id": "184821",
@@ -286,7 +317,8 @@
       "group": "Gen Con",
       "year": 2015,
       "update": false,
-      "objectid": 184821
+      "objectid": 184821,
+      "visible": false
     },
     {
       "_id": "190037",
@@ -295,7 +327,8 @@
       "group": "Tokyo Game Market",
       "year": 2015,
       "update": false,
-      "objectid": 190037
+      "objectid": 190037,
+      "visible": false
     },
     {
       "_id": "191207",
@@ -304,7 +337,8 @@
       "group": "Origins",
       "year": 2015,
       "update": false,
-      "objectid": 191207
+      "objectid": 191207,
+      "visible": false
     },
     {
       "_id": "191095",
@@ -313,7 +347,8 @@
       "group": "Test",
       "year": 2015,
       "update": true,
-      "objectid": 191095
+      "objectid": 191095,
+      "visible": true
     }
   ]
 }

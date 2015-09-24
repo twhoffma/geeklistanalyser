@@ -48,7 +48,7 @@ app.use(uri + '/getGeeklists', function(req, res, next){
 	res.setHeader("Access-Control-Allow-Origin", "*");
 	
 	
-	db.getGeeklists(true).then(
+	db.getGeeklists(false, true).then(
 			function(val){
 				var u = req._parsedUrl.href + '?';
 				var r = JSON.stringify(val);
@@ -72,7 +72,7 @@ app.use(uri + '/getGeeklist', function(req, res, next){
 	
 	if(p.geeklistId != undefined){
 		var skip = p.skip || 0;
-		var limit = p.limit || 100;
+		var limit = 10;
 		
 		var sortby = p.sortby || 'crets';
 		var sortby_asc = p.sortby_asc || 0;

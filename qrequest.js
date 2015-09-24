@@ -1,32 +1,44 @@
 request = require('request');
 q = require('q');
 
-function qrequest(method, url, data){
+function qrequest(method, url, data, headers){
 	var p = q.defer();
 	
 	method = method.toUpperCase();
 	
 	if(method === "GET"){
 		request(url, function(error, response, body){
-			if(!error && response.statusCode == 200){
+			if(!error && response.statusCode >= 200 && response.statusCode < 300){
 				p.resolve(response.body);
 			}else{
 				console.log("failed url: " + url);
-				p.reject(response.body);	
+				console.log(error);
+				//console.log(error);
+				//console.log(body);
+				console.log("Returning error");
+				p.reject(response.statusCode);	
 			}
 		});
 	}else if(method === "PUT" || method === "POST"){
-		request(
-			{
+		var r = {
 				method: method,
-				uri: url,
-				body: data
-			},
+				uri: url
+		};
+		
+		if(data !== undefined && data !== null){
+				r['body'] = data;
+		}
+			
+		if(headers !== undefined & headers !== null){
+			r['headers'] = headers;
+		}
+		
+		request(
+			r,
 			function(error, response, body) {
 				var sc = response.statusCode;
 				
-				if((sc == 201 && method === "PUT") || (sc == 200 && method === "POST")){		
-					//console.log(body);
+				if((sc == 201 && method === "PUT") || (sc >= 200 && sc < 300 && method === "POST")){		
 					p.resolve(body);
 					
 				}else{
