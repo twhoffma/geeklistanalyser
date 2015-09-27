@@ -37,113 +37,88 @@ function getBoardgame(boardgameId){
 	
 	return qrequest.qrequest("GET", boardgameURL + boardgameId, null, null).then(
 		function(val){
-			//var bg = {};
-			var bg = new Boardgame(boardgameId);
 			var $ = cheerio.load(val);
+			var boardgames = [];
 			
-			/*	
-			bg['type'] = "boardgame";
-			bg['objectid'] = boardgameId;
-			bg['yearpublished'] = $('yearpublished').text();
-			bg['minplayers'] = $('minplayers').text();
-			bg['maxplayers'] = $('maxplayers').text();
-			bg['playingtime'] = $('playingtime').text();
-			bg['minplaytime'] = $('minplaytime').text();
-			bg['maxplaytime'] = $('maxplaytime').text();
-			bg['thumbnail'] = $('thumbnail').text();
-			bg['geeklists'] = [];
-			*/
+			$('boardgame').each(function(index, elem){
+				var bg = new Boardgame($(this).attr('objectid'));
 				
-			bg.yearpublished = $('yearpublished').text();
-			bg.minplayers = $('minplayers').text();
-			bg.maxplayers = $('maxplayers').text();
-			bg.playingtime = $('playingtime').text();
-			bg.minplaytime = $('minplaytime').text();
-			bg.maxplaytime = $('maxplaytime').text();
-			bg.thumbnail = $('thumbnail').text();
-			
-			//bg['name'] = [];
-			$('name').each(function(index, elem){
-				//bg['name'].push({'name': $(this).text(), 'primary': $(this).attr('primary')});
-				bg.name.push({'name': $(this).text(), 'primary': $(this).attr('primary')});
-			});
-	
-			//bg['boardgamecategory'] = [];
-			$('boardgamecategory').each(function(index, elem){
-				var id = $(this).attr('objectid');
-				var val = $(this).text();
-				//bg['boardgamecategory'].push({objectid: id, name: val});
-				bg.boardgamecategory.push({objectid: id, name: val});
-			});
+				bg.yearpublished = $('yearpublished', $(this)).text();
+				bg.minplayers = $('minplayers', $(this)).text();
+				bg.maxplayers = $('maxplayers', $(this)).text();
+				bg.playingtime = $('playingtime', $(this)).text();
+				bg.minplaytime = $('minplaytime', $(this)).text();
+				bg.maxplaytime = $('maxplaytime', $(this)).text();
+				bg.thumbnail = $('thumbnail', $(this)).text();
+				
+				$('name', $(this)).each(function(index, elem){
+					bg.name.push({'name': $(this).text(), 'primary': $(this).attr('primary')});
+				});
 		
-			//bg['boardgamemechanic'] = [];
-			$('boardgamemechanic').each(function(index, elem){
-				var id = $(this).attr('objectid');
-				var val = $(this).text();
-				//bg['boardgamemechanic'].push({objectid: id, name: val});
-				bg.boardgamemechanic.push({objectid: id, name: val});
-			});
+				$('boardgamecategory', $(this)).each(function(index, elem){
+					var id = $(this).attr('objectid');
+					var val = $(this).text();
+					
+					bg.boardgamecategory.push({objectid: id, name: val});
+				});
 			
-			//bg['boardgamedesigner'] = [];
-			$('boardgamedesigner').each(function(index, elem){
-				var id = $(this).attr('objectid');
-				var val = $(this).text();
-				//bg['boardgamedesigner'].push({objectid: id, name: val});
-				bg.boardgamedesigner.push({objectid: id, name: val});
-			});
-	
-			//bg['boardgameartist'] = [];
-			$('boardgameartist').each(function(index, elem){
-				var id = $(this).attr('objectid');
-				var val = $(this).text();
-				//bg['boardgameartist'].push({objectid: id, name: val});
-				bg.boardgameartist.push({objectid: id, name: val});
-			});
-	
-			//bg['boardgamepublisher'] = [];
-			$('boardgamepublisher').each(function(index, elem){
-				var id = $(this).attr('objectid');
-				var val = $(this).text();
-				//bg['boardgamepublisher'].push({objectid: id, name: val});
-				bg.boardgamepublisher.push({objectid: id, name: val});
-			});
-			
-			//bg['boardgameintegration'] = [];
-			$('boardgameintegration').each(function(index, elem){
-				var id = $(this).attr('objectid');
-				var val = $(this).text();
+				$('boardgamemechanic', $(this)).each(function(index, elem){
+					var id = $(this).attr('objectid');
+					var val = $(this).text();
+					bg.boardgamemechanic.push({objectid: id, name: val});
+				});
 				
-				if($(this).attr('inbound') === "true"){
-					//bg['boardgameintegration'].push({objectid: id, name: val});
-					bg.boardgameintegration.push({objectid: id, name: val});
-				}
-			});
-			
-			//bg['boardgameimplementation'] = [];
-			$('boardgameimplementation').each(function(index, elem){
-				var id = $(this).attr('objectid');
-				var val = $(this).text();
+				$('boardgamedesigner', $(this)).each(function(index, elem){
+					var id = $(this).attr('objectid');
+					var val = $(this).text();
+					bg.boardgamedesigner.push({objectid: id, name: val});
+				});
+		
+				$('boardgameartist', $(this)).each(function(index, elem){
+					var id = $(this).attr('objectid');
+					var val = $(this).text();
+					bg.boardgameartist.push({objectid: id, name: val});
+				});
+		
+				$('boardgamepublisher', $(this)).each(function(index, elem){
+					var id = $(this).attr('objectid');
+					var val = $(this).text();
+					bg.boardgamepublisher.push({objectid: id, name: val});
+				});
 				
-				if($(this).attr('inbound') === "true"){
-					//bg['boardgameimplementation'].push({objectid: id, name: val});
-					bg.boardgameimplementation.push({objectid: id, name: val});
-				}
-			});
-			
-			//bg['boardgameexpansion'] = [];
-			$('boardgameexpansion').each(function(index, elem){
-				var id = $(this).attr('objectid');
-				var val = $(this).text();
+				$('boardgameintegration', $(this)).each(function(index, elem){
+					var id = $(this).attr('objectid');
+					var val = $(this).text();
+					
+					if($(this).attr('inbound') === "true"){
+						bg.boardgameintegration.push({objectid: id, name: val});
+					}
+				});
 				
-				if($(this).attr('inbound') === "true"){
-					//bg['boardgameexpansion'].push({objectid: id, name: val});
-					bg.expands.push({objectid: id, name: val});
-				}else{
-					bg.expansions.push({objectid: id, name: val});
-				}
-			});
+				$('boardgameimplementation', $(this)).each(function(index, elem){
+					var id = $(this).attr('objectid');
+					var val = $(this).text();
+					
+					if($(this).attr('inbound') === "true"){
+						bg.boardgameimplementation.push({objectid: id, name: val});
+					}
+				});
+				
+				$('boardgameexpansion', $(this)).each(function(index, elem){
+					var id = $(this).attr('objectid');
+					var val = $(this).text();
+					
+					if($(this).attr('inbound') === "true"){
+						bg.expands.push({objectid: id, name: val});
+					}else{
+						bg.expansions.push({objectid: id, name: val});
+					}
+				});
+
+				boardgames.push(bg);
+			});	
 			
-			return bg		
+			return boardgames
 		}
 	)
 }

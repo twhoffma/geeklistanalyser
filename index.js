@@ -102,18 +102,6 @@ function getGeeklistData(geeklistid, subgeeklistid, geeklists, boardgameStats, g
 						var bgStat;
 					
 						if(bgStats.length === 0){
-							/*
-							bgStat = {
-								objectid: bgId,
-								geeklistid: geeklistid,
-								analysisDate: currentDate,
-								crets: moment().format("YYYY-MM-DD[T]HH:mm:ss"),
-								cnt: 0,
-								thumbs: 0,
-								type: "boardgamestat",
-								hist: {} //Histogram based on position
-							}
-							*/
 							bgStat = new BoardgameStat(bgId, geeklistid, currentDate);
 							boardgameStats.push(bgStat);
 						}else{
@@ -175,14 +163,58 @@ function getGeeklistData(geeklistid, subgeeklistid, geeklists, boardgameStats, g
 	return p.promise	
 }
 
-function getBoardgameData(boardgameId){
-	return db.getBoardgame(boardgameId).then(
-		function(bg){
-			//console.log(bg);
-			return bg
+function getBoardgameData(boardgameIds){
+	var boardgames = [];
+	var p = [];
+	var bggList = [];
+	var pBGG = [];	
+	
+	//console.log(boardgameIds);
+	 
+	boardgameIds.forEach(function(boardgameId){	
+		console.log(boardgameId);
+		
+		p.push(db.getBoardgame(boardgameId).then(
+			function(bg){
+				return bg
+			}
+		));
+	});
+	
+	//TODO: This doesn't return anything, so obviously it can't continue..
+	return q.allSettled(p).spread(
+		function(matched){
+			console.log("From DB..");
+
+			boardgames.push(matched.value);
 		},
-		function(){
-			return bgg.getBoardgame(boardgameId) 
+		function(unmatched){
+			var idList = [];
+
+			console.log("BGG..");
+
+			for(i = 0; i < unmatched.length; i++){
+				idList.push(unmatched[i]);
+
+				if(idList.length === 100 || i === unmatched.length -1){
+					var idBatch = Math.floor(idList.Length / 100);
+					console.log("Looking up boardgames " + (idBatch + 1) + " - " + ((idBatch + 1)*100));
+					
+					pBGG.push(bgg.getBoardgame(idList.join(",")));
+					idList = [];
+				}
+			}
+		}
+	).then(
+		function(g){
+			q.all(pBGG).then(function(matches){
+				console.log("all lookup towards both DB and BGG are finished...");
+				matches.forEach(function(m){
+					boardgames.push(m);
+				});
+
+				return boardgames
+			});
 		}
 	).catch(
 		function(val){
@@ -246,108 +278,102 @@ db.getGeeklists(true, false).then(
 		console.log(err);
 	}
 ).then(
-	function(val){
-		return q.all(val.map(function(bgStat){
-				return getBoardgameData(bgStat.objectid).then(
-					//TODO: Rewrite to send multiple boardgames at once.
-					function(boardgame){
-						console.log("Appending latest stats");
-						//TODO: Need to append to geeklist array as well or change the model..
-						var geeklist = boardgame.geeklists.filter(function(e){return e.objectid === bgStat.geeklistid});
-						
-						if(geeklist.length === 0){
-							geeklist = {'objectid': bgStat.geeklistid, 'crets': moment().format("YYYY-MM-DD[T]HH:mm:ss"), 'latest': bgStat};
-							boardgame['geeklists'].push(geeklist);
-						}else{
-							//There is only one latest per geeklist
-							geeklist[0].latest = bgStat;
-						}
-						
-						return boardgame
-					},
-					function(g){
-						console.log("ERROR: Look up bg failed.");
-						
-						return false
+	function(bgStats){
+		return getBoardgameData(bgStats.map(function(e){return e.objectid})).then(
+			function(boardgames){
+				boardgames.forEach(function(boardgame){
+					var geeklist = boardgame.geeklists.filter(function(e){return e.objectid === bgStat.geeklistid});
+					var bgStat = bgStats.filter(function(e){return e.objectid === boardgame.objectid});
+					
+					if(geeklist.length === 0){
+						geeklist = {'objectid': bgStat.geeklistid, 'crets': moment().format("YYYY-MM-DD[T]HH:mm:ss"), 'latest': bgStat};
+						boardgame['geeklists'].push(geeklist);
+					}else{
+						//There is only one latest per geeklist per boardgame
+						geeklist[0].latest = bgStat;
 					}
-				).catch(function(e){
-					console.log("ERROR caught in look up" + e);
 				});
-			})
-		).then(
-			function(boardgames){
-				var filterValues = [];
 
-				for(var i = 0; i < boardgames.length; i++){
-					var boardgame = boardgames[i];
-					
-					for(var j=0; j < boardgame.geeklists.length; j++){
-						var geeklistid = boardgame.geeklists[j].objectid;
-						var fv = filterValues.filter(function(e){return e.objectid === geeklistid});
-						var filterValue;
-						
-						if(fv.length === 0){
-							filterValue = new FilterValue(currentDate, geeklistid);
-							filterValues.push(filterValue);
-						}else{
-							filterValue = fv[0];
-						}
-						
-						filterValue.boardgameartist = boardgame.boardgameartist.reduce(function(prev, curr){
-							if(prev.filter(function(e){return e.objectid === curr.objectid}).length === 0){
-								return prev.concat(curr)
-							}else{
-								return prev
-							}
-						}, filterValue.boardgameartist).sort(function(a, b){return (a.name < b.name)});
-						
-						filterValue.boardgamedesigner = boardgame.boardgamedesigner.reduce(function(prev, curr){
-							if(prev.filter(function(e){return e.objectid === curr.objectid}).length === 0){return prev.concat(curr)}else{return prev}
-						}, filterValue.boardgamedesigner).sort(function(a, b){return (a.name < b.name)});
-						
-						filterValue.boardgamemechanic = boardgame.boardgamemechanic.reduce(function(prev, curr){
-							if(prev.filter(function(e){return e.objectid === curr.objectid}).length === 0){return prev.concat(curr)}else{return prev}
-						}, filterValue.boardgamemechanic).sort(function(a, b){return (a.name < b.name)});
-						
-						filterValue.boardgamecategory = boardgame.boardgamecategory.reduce(function(prev, curr){
-							if(prev.filter(function(e){return e.objectid === curr.objectid}).length === 0){return prev.concat(curr)}else{return prev}
-						}, filterValue.boardgamecategory).sort(function(a, b){return (a.name < b.name)});
-						
-						filterValue.boardgamepublisher = boardgame.boardgamepublisher.reduce(function(prev, curr){
-							if(prev.filter(function(e){return e.objectid === curr.objectid}).length === 0){return prev.concat(curr)}else{return prev}
-						}, filterValue.boardgamepublisher).sort(function(a, b){return (a.name < b.name)});
-						
-						filterValue.maxplaytime = Math.max(filterValue.maxplaytime, boardgame.maxplaytime || -Infinity, boardgame.playingtime || -Infinity);
-						filterValue.minplaytime = Math.min(filterValue.minplaytime, boardgame.minplaytime || Infinity, boardgame.playingtime || Infinity);
-					}
-				}
-				
-				return db.deleteFilterRanges(geeklistid, currentDate).then(function() {return db.saveFilterRanges(filterValues)}).then(function() { return boardgames});	
-			}
-		).then(
-			function(boardgames){
-				console.log("Saving all boardgames to DB.");
-					
-				return db.saveBoardgames(boardgames)
+				return boardgames
+			},
+			function(err){
+				console.log("Couldn't find bg..");
+				console.log(err);
 			}
 		).catch(
 			function(err){
-				console.log("Uh-oh: ");
+				console.log("Caught error bg lookup..");
 				console.log(err);
 			}
-		);
-		
-	},
-	function(v){
-		console.log("ERROR: Some stats failed to save!");
-		
-		return false
+		)
 	}
 ).then(
-	function(v) { return db.finalizeDb()}
+	function(boardgames){
+		var filterValues = [];
+	
+		for(var i = 0; i < boardgames.length; i++){
+			var boardgame = boardgames[i];
+			
+			for(var j=0; j < boardgame.geeklists.length; j++){
+				var geeklistid = boardgame.geeklists[j].objectid;
+				var fv = filterValues.filter(function(e){return e.objectid === geeklistid});
+				var filterValue;
+				
+				if(fv.length === 0){
+					filterValue = new FilterValue(currentDate, geeklistid);
+					filterValues.push(filterValue);
+				}else{
+					filterValue = fv[0];
+				}
+
+				['boardgameartist', 'boardgamedesigner', 'boardgamecategory', 'boardgamemechanic', 'boardgamepublisher'].forEach(function(prop){
+					filterValue[prop] = boardgame[prop].reduce(function(prev, curr){
+						if(prev.filter(function(e){return e.objectid === curr.objectid}).length === 0){
+							return prev.concat(curr)
+						}else{
+							return prev
+						}
+					}, filterValue[prop]).sort(function(a, b){return (a.name < b.name)});
+				});
+				
+				filterValue.maxplaytime = Math.max(filterValue.maxplaytime, boardgame.maxplaytime || -Infinity, boardgame.playingtime || -Infinity);
+				filterValue.minplaytime = Math.min(filterValue.minplaytime, boardgame.minplaytime || Infinity, boardgame.playingtime || Infinity);
+			}
+		}
+		
+		return db.deleteFilterRanges(geeklistid, currentDate).then(
+			function() {
+				return db.saveFilterRanges(filterValues).then(
+					function() { 
+						return boardgames
+					},
+					function(err){
+						console.log("Failed to save some stats");
+						console.log(err);
+					}
+				)
+			}
+		)
+	}
+).then(
+	function(boardgames){
+		console.log("Saving all boardgames to DB.");
+			
+		return db.saveBoardgames(boardgames).fail(
+			function(err){
+				console.log("Failed to have some boardgames");
+				console.log(err);
+			}
+		)
+	}
+).then(
+	function(v) { 
+		return db.finalizeDb()
+	}
 ).then(
 	function(v){
 		console.log("All done!");
+		return true
 	}
 ).catch(
 	function(e){
