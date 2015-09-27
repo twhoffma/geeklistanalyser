@@ -114,7 +114,7 @@ function getBoardgame(boardgameId){
 						bg.expansions.push({objectid: id, name: val});
 					}
 				});
-
+				
 				boardgames.push(bg);
 			});	
 			

@@ -151,7 +151,7 @@ function loadGeeklist(geeklistid, limit, skip, filter, sort){
 				if(sortby === "name"){
 					currentTerm = n.substring(0,1);
 				}else if(sortby === "thumbs"){
-					currentTerm = boardgamestat.thumbs;
+					currentTerm = "<= " + (100 * (Math.max(Math.ceil(boardgamestat.thumbs / 100, 0), 1)));
 				}else if(sortby === "yearpublished"){
 					currentTerm = r[i].yearpublished;
 				}

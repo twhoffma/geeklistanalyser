@@ -109,7 +109,7 @@ function saveDocs(docs){
 						docId = uuids.pop();
 					}else{
 						docId = doc._id;
-						console.log("Updating " + doc.objectid);
+						//console.log("Updating " + doc.objectid);
 					}
 					
 					var docURL = dbURL + "\\" + dbName + "\\" + docId;
@@ -149,7 +149,7 @@ function saveDocs(docs){
 /* --- Boardgame -- */
 function getBoardgame(boardgameId){
 	var boardgameViewURL = getViewURL('boardgame', 'boardgame') + '?include_docs=true&key=\"' + boardgameId + "\"";
-	return getDoc(boardgameViewURL)
+	return getDoc(boardgameViewURL).fail(function(v){ throw boardgameId})
 }
 
 

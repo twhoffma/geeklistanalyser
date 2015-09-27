@@ -59,22 +59,6 @@ function getGeeklistData(geeklistid, subgeeklistid, geeklists, boardgameStats, g
 	
 	//XXX: Find out why this is just not passed as a single object to be updated 
 	if(geeklistStatList.length === 0){
-		/*
-		geeklistStat = {
-			id: geeklistid, //XXX:For compatibility with other old ones in database, 
-			objectid: geeklistid,
-			statDate: currentDate,
-			crets: moment().format("YYYY-MM-DD[T]HH:mm:SS"),
-			numLists: 0,
-			type: "geekliststat",
-			depth: 0,
-			numBoardgames: 0,
-			avgListLength: 0,
-			medListLength: 0,
-			maxListLength: 0,
-			minListLength: 0
-		};
-		*/
 		geeklistStat = new GeeklistStat(geeklistid, currentDate);
 		geeklistStats.push(geeklistStat);
 	}else{
@@ -172,54 +156,55 @@ function getBoardgameData(boardgameIds){
 	//console.log(boardgameIds);
 	 
 	boardgameIds.forEach(function(boardgameId){	
-		console.log(boardgameId);
-		
 		p.push(db.getBoardgame(boardgameId).then(
 			function(bg){
-				return bg
+				boardgames.push(bg);
+				return true
+			},
+			function(bgId){
+				bggList.push(bgId);
+				return false
 			}
 		));
 	});
 	
 	//TODO: This doesn't return anything, so obviously it can't continue..
-	return q.allSettled(p).spread(
-		function(matched){
-			console.log("From DB..");
-
-			boardgames.push(matched.value);
-		},
-		function(unmatched){
+	return q.allSettled(p).then(
+		function(){
+			var p = [];
 			var idList = [];
-
-			console.log("BGG..");
-
-			for(i = 0; i < unmatched.length; i++){
-				idList.push(unmatched[i]);
-
-				if(idList.length === 100 || i === unmatched.length -1){
-					var idBatch = Math.floor(idList.Length / 100);
-					console.log("Looking up boardgames " + (idBatch + 1) + " - " + ((idBatch + 1)*100));
+			
+			for(i = 0; i < bggList.length; i++){
+				idList.push(bggList[i]);
 					
-					pBGG.push(bgg.getBoardgame(idList.join(",")));
+				if(idList.length === 100 || (bggList.length-1) === i){
+					var idBatch = Math.floor(idList.length / 100);
+					console.log("Looking up boardgames " + (idBatch + 1) + " - " + ((idBatch + 1)*100));
+						
+					p.push(bgg.getBoardgame(idList.join(",")));
 					idList = [];
 				}
 			}
-		}
-	).then(
-		function(g){
-			q.all(pBGG).then(function(matches){
-				console.log("all lookup towards both DB and BGG are finished...");
-				matches.forEach(function(m){
-					boardgames.push(m);
-				});
 
-				return boardgames
-			});
+			return q.all(p).then(
+				function(a){
+					a.forEach(
+						function(e){
+							e.forEach(
+								function(b){
+									boardgames.push(b);	
+								}
+							);
+						}
+					);
+					return boardgames	
+				}
+			)
 		}
 	).catch(
 		function(val){
 			console.log("what??");
-			console.log(val);
+			//console.log(val);
 			throw val
 		}
 	)
@@ -265,6 +250,8 @@ db.getGeeklists(true, false).then(
 				console.log("Error saving geeklist stats: " + err);
 			}
 		);
+
+		console.log("Done saving stats");
 		
 		return q.all([pBgStats, pGlStats]).then(function(){
 				return val.value.bgStats
@@ -282,11 +269,12 @@ db.getGeeklists(true, false).then(
 		return getBoardgameData(bgStats.map(function(e){return e.objectid})).then(
 			function(boardgames){
 				boardgames.forEach(function(boardgame){
+					var bgStat = bgStats.filter(function(e){return e.objectid === boardgame.objectid})[0];
 					var geeklist = boardgame.geeklists.filter(function(e){return e.objectid === bgStat.geeklistid});
-					var bgStat = bgStats.filter(function(e){return e.objectid === boardgame.objectid});
-					
+						
 					if(geeklist.length === 0){
 						geeklist = {'objectid': bgStat.geeklistid, 'crets': moment().format("YYYY-MM-DD[T]HH:mm:ss"), 'latest': bgStat};
+						
 						boardgame['geeklists'].push(geeklist);
 					}else{
 						//There is only one latest per geeklist per boardgame
@@ -310,7 +298,9 @@ db.getGeeklists(true, false).then(
 ).then(
 	function(boardgames){
 		var filterValues = [];
-	
+		var geeklists = [];
+		
+		console.log("saving filtervalues");	
 		for(var i = 0; i < boardgames.length; i++){
 			var boardgame = boardgames[i];
 			
@@ -319,6 +309,10 @@ db.getGeeklists(true, false).then(
 				var fv = filterValues.filter(function(e){return e.objectid === geeklistid});
 				var filterValue;
 				
+				if(geeklists.indexOf(geeklistid) === -1){
+					geeklists.push(geeklistid);
+				}
+					
 				if(fv.length === 0){
 					filterValue = new FilterValue(currentDate, geeklistid);
 					filterValues.push(filterValue);
@@ -333,7 +327,7 @@ db.getGeeklists(true, false).then(
 						}else{
 							return prev
 						}
-					}, filterValue[prop]).sort(function(a, b){return (a.name < b.name)});
+					}, filterValue[prop]).sort(function(a, b){return (a.name > b.name)});
 				});
 				
 				filterValue.maxplaytime = Math.max(filterValue.maxplaytime, boardgame.maxplaytime || -Infinity, boardgame.playingtime || -Infinity);
@@ -341,19 +335,28 @@ db.getGeeklists(true, false).then(
 			}
 		}
 		
-		return db.deleteFilterRanges(geeklistid, currentDate).then(
-			function() {
-				return db.saveFilterRanges(filterValues).then(
-					function() { 
-						return boardgames
-					},
-					function(err){
-						console.log("Failed to save some stats");
-						console.log(err);
-					}
-				)
-			}
-		)
+		var p = [];
+
+		geeklists.forEach(function(geeklistid){
+			console.log(geeklistid);	
+			p.push(db.deleteFilterRanges(geeklistid, currentDate).then(
+				function() {
+					return db.saveFilterRanges(filterValues).then(
+						function() { 
+							//TODO: Could return anything.
+							return boardgames
+						},
+						function(err){
+							console.log("Failed to save some stats");
+							console.log(err);
+						}
+					)
+				}
+			));
+		});
+
+		console.log("Done saving filtervalues");	
+		return q.allSettled(p).then(function(){ return boardgames })
 	}
 ).then(
 	function(boardgames){
