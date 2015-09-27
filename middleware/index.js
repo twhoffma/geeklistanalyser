@@ -84,6 +84,7 @@ app.use(uri + '/getGeeklist', function(req, res, next){
 			console.log("Using filters");
 			console.log(filterJSON);
 			console.log(sortby);
+			console.log(sortby_asc);
 				
 			//TODO: You need to use try/catch here..
 			var filters = JSON.parse(p.filters);

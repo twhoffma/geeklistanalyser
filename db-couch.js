@@ -320,7 +320,7 @@ function srchBoardgames(geeklistid, filters, sortby, sortby_asc, skip, lim){
 	var orderby;
 	var s;
 	
-	if(sortby_asc === 0){
+	if(sortby_asc == 0){
 		orderby = "desc";
 	}else{
 		orderby = "asc";	
