@@ -1,12 +1,14 @@
 cheerio = require('cheerio');
 q = require('q');
 moment = require('moment');
+fs = require('fs');
 
+c = JSON.parse(fs.readFileSync('localconfig.json', 'utf8'));
 db = require('./db-couch');
 bgg = require('./bgg.js');
 
-var currentDate = moment().format("YYYY-MM-DD")
-var currentTime = moment().format("YYYY-MM-DD[T]HH:mm:ss")
+var currentDate = moment().format(c.format.date)
+var currentTime = moment().format(c.format.dateandtime)
 
 function FilterValue(analysisDate, geeklistId){
 	this.type = 'filtervalue';
@@ -24,7 +26,7 @@ function FilterValue(analysisDate, geeklistId){
 function GeeklistStat(geeklistid, statDate){
 	this.objectid = geeklistid;
 	this.statDate = statDate;
-	this.crets = moment().format("YYYY-MM-DD[T]HH:mm:ss");
+	this.crets = moment().format(c.format.dateandtime);
 	this.numLists =0;
 	this.type = "geekliststat";
 	this.depth = 0;
@@ -35,15 +37,17 @@ function GeeklistStat(geeklistid, statDate){
 	this.minListLength = 0;
 };
 
-function BoardgameStat(boardgameid, geeklistid, analysisdate){
+function BoardgameStat(boardgameid, geeklistid, analysisdate, postdate, editdate){
 	this.objectid = boardgameid;
 	this.geeklistid = geeklistid;
 	this.analysisDate = analysisdate;
-	this.crets = moment().format("YYYY-MM-DD[T]HH:mm:ss");
+	this.crets = moment().format(c.format.dateandtime);
 	this.cnt = 0;
 	this.thumbs = 0;
 	this.type = "boardgamestat";
 	this.hist = {}; //Histogram based on position
+	this.postdate = moment(postdate).format(c.format.dateandtime);
+	this.editdate = moment(editdate).format(c.format.dateandtime);
 }
 
 function getGeeklistData(geeklistid, subgeeklistid, geeklists, boardgameStats, geeklistStats){
@@ -78,6 +82,8 @@ function getGeeklistData(geeklistid, subgeeklistid, geeklists, boardgameStats, g
 					if($(this).attr('subtype') == 'boardgame'){
 						var bgId = $(this).attr('objectid');
 						var thumbs = parseInt($(this).attr('thumbs'));
+						var postdate = Date.parse($(this).attr('postdate'));
+						var editdate = Date.parse($(this).attr('editdate'));
 						
 						var bgStats = boardgameStats.filter(function(e){
 							return e.objectid == bgId && e.geeklistid == geeklistid
@@ -86,10 +92,20 @@ function getGeeklistData(geeklistid, subgeeklistid, geeklists, boardgameStats, g
 						var bgStat;
 					
 						if(bgStats.length === 0){
-							bgStat = new BoardgameStat(bgId, geeklistid, currentDate);
+							bgStat = new BoardgameStat(bgId, geeklistid, currentDate, postdate, editdate);
 							boardgameStats.push(bgStat);
 						}else{
 							bgStat = bgStats[0];
+							
+							//The first post defines creation time.
+							if(Date.parse(bgStat.postdate) > postdate){
+								bgStat.postdate = moment(postdate).format(c.format.dateandtime);
+							}
+							
+							//The latest editdate is the one that is used.
+							if(Date.parse(bgStat.editdate) < editdate){
+								bgStat.editdate = moment(editdate).format(c.format.dateandtime);
+							} 
 						}
 						
 						//Here we tally all stats.
@@ -273,7 +289,8 @@ db.getGeeklists(true, false).then(
 					var geeklist = boardgame.geeklists.filter(function(e){return e.objectid === bgStat.geeklistid});
 						
 					if(geeklist.length === 0){
-						geeklist = {'objectid': bgStat.geeklistid, 'crets': moment().format("YYYY-MM-DD[T]HH:mm:ss"), 'latest': bgStat};
+						//geeklist = {'objectid': bgStat.geeklistid, 'crets': moment().format("YYYY-MM-DD[T]HH:mm:ss"), 'latest': bgStat};
+						geeklist = {'objectid': bgStat.geeklistid, 'crets': moment(bgStat.postdate).format(c.format.dateandtime), 'latest': bgStat};
 						
 						boardgame['geeklists'].push(geeklist);
 					}else{

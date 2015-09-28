@@ -6,10 +6,13 @@ var qs = require('qs')
 var db = require('../db-couch')
 var Memcached = require('memcached')
 
+var fs = require('fs');
+c = JSON.parse(fs.readFileSync('localconfig.json', 'utf8'));
 
 /* Config */
-var uri = '/geeklistmonitor/data';
-var memcached_uri = 'localhost:11211';
+//var uri = '/geeklistmonitor/data';
+var uri = c.middleware.baseuri;
+var memcached_uri = c.middleware.memcached_uri;
 
 /* Middleware */
 var app = connect();
@@ -22,7 +25,9 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(uri + '/getGeeklistFilters', function(req, res, next){
 	var p = qs.parse(req._parsedUrl.query);
 	
-	res.setHeader("Access-Control-Allow-Origin", "*");
+	if(c.devmode){	
+		res.setHeader("Access-Control-Allow-Origin", "*");
+	}
 	
 	//TODO: Needs to clean incoming data.
 	
@@ -45,7 +50,9 @@ app.use(uri + '/getGeeklistFilters', function(req, res, next){
 });
 
 app.use(uri + '/getGeeklists', function(req, res, next){
-	res.setHeader("Access-Control-Allow-Origin", "*");
+	if(c.devmode){
+		res.setHeader("Access-Control-Allow-Origin", "*");
+	}
 	
 	
 	db.getGeeklists(false, true).then(
@@ -68,11 +75,13 @@ app.use(uri + '/getGeeklists', function(req, res, next){
 app.use(uri + '/getGeeklist', function(req, res, next){
 	var p = qs.parse(req._parsedUrl.query);
 	
-	res.setHeader("Access-Control-Allow-Origin", "*");
+	if(c.devmode){
+		res.setHeader("Access-Control-Allow-Origin", "*");
+	}
 	
 	if(p.geeklistId != undefined){
 		var skip = p.skip || 0;
-		var limit = 10;
+		var limit = c.middleware.limit;
 		
 		var sortby = p.sortby || 'crets';
 		var sortby_asc = p.sortby_asc || 0;

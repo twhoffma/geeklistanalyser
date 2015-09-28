@@ -1,0 +1,25 @@
+{
+	"devmode": true,
+	"format":
+		{
+			"date": "YYYY-MM-DD",
+			"dateandtime": "YYYY-MM-DD[T]HH:mm:ss"
+		},
+	"db":
+		{
+			"dbname": "geeklistid",
+			"dbaddr": "127.0.0.1",
+			"dbport": "5984"
+		},
+	"elastic":
+		{
+			"addr": "127.0.0.1",
+			"port": "9200"
+		},
+	"middleware":
+		{
+			"limit": 100,
+			"baseuri": "/geeklistmonitor/data", 
+			"memcached_uri": "localhost:11211"
+		}
+}

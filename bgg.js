@@ -33,7 +33,7 @@ function getGeeklist(geeklistId){
 }
 
 function getBoardgame(boardgameId){
-	console.log("Looking up " + boardgameId + " at BGG..");
+	//console.log("Looking up " + boardgameId + " at BGG..");
 	
 	return qrequest.qrequest("GET", boardgameURL + boardgameId, null, null).then(
 		function(val){

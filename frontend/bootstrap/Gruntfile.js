@@ -23,6 +23,7 @@ module.exports = function(grunt) {
 						flatten: true, 
 						src: [
 							'bower_components/bootstrap/dist/css/*', 
+							'node_modules/bootstrap-slider/dist/css/*',
 						], 
 						dest: '/var/www/hoffy.no/geeklistmonitor/css/', 
 						filter: 'isFile'
@@ -36,6 +37,15 @@ module.exports = function(grunt) {
 						dest: '/var/www/hoffy.no/geeklistmonitor/fonts/', 
 						filter: 'isFile'
 					},
+					{
+						expand: true,
+						flatten: true,
+						src: [
+							'node_modules/bootstrap-slider/dist/bootstrap-slider.min.js',
+						],
+						dest: '/var/www/hoffy.no/geeklistmonitor/js/',
+						filter: 'isFile'
+					}
       	  	  		// includes files within path and its sub-directories
       	  	  		//{expand: true, src: ['path/**'], dest: 'dest/'},
 

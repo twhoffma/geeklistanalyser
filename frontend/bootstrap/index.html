@@ -10,6 +10,7 @@
     <!-- Bootstrap -->
     <link href="css/frontend.css" rel="stylesheet">
 	<link href="css/bootstrap.min.css" rel="stylesheet">
+	<link href="css/bootstrap-slider.min.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -25,6 +26,7 @@
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <!--<script src="js/bootstrap.min.js"></script>-->
 	<script src="js/frontend.js"></script>
+	<script src="js/bootstrap-slider.min.js"></script>
 	<script>
 		var selectedGeeklist = 0;
 		
@@ -199,12 +201,8 @@
 								</select>
 						</div>
 						<div class="form-group">
-							<div data-role="rangeslider">
-  								<label for="range-1a">Rangeslider:</label>
-							 	<input name="range-1a" id="range-1a" min="0" max="100" value="0" type="range" />
-  								<label for="range-1b">Rangeslider:</label>
-  								<input name="range-1b" id="range-1b" min="0" max="100" value="100" type="range" />
-							</div>
+							<label for="releasetype">
+							<input id="playingtime" data-slider-id='playingtime' type="text" data-slider-min="0" data-slider-max="0" data-slider-step="10" data-slider-value="[0,0]"/>
 						</div>
 					</form>
       			</div>

@@ -26,9 +26,14 @@ function isDefaultFilters(){
 
 function isDefaultSorting(){
 	var isDefaultValues = true;
-
-	isDefaultValues = ($('#sortby').val() === 'crets');
-	isDefaultValues = ($('input[name="sortby_asc"]:checked').val() === "0");
+	
+	if($('#sortby').val() !== 'crets'){ 
+		isDefaultValues = false;
+	}
+	
+	if($('input[name="sortby_asc"]:checked').val() !== "0"){
+		isDefaultValues = false;
+	}
 	
 	return isDefaultValues
 }
@@ -68,6 +73,9 @@ function loadGeeklistFilters(geeklistid){
 					e.append('<option value="' + doc[v][i].objectid + '">' + doc[v][i].name + '</option>');
 				}
 			});
+
+			var e = $('#playingtime');
+			e.slider({min: doc.minplaytime, max: doc.maxplaytime, value: [doc.minplaytime, doc.maxplaytime], tooltip: 'always', tooltip_split: true});
 		}	
 	});
 }
@@ -121,6 +129,8 @@ function loadGeeklist(geeklistid, limit, skip, filter, sort){
 	//Sorting
 	geeklistURL += "&sortby=" + sortby + "&sortby_asc=" + sortby_asc;	
 	
+	alert($('#playingtime').val());
+		
 	jQuery.ajax({
 		url: geeklistURL 
 	}).done(function(data){
