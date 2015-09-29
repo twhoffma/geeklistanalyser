@@ -255,10 +255,10 @@ function saveGeeklistStats(geeklistStats){
 
 //General function for saving to couchDB
 function deleteFilterRanges(geeklistId, analysisDate){
-	var url = getViewURL('geeklistfilters', 'geeklistfilters')+'?key=[{id}, \"{date}\"]&include_docs=true';
+	var url = getViewURL('geeklistfilters', 'geeklistfilters')+'?key=[{id}, {date}]&include_docs=true';
 	url = url.replace(/\{id\}/g, geeklistId);
-	url = url.replace(/\{date\}/g, analysisDate);
-	
+	url = url.replace(/\{date\}/g, Date.parse(analysisDate));
+	console.log(url);	
 	return deleteDocs(url)
 }
 
@@ -314,6 +314,19 @@ function srchBoardgames(geeklistid, filters, sortby, sortby_asc, skip, lim){
 				q['query']['bool']['must_not'].push(filterIsExpansion());
 				break;
 		}
+	}
+
+	//Playing time
+	if(filters["playingtimemin"] != undefined || filters["playingtimemax"] != undefined){
+		q['query']['bool']['must'].push(filterRange("playingtime", filters["playingtimemin"] || -Infinity, filters["playingtimemax"] || Infinity));
+	}
+	
+	//Number of players
+	if(filters["playersmin"] != undefined || filters["playersmax"] != undefined){
+		q['query']['bool']['minimum_should_match'] = 1;
+		q['query']['bool']['should'] = [];
+		q['query']['bool']['should'].push(filterRange("minplayers", filters["playersmin"] || -Infinity, filters["playersmax"] || Infinity));
+		q['query']['bool']['should'].push(filterRange("maxplayers", filters["playersmin"] || -Infinity, filters["playersmax"] || Infinity));
 	}
 		
 	//Sorting
@@ -390,6 +403,24 @@ function filterIsExpansion(){
 	q['filtered']['filter'] = {};
 	q['filtered']['filter']['missing'] = {};
 	q['filtered']['filter']['missing']['field'] = 'expands';
+
+	return q
+}
+
+function filterRange(name, min, max){
+	var q = {};
+	q['filtered'] = {};
+	q['filtered']['filter'] = {};
+	q['filtered']['filter']['range'] = {};
+	q['filtered']['filter']['range'][name] = {};
+
+	if(min > -Infinity){
+		q['filtered']['filter']['range'][name]['gte'] = min;
+	}
+
+	if(max < Infinity){
+		q['filtered']['filter']['range'][name]['lte'] = max;
+	}
 
 	return q
 }

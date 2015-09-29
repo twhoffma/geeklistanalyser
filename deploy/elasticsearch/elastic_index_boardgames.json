@@ -132,10 +132,10 @@
             }
           },
           "maxplayers": {
-            "type": "string"
+            "type": "long"
           },
           "minplayers": {
-            "type": "string"
+            "type": "long"
           },
           "name": {
             "type": "nested",

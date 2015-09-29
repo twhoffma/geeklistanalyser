@@ -16,6 +16,8 @@ function FilterValue(analysisDate, geeklistId){
 	this.objectid = geeklistId;
 	this.maxplaytime = -Infinity; 
 	this.minplaytime = Infinity;
+	this.maxplayers = -Infinity; 
+	this.minplayers = Infinity;
 	this.boardgamedesigner = []; 
 	this.boardgameartist = [];
 	this.boardgamecategory = []; 
@@ -349,6 +351,8 @@ db.getGeeklists(true, false).then(
 				
 				filterValue.maxplaytime = Math.max(filterValue.maxplaytime, boardgame.maxplaytime || -Infinity, boardgame.playingtime || -Infinity);
 				filterValue.minplaytime = Math.min(filterValue.minplaytime, boardgame.minplaytime || Infinity, boardgame.playingtime || Infinity);
+				filterValue.maxplayers = Math.max(filterValue.maxplayers, boardgame.maxplayers || -Infinity);
+				filterValue.minplayers = Math.min(filterValue.minplayers, boardgame.minplayers || Infinity);
 			}
 		}
 		

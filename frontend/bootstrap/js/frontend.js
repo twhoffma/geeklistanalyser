@@ -45,6 +45,7 @@ function resetFilters(){
 		e.val("");
 	});
 
+
 	$('.glyphicon-filter').css('color', 'black');
 }
 
@@ -75,18 +76,31 @@ function loadGeeklistFilters(geeklistid){
 			});
 
 			var e = $('#playingtime');
-			e.slider({min: doc.minplaytime, max: doc.maxplaytime, value: [doc.minplaytime, doc.maxplaytime], tooltip: 'always', tooltip_split: true});
+			e.slider({
+						min: doc.minplaytime, 
+						max: doc.maxplaytime, 
+						value: [doc.minplaytime, doc.maxplaytime], 
+						tooltip: 'always', 
+						tooltip_split: true,
+						scale: 'logarithmic'
+					});
+			e.slider('refresh');
+			
+			var e = $('#numplayers');
+			e.slider({
+						min: doc.minplayers, 
+						max: doc.maxplayers, 
+						value: [doc.minplayers, doc.maxplayers], 
+						tooltip: 'always', 
+						tooltip_split: true,
+						scale: 'logarithmic'
+					});
+			e.slider('refresh');
 		}	
 	});
 }
 
 function loadGeeklist(geeklistid, limit, skip, filter, sort){
-	/*
-	if(limit === undefined){
-		limit = 10;
-	}
-	*/
-
 	if(skip === undefined){
 		skip = 0;
 	}
@@ -121,6 +135,33 @@ function loadGeeklist(geeklistid, limit, skip, filter, sort){
 		filterby['releasetype'] = $('#releasetype').val();
 	}
 	
+	var s = $('#playingtime').slider();	
+	var playingtime = s.slider('getValue');
+	var playingtimeMin = s.slider('getAttribute', 'min');
+	var playingtimeMax = s.slider('getAttribute', 'max');
+	
+	if(playingtime[0] > playingtimeMin){
+		filterby['playingtimemin'] = playingtime[0];
+	}
+
+	if(playingtime[1] < playingtimeMax){
+		filterby['playingtimemax'] = playingtime[1];
+	}
+	
+	var ss = $('#numplayers').slider();	
+	var players = ss.slider('getValue');
+	var playersMin = ss.slider('getAttribute', 'min');
+	var playersMax = ss.slider('getAttribute', 'max');
+	
+	if(players[0] > playersMin){
+		filterby['playersmin'] = players[0];
+	}
+
+	if(playingtime[1] < playingtimeMax){
+		filterby['playersmax'] = players[1];
+	}
+	
+	
 	//Actual adding of filter should be somewhere else to keep it DRY
 	if(Object.keys(filterby).length !== 0){
 		geeklistURL += "&filters=" + JSON.stringify(filterby);
@@ -129,7 +170,8 @@ function loadGeeklist(geeklistid, limit, skip, filter, sort){
 	//Sorting
 	geeklistURL += "&sortby=" + sortby + "&sortby_asc=" + sortby_asc;	
 	
-	alert($('#playingtime').val());
+
+	
 		
 	jQuery.ajax({
 		url: geeklistURL 
