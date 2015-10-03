@@ -21,7 +21,10 @@ function isDefaultFilters(){
 		}
 	});
 	
-	return isDefaultValues
+	isDefaultValues = (isDefaultValues && isDefaultSlider('#playingtime'));
+	isDefaultValues = (isDefaultValues && isDefaultSlider('#numplayers'));
+	
+	return isDefaultValues;
 }
 
 function isDefaultSorting(){
@@ -35,7 +38,16 @@ function isDefaultSorting(){
 		isDefaultValues = false;
 	}
 	
-	return isDefaultValues
+	return isDefaultValues;
+}
+
+function isDefaultSlider(sliderId){
+	var s = $(sliderId).slider();	
+	var sliderValues = s.slider('getValue');
+	var sliderMin = s.slider('getAttribute', 'min');
+	var sliderMax = s.slider('getAttribute', 'max');
+
+	return (sliderValues[0] === sliderMin && sliderValues[1] === sliderMax);
 }
 
 function resetFilters(){
@@ -73,6 +85,8 @@ function loadGeeklistFilters(geeklistid){
 				for(var i = 0; i < doc[v].length; i++){
 					e.append('<option value="' + doc[v][i].objectid + '">' + doc[v][i].name + '</option>');
 				}
+
+				e.selectpicker('refresh');
 			});
 
 			var e = $('#playingtime');
@@ -86,7 +100,7 @@ function loadGeeklistFilters(geeklistid){
 					});
 			e.slider('refresh');
 			
-			var e = $('#numplayers');
+			e = $('#numplayers');
 			e.slider({
 						min: doc.minplayers, 
 						max: doc.maxplayers, 
@@ -117,6 +131,7 @@ function loadGeeklist(geeklistid, limit, skip, filter, sort){
 	
 	if(skip === 0){
 		list.empty();
+		setLoadButtonState(true);
 	}
 	
 	list.append("<tr id=\"spinner\"><td colspan=\"9\"><img src=\"img/spiffygif_30x30.gif\"</td></tr>");
@@ -188,12 +203,12 @@ function loadGeeklist(geeklistid, limit, skip, filter, sort){
 			
 		for(i = 0; i < r.length; i++){
 			var n = r[i].name.filter(function(e){
-							return e.primary === "true"
+							return e.primary === "true";
 						}
 					)[0].name  || r[i].name[0].name;
 			
 			var geeklist = r[i].geeklists.filter(function(o){
-									return o.objectid == geeklistid
+									return o.objectid == geeklistid;
 								})[0];
 			var boardgamestat = geeklist.latest; 
 			
@@ -243,16 +258,16 @@ function getGeeklists(){
 		var geeklists = $('#geeklists .dropdown-menu');
 		r.sort(function(a, b){
 			if(a.group < b.group){
-				return -1
+				return -1;
 			}else if(b.group < a.group){
-				return 1
+				return 1;
 			}else{
 				if(a.year < b.year){
-					return -1
+					return -1;
 				}else if(a.year > b.year){
-					return 1
+					return 1;
 				}else{
-					return 0
+					return 0;
 				}
 			}
 		});
@@ -268,5 +283,5 @@ function getGeeklists(){
 			
 			geeklists.append(geeklistitem);
 		}
-	})	
+	});	
 }

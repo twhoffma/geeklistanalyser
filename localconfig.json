@@ -7,14 +7,16 @@
 		},
 	"db":
 		{
-			"dbname": "geeklistid",
+			"dbname": "geeklistdb",
 			"dbaddr": "127.0.0.1",
 			"dbport": "5984"
 		},
 	"elastic":
 		{
 			"addr": "127.0.0.1",
-			"port": "9200"
+			"port": "9200",
+			"srchType": "boardgame",
+			"srchIndex": "boardgames" 
 		},
 	"middleware":
 		{

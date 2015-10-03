@@ -23,6 +23,7 @@ function Boardgame(boardgameId){
 	this.boardgamepublisher = [];
 	this.boardgameintegration = [];
 	this.boardgameimplementation = [];
+	this.boardgamecompilation = [];
 	this.expansions = [];
 	this.expands = [];
 }
@@ -112,6 +113,15 @@ function getBoardgame(boardgameId){
 						bg.expands.push({objectid: id, name: val});
 					}else{
 						bg.expansions.push({objectid: id, name: val});
+					}
+				});
+				
+				$('boardgamecompilation', $(this)).each(function(index, elem){
+					var id = $(this).attr('objectid');
+					var val = $(this).text();
+					
+					if($(this).attr('inbound') === "true"){
+						bg.boardgamecompilation.push({objectid: id, name: val});
 					}
 				});
 				

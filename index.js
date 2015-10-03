@@ -176,6 +176,13 @@ function getBoardgameData(boardgameIds){
 	boardgameIds.forEach(function(boardgameId){	
 		p.push(db.getBoardgame(boardgameId).then(
 			function(bg){
+				/*
+				TODO:
+				if(!bg.isComplete()){
+					bggList.push(bg.objectid);
+				}
+				*/
+				
 				boardgames.push(bg);
 				return true
 			},
@@ -186,7 +193,6 @@ function getBoardgameData(boardgameIds){
 		));
 	});
 	
-	//TODO: This doesn't return anything, so obviously it can't continue..
 	return q.allSettled(p).then(
 		function(){
 			var p = [];
@@ -238,79 +244,116 @@ db.getGeeklists(true, false).then(
 		geeklists.forEach(function(geeklist, i){
 			p.push(getGeeklistData(geeklist.objectid, geeklist.objectid, [], [], []));
 		});
-		
+		console.log("Num lists: " + p.length)	
 		return q.allSettled(p)
 	}
-).spread(
-	function(val){
-		console.log("Saving boardgamestats");
-		var geeklistId = val.value.glStats[0].objectid;
-		var analysisDate = val.value.glStats[0].statDate;
+).then(
+	function(results){
+		var pBgStats = [];
+		var pGlStats = [];
+		var bgStats = [];
 		
-		var pBgStats = db.deleteBoardgameStats(geeklistId, analysisDate).then(
-			function(){
-				return db.saveBoardgameStats(val.value.bgStats);
-			}
-		).fail(
-			function(err){
-				console.log("Error saving boardgame stats: " + err);
-			}
-		);
 		
-		//TODO: Implement median calculation for geeklists
-		console.log("Saving geekliststats");
-		var pGlStats = db.deleteGeeklistStats(geeklistId, analysisDate).then(
-			function(){
-				return db.saveGeeklistStats(val.value.glStats);
-			}
-		).fail(
-			function(err){
-				console.log("Error saving geeklist stats: " + err);
-			}
-		);
+		results.forEach(function(r){
+			//glStats[0] is the main list
+			var geeklistId = r.value.glStats[0].objectid;
+			var analysisDate = r.value.glStats[0].statDate;
+			
+			bgStats = bgStats.concat(r.value.bgStats);
+			
+			console.log("Saving boardgamestats");
+			pBgStats.push(
+				db.deleteBoardgameStats(geeklistId, analysisDate).then(
+					function(){
+						return db.saveBoardgameStats(r.value.bgStats);
+					}
+				).fail(
+					function(err){
+						console.log("Error saving boardgame stats: " + err);
+						throw err
+					}
+				)
+			);
+			
+			//TODO: Implement median calculation for geeklists
+			console.log("Saving geekliststats");
+			pGlStats.push(
+				db.deleteGeeklistStats(geeklistId, analysisDate).then(
+					function(){
+						return db.saveGeeklistStats(r.value.glStats);
+					}
+				).fail(
+					function(err){
+						console.log("Error saving geeklist stats: " + err);
+					}
+				)
+			);
 
-		console.log("Done saving stats");
+			console.log("Done saving stats");
 		
-		return q.all([pBgStats, pGlStats]).then(function(){
-				return val.value.bgStats
-			});
-		//TODO: Look up board game static, update static that is by some criterion incomplete.
+		});
 		
-		//TODO: Add most recent stats to boardgame object and save.
+		return q.all(pBgStats.concat(pGlStats)).then(
+			function(){
+				return bgStats
+			}).catch(
+				function(err){
+					console.log("Error in stats saving");
+					console.log(err);
+	
+					throw err
+				}
+			)
 	},
 	function(err){
 		console.log("Error occurred:");
 		console.log(err);
+		throw err
 	}
 ).then(
 	function(bgStats){
-		return getBoardgameData(bgStats.map(function(e){return e.objectid})).then(
+		return getBoardgameData(bgStats.map(
+				function(e){return e.objectid}
+			).reduce(
+				function(prev, curr){
+					if(prev.indexOf(curr) === -1){
+						return prev.concat(curr)
+					}else{
+						return prev
+					}
+				},
+				[]
+			)
+		).then(
 			function(boardgames){
 				boardgames.forEach(function(boardgame){
-					var bgStat = bgStats.filter(function(e){return e.objectid === boardgame.objectid})[0];
-					var geeklist = boardgame.geeklists.filter(function(e){return e.objectid === bgStat.geeklistid});
-						
-					if(geeklist.length === 0){
-						//geeklist = {'objectid': bgStat.geeklistid, 'crets': moment().format("YYYY-MM-DD[T]HH:mm:ss"), 'latest': bgStat};
-						geeklist = {'objectid': bgStat.geeklistid, 'crets': moment(bgStat.postdate).format(c.format.dateandtime), 'latest': bgStat};
-						
-						boardgame['geeklists'].push(geeklist);
-					}else{
-						//There is only one latest per geeklist per boardgame
-						geeklist[0].latest = bgStat;
-					}
+					bgStats.filter(function(e){return e.objectid === boardgame.objectid}).forEach(function(bgStat){
+						var geeklist = boardgame.geeklists.filter(function(e){return e.objectid === bgStat.geeklistid});
+							
+						if(geeklist.length === 0){
+							geeklist = {'objectid': bgStat.geeklistid, 'crets': moment(bgStat.postdate).format(c.format.dateandtime), 'latest': bgStat};
+							boardgame['geeklists'].push(geeklist);
+						}else{
+							//There is only one latest per geeklist per boardgame
+							geeklist[0].latest = bgStat;
+						}
+					});
 				});
 
 				return boardgames
 			},
 			function(err){
-				console.log("Couldn't find bg..");
+				console.log("Couldn't find boardgame in db or bgg..");
 				console.log(err);
+
+				throw err
 			}
 		).catch(
 			function(err){
 				console.log("Caught error bg lookup..");
 				console.log(err);
+				
+				throw err
 			}
 		)
 	}

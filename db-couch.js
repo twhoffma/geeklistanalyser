@@ -1,11 +1,18 @@
 qrequest = require('./qrequest.js');
+fs = require('fs');
+c = JSON.parse(fs.readFileSync('localconfig.json', 'utf8'));
 
-var dbURL = "http://127.0.0.1:5984";
-var dbName = "geeklistdb";
+//var dbURL = "http://127.0.0.1:5984";
+//var dbName = "geeklistdb";
+var dbURL = "http://" + c.db.dbaddr + ":" + c.db.dbport;
+var dbName = c.db.dbname;
 
-var srchURL = "http://127.0.0.1:9200";
-var srchIndex = "boardgames";
-var srchType = "boardgame";
+//var srchURL = "http://127.0.0.1:9200";
+//var srchIndex = "boardgames";
+//var srchType = "boardgame";
+var srchURL = "http://" + c.elastic.addr + ":" + c.elastic.port;
+var srchIndex = c.elastic.srchIndex;
+var srchType = c.elastic.srchType;
 
 /* --- Generic functions --- */
 function getSrchURL(){
@@ -21,6 +28,7 @@ function getCompactURL(){
 }
 
 function generateUuids(num){
+		//XXX: In reality, this can only fetch 1000 ids at a time - so this needs to be patched.
 		var idURL = dbURL + '/_uuids?count=' + num;
 	
 		return qrequest.qrequest("GET", idURL, null, null).then(
@@ -307,11 +315,33 @@ function srchBoardgames(geeklistid, filters, sortby, sortby_asc, skip, lim){
 	if(filters["releasetype"] != undefined){
 		switch(filters["releasetype"]){
 			case 'boardgame':
-				q['query']['bool']['must'].push(filterIsExpansion());
+				//q['query']['bool']['must'].push(filterIsExpansion());
+				q['query']['bool']['must'].push(filterIsEmpty('expands'));
 				break;
 			case 'expansion':
-				q['query']['bool']['must_not'] = [];	
-				q['query']['bool']['must_not'].push(filterIsExpansion());
+				if(q['query']['bool']['must_not'] === undefined){  
+					q['query']['bool']['must_not'] = [];	
+				}
+				//q['query']['bool']['must_not'].push(filterIsExpansion());
+				q['query']['bool']['must_not'].push(filterIsEmpty('expands'));
+				break;
+			case 'reimplementation':
+				if(q['query']['bool']['must_not'] === undefined){  
+					q['query']['bool']['must_not'] = [];	
+				}
+				q['query']['bool']['must_not'].push(filterIsEmpty('boardgameimplementation'));
+				break;
+			case 'integration':
+				if(q['query']['bool']['must_not'] === undefined){  
+					q['query']['bool']['must_not'] = [];	
+				}
+				q['query']['bool']['must_not'].push(filterIsEmpty('boardgameintegration'));
+				break;
+			case 'collection':
+				if(q['query']['bool']['must_not'] === undefined){  
+					q['query']['bool']['must_not'] = [];	
+				}
+				q['query']['bool']['must_not'].push(filterIsEmpty('boardgamecompilation'));
 				break;
 		}
 	}
@@ -403,6 +433,16 @@ function filterIsExpansion(){
 	q['filtered']['filter'] = {};
 	q['filtered']['filter']['missing'] = {};
 	q['filtered']['filter']['missing']['field'] = 'expands';
+
+	return q
+}
+
+function filterIsEmpty(fieldName){
+	var q = {};
+	q['filtered'] = {};
+	q['filtered']['filter'] = {};
+	q['filtered']['filter']['missing'] = {};
+	q['filtered']['filter']['missing']['field'] = fieldName;
 
 	return q
 }

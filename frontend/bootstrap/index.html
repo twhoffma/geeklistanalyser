@@ -11,6 +11,7 @@
     <link href="css/frontend.css" rel="stylesheet">
 	<link href="css/bootstrap.min.css" rel="stylesheet">
 	<link href="css/bootstrap-slider.min.css" rel="stylesheet">
+	<link href="css/bootstrap-select.min.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -27,6 +28,7 @@
     <!--<script src="js/bootstrap.min.js"></script>-->
 	<script src="js/frontend.js"></script>
 	<script src="js/bootstrap-slider.min.js"></script>
+	<script src="js/bootstrap-select.min.js"></script>
 	<script>
 		var selectedGeeklist = 0;
 		
@@ -80,6 +82,10 @@
 			
 			$('#resetFilters').on('click', function(){
 				resetFilters();
+			});
+
+			['#boardgamepublisher', '#boardgamedesigner'].forEach(function(e){
+				$(e).selectpicker();
 			});
 		});
 	</script>
@@ -173,23 +179,23 @@
 					<form>
 						<div class="form-group">
 							<label for="boardgamedesigner">Designer</label>
-							<select id="boardgamedesigner" class="form-control"></select>
+							<select id="boardgamedesigner" class="form-control" data-live-search="true"></select>
 						</div>
 						<div class="form-group">
 							<label for="boardgamepublisher">Publisher</label>
-							<select id="boardgamepublisher" class="form-control"></select>
+							<select id="boardgamepublisher" class="form-control" data-live-search="true"></select>
 						</div>
 						<div class="form-group">
 							<label for="boardgameartist">Artist</label>
-							<select id="boardgameartist" class="form-control"></select>
+							<select id="boardgameartist" class="form-control" data-live-search="true"></select>
 						</div>
 						<div class="form-group">
 							<label for="boardgamemechanic">Mechanic</label>
-							<select id="boardgamemechanic" class="form-control"></select>
+							<select id="boardgamemechanic" class="form-control" data-live-search="true"></select>
 						</div>
 						<div class="form-group">
 							<label for="boardgamecategory">Category</label>
-							<select id="boardgamecategory" class="form-control"></select>
+							<select id="boardgamecategory" class="form-control" data-live-search="true"></select>
 						</div>
 						<div class="form-group">
 								<label for="releasetype">
@@ -198,14 +204,16 @@
 									<option value="boardgame">Boardgames</option>
 									<option value="expansion">Expansions</option>
 									<option value="collection">Collections</option>
+									<option value="reimplementation">Reimplementations</option>
+									<option value="integration">Integrates with..</option>
 								</select>
 						</div>
 						<div class="form-group">
-							<label for="playingtime">
+							<label for="playingtime">Playing Time</label>
 							<input id="playingtime" data-slider-id='playingtime' type="text" data-slider-min="0" data-slider-max="0" data-slider-step="10" data-slider-value="[0,0]"/>
 						</div>
 						<div class="form-group">
-							<label for="numplayers">
+							<label for="numplayers">Number of players</label>
 							<input id="numplayers" data-slider-id='numplayer' type="text" data-slider-min="0" data-slider-max="0" data-slider-step="1" data-slider-value="[0,0]"/>
 						</div>
 					</form>
