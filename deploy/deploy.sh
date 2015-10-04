@@ -16,8 +16,8 @@ sudo apt-get install elasticsearch logstash
 
 sudo service elasticsearch stop
 
-cd /usr/share/elasticsearch/
-sudo ./bin/plugin --install elasticsearch/elasticsearch-river-couchdb/1.2.0
+#cd /usr/share/elasticsearch/
+#sudo ./bin/plugin --install elasticsearch/elasticsearch-river-couchdb/1.2.0
 
 sudo service start logstash
 sudo service start elasticsearch
@@ -33,9 +33,9 @@ sudo /usr/share/elasticsearch/bin/plugin -install polyfractal/elasticsearch-inqu
 
 #Set services to start on boot - systemd
 sudo /bin/systemctl daemon-reload
-sudo /bin/systemctl enable elasticsearch.service
-sudo /bin/systemctl enable logstash.service
+#sudo /bin/systemctl enable elasticsearch.service
+#sudo /bin/systemctl enable logstash.service
 
 #XXX:
 #We have problems running couchdb as a service on Debian 8 since we built it..
-sudo couchdb -b
+#sudo couchdb -b

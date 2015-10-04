@@ -120,7 +120,7 @@ function saveDocs(docs){
 						//console.log("Updating " + doc.objectid);
 					}
 					
-					var docURL = dbURL + "\\" + dbName + "\\" + docId;
+					var docURL = dbURL + "/" + dbName + "/" + docId;
 						
 					promises.push(qrequest.qrequest("PUT", docURL, JSON.stringify(doc)).then(
 							function(res){
