@@ -150,11 +150,13 @@ app.use(uri + '/getGeeklist', function(req, res, next){
 });
 
 function cacheResponse(cachekey, val){
-	mc.set(cachekey, val, 10, function (err) { 
+	mc.set(cachekey, val, 120, function (err) { 
 		if(err){
 			console.log("Memcache storing of " + cachekey + " failed:" + err);
 		}
 	});
 }
+
+//function clean
 
 http.createServer(app).listen(3000);
