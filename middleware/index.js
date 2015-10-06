@@ -22,7 +22,8 @@ var mc = new Memcached(memcached_uri, {'maxKeySize': 200});
 app.use(compression());
 app.use(bodyParser.urlencoded({extended: true}));
 
-app.use(uri + '/getGeeklistFilters', function(req, res, next){
+app.use('/data/getGeeklistFilters', function(req, res, next){
+//app.use(uri + '/data/getGeeklistFilters', function(req, res, next){
 	var p = qs.parse(req._parsedUrl.query);
 	
 	if(c.devmode){	
@@ -49,7 +50,8 @@ app.use(uri + '/getGeeklistFilters', function(req, res, next){
 	}
 });
 
-app.use(uri + '/getGeeklists', function(req, res, next){
+//app.use(uri + '/data/getGeeklists', function(req, res, next){
+app.use('/data/getGeeklists', function(req, res, next){
 	if(c.devmode){
 		res.setHeader("Access-Control-Allow-Origin", "*");
 	}
@@ -72,7 +74,7 @@ app.use(uri + '/getGeeklists', function(req, res, next){
 		);
 });
 
-app.use(uri + '/getGeeklist', function(req, res, next){
+app.use('/data/getGeeklist', function(req, res, next){
 	var p = qs.parse(req._parsedUrl.query);
 	
 	if(c.devmode){

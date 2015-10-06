@@ -11,7 +11,7 @@
                 "type": "string"
               },
               "objectid": {
-                "type": "string"
+                "type": "long"
               }
             }
           },
@@ -37,7 +37,20 @@
 				"index": "not_analyzed"
               },
               "objectid": {
-                "type": "string"
+                "type": "long"
+              }
+            }
+          },
+          "boardgameimplementation": {
+            "type": "nested",
+            "include_in_parent": true,
+            "properties": {
+              "name": {
+                "type": "string",
+				"index": "not_analyzed"
+              },
+              "objectid": {
+                "type": "long"
               }
             }
           },
@@ -50,7 +63,7 @@
 				"index": "not_analyzed"
               },
               "objectid": {
-                "type": "string"
+                "type": "long"
               }
             }
           },
@@ -63,7 +76,7 @@
 				"index": "not_analyzed"
               },
               "objectid": {
-                "type": "string"
+                "type": "long"
               }
             }
           },
@@ -73,10 +86,36 @@
             "properties": {
               "name": {
                 "type": "string",
-				"index": "not_analyzed"
+		"index": "not_analyzed"
               },
               "objectid": {
-                "type": "string"
+                "type": "long"
+              }
+            }
+          },
+          "expansions": {
+            "type": "nested",
+            "include_in_parent": true,
+            "properties": {
+              "name": {
+                "type": "string",
+		"index": "not_analyzed"
+              },
+              "objectid": {
+                "type": "long"
+              }
+            }
+          },
+          "expands": {
+            "type": "nested",
+            "include_in_parent": true,
+            "properties": {
+              "name": {
+                "type": "string",
+		"index": "not_analyzed"
+              },
+              "objectid": {
+                "type": "long"
               }
             }
           },
@@ -85,8 +124,8 @@
             "include_in_parent": true,
             "properties": {
               "latest": {
-				"type": "nested",
-				"include_in_parent": true,
+		"type": "nested",
+		"include_in_parent": true,
                 "properties": {
                   "_id": {
                     "type": "string"
@@ -112,7 +151,7 @@
                     "type": "object"
                   },
                   "objectid": {
-                    "type": "string"
+                    "type": "long"
                   },
                   "thumbs": {
                     "type": "long"
@@ -127,7 +166,7 @@
               },
               "crets": {
                 "type": "date",
-				"format": "dateOptionalTime"
+		"format": "dateOptionalTime"
               } 
             }
           },

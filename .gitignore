@@ -34,3 +34,4 @@ public
 
 *.stderr
 *.stdout
+*.out
