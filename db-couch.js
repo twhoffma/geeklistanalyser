@@ -48,9 +48,6 @@ function updateSearch(boardgames){
 			bulk_request.push(JSON.stringify({"doc": boardgame, "doc_as_upsert": true}));
 	});
 	
-	console.log(bulk_request[0]);
-	console.log(bulk_request[1]);
-
 	return qrequest.qrequest("POST", url, bulk_request.join("\n") + "\n", {"Content-Type": "application/json"}).then(
 		function(v){
 			var r = JSON.parse(v);
@@ -152,7 +149,6 @@ function saveDocs(docs){
 						docId = uuids.pop();
 					}else{
 						docId = doc._id;
-						//console.log("Updating " + doc.objectid);
 					}
 					
 					var docURL = dbURL + "/" + dbName + "/" + docId;
@@ -171,8 +167,10 @@ function saveDocs(docs){
 								}
 							}
 						).catch(
-							function(){
+							function(e){
 								console.log("Failed to save doc: " + JSON.stringify(doc));
+								
+								throw e
 							}
 						)
 					);
@@ -301,7 +299,7 @@ function deleteFilterRanges(geeklistId, analysisDate){
 	var url = getViewURL('geeklistfilters', 'geeklistfilters')+'?key=[{id}, {date}]&include_docs=true';
 	url = url.replace(/\{id\}/g, geeklistId);
 	url = url.replace(/\{date\}/g, Date.parse(analysisDate));
-	console.log(url);	
+	
 	return deleteDocs(url)
 }
 
@@ -394,6 +392,11 @@ function srchBoardgames(geeklistid, filters, sortby, sortby_asc, skip, lim){
 		q['query']['bool']['should'].push(filterRange("maxplayers", filters["playersmin"] || -Infinity, filters["playersmax"] || Infinity));
 	}
 		
+	//Year published
+	if(filters["minyearpublished"] != undefined || filters["maxyearpublished"] != undefined){
+		q['query']['bool']['must'].push(filterRange("yearpublished", filters["minyearpublished"] || -Infinity, filters["maxyearpublished"] || Infinity));
+	}
+	
 	//Sorting
 	var orderby;
 	var s;
@@ -421,6 +424,7 @@ function srchBoardgames(geeklistid, filters, sortby, sortby_asc, skip, lim){
 	q['sort'].push(s);
 	
 	var json_query = JSON.stringify(q);
+	
 	console.log("this is q:\n" + json_query);
 	
 	return qrequest.qrequest("POST", getSrchURL(), json_query);

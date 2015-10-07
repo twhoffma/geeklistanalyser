@@ -23,6 +23,7 @@ function isDefaultFilters(){
 	
 	isDefaultValues = (isDefaultValues && isDefaultSlider('#playingtime'));
 	isDefaultValues = (isDefaultValues && isDefaultSlider('#numplayers'));
+	isDefaultValues = (isDefaultValues && isDefaultSlider('#yearpublished'));
 	
 	return isDefaultValues;
 }
@@ -52,9 +53,10 @@ function isDefaultSlider(sliderId){
 
 function resetFilters(){
 	filterDropdownIds.forEach(function(v){
-		var e = $('#' + v);
+		$('#' + v).selectpicker('val', '');
+		//var e = $('#' + v).selectpicker('val', '');
 		
-		e.val("");
+		//e.Value("");
 	});
 
 
@@ -110,6 +112,17 @@ function loadGeeklistFilters(geeklistid){
 						scale: 'logarithmic'
 					});
 			e.slider('refresh');
+			
+			e = $('#yearpublished');
+			e.slider({
+						min: doc.minyearpublished, 
+						max: doc.maxyearpublished, 
+						value: [doc.minyearpublished, doc.maxyearpublished], 
+						tooltip: 'always', 
+						tooltip_split: true,
+						scale: 'logarithmic'
+					});
+			e.slider('refresh');
 		}	
 	});
 }
@@ -151,31 +164,43 @@ function loadGeeklist(geeklistid, limit, skip, filter, sort){
 	}
 	
 	var s = $('#playingtime').slider();	
-	var playingtime = s.slider('getValue');
-	var playingtimeMin = s.slider('getAttribute', 'min');
-	var playingtimeMax = s.slider('getAttribute', 'max');
+	var sVal = s.slider('getValue');
+	var sMin = s.slider('getAttribute', 'min');
+	var sMax = s.slider('getAttribute', 'max');
 	
-	if(playingtime[0] > playingtimeMin){
-		filterby['playingtimemin'] = playingtime[0];
+	if(sVal[0] > sMin){
+		filterby['playingtimemin'] = sVal[0];
 	}
 
-	if(playingtime[1] < playingtimeMax){
-		filterby['playingtimemax'] = playingtime[1];
+	if(sVal[1] < sMax){
+		filterby['playingtimemax'] = sVal[1];
 	}
 	
-	var ss = $('#numplayers').slider();	
-	var players = ss.slider('getValue');
-	var playersMin = ss.slider('getAttribute', 'min');
-	var playersMax = ss.slider('getAttribute', 'max');
+	s = $('#numplayers').slider();	
+	sVal = s.slider('getValue');
+	sMin = s.slider('getAttribute', 'min');
+	sMax = s.slider('getAttribute', 'max');
 	
-	if(players[0] > playersMin){
-		filterby['playersmin'] = players[0];
+	if(sVal[0] > sMin){
+		filterby['playersmin'] = sVal[0];
 	}
 
-	if(playingtime[1] < playingtimeMax){
-		filterby['playersmax'] = players[1];
+	if(sVal[1] < sMax){
+		filterby['playersmax'] = sVal[1];
 	}
 	
+	s = $('#yearpublished').slider();	
+	sVal = s.slider('getValue');
+	sMin = s.slider('getAttribute', 'min');
+	sMax = s.slider('getAttribute', 'max');
+	
+	if(sVal[0] > sMin){
+		filterby['minyearpublished'] = sVal[0];
+	}
+
+	if(sVal[1] < sMax){
+		filterby['maxyearpublished'] = sVal[1];
+	}
 	
 	//Actual adding of filter should be somewhere else to keep it DRY
 	if(Object.keys(filterby).length !== 0){

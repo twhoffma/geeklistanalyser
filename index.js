@@ -18,6 +18,8 @@ function FilterValue(analysisDate, geeklistId){
 	this.minplaytime = Infinity;
 	this.maxplayers = -Infinity; 
 	this.minplayers = Infinity;
+	this.maxyearpublished = -Infinity; 
+	this.minyearpublished = Infinity;
 	this.boardgamedesigner = []; 
 	this.boardgameartist = [];
 	this.boardgamecategory = []; 
@@ -362,7 +364,7 @@ db.getGeeklists(true, false).then(
 		var filterValues = [];
 		var geeklists = [];
 		
-		console.log("saving filtervalues");	
+		console.log("Saving filtervalues");	
 		for(var i = 0; i < boardgames.length; i++){
 			var boardgame = boardgames[i];
 			
@@ -396,6 +398,9 @@ db.getGeeklists(true, false).then(
 				filterValue.minplaytime = Math.min(filterValue.minplaytime, boardgame.minplaytime || Infinity, boardgame.playingtime || Infinity);
 				filterValue.maxplayers = Math.max(filterValue.maxplayers, boardgame.maxplayers || -Infinity);
 				filterValue.minplayers = Math.min(filterValue.minplayers, boardgame.minplayers || Infinity);
+				
+				filterValue.maxyearpublished = Math.max(filterValue.maxyearpublished, boardgame.yearpublished || -Infinity);
+				filterValue.minyearpublished = Math.min(filterValue.minyearpublished, boardgame.yearpublished || Infinity);
 			}
 		}
 		

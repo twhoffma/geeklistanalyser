@@ -13,6 +13,15 @@ c = JSON.parse(fs.readFileSync('localconfig.json', 'utf8'));
 var uri = c.devmode ? c.middleware.dev_baseuri : c.middleware.baseuri;
 var memcached_uri = c.middleware.memcached_uri;
 
+/* Commandline args */
+var verbose = false;
+
+process.argv.forEach(function(val, index, array){
+	if(val === '-v'){
+		verbose = true;
+	}
+});
+
 /* Middleware */
 var app = connect();
 
@@ -61,7 +70,9 @@ app.use(uri + '/data/getGeeklists', function(req, res, next){
 				var u = req._parsedUrl.href + '?';
 				var r = JSON.stringify(val);
 				
-				console.log("Asked database about" + u);	
+				if(verbose){
+					console.log("Asked database about" + u);	
+				}
 				
 				cacheResponse(u, r);
 				res.end(r);
@@ -135,8 +146,10 @@ app.use(uri + '/data/getGeeklist', function(req, res, next){
 					
 					var r = JSON.stringify(docs);
 					
-					console.log("Asked about: " + u);
-
+					if(verbose){		
+						console.log("Asked about: " + u);
+					}
+					
 					cacheResponse(u, r);
 					res.end(r);
 				}
