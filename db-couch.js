@@ -2,14 +2,9 @@ qrequest = require('./qrequest.js');
 fs = require('fs');
 c = JSON.parse(fs.readFileSync('localconfig.json', 'utf8'));
 
-//var dbURL = "http://127.0.0.1:5984";
-//var dbName = "geeklistdb";
 var dbURL = "http://" + c.db.dbaddr + ":" + c.db.dbport;
 var dbName = c.db.dbname;
 
-//var srchURL = "http://127.0.0.1:9200";
-//var srchIndex = "boardgames";
-//var srchType = "boardgame";
 var srchURL = "http://" + c.elastic.addr + ":" + c.elastic.port;
 var srchIndex = c.elastic.srchIndex;
 var srchType = c.elastic.srchType;
@@ -39,6 +34,46 @@ function generateUuids(num){
 					console.log("UUID Failed: " + res.statusCode)
 				}
 			)
+}
+
+function updateSearch(boardgames){
+	var url = srchURL + "/_bulk"
+	var bulk_request = [];
+	var p = [];
+	var h = {};
+
+	boardgames.forEach(function(boardgame){
+			h = {'update': {"_id": boardgame._id, "_type": "boardgame", "_index": "boardgames"}};
+			bulk_request.push(JSON.stringify(h));
+			bulk_request.push(JSON.stringify({"doc": boardgame, "doc_as_upsert": true}));
+	});
+	
+	console.log(bulk_request[0]);
+	console.log(bulk_request[1]);
+
+	return qrequest.qrequest("POST", url, bulk_request.join("\n") + "\n", {"Content-Type": "application/json"}).then(
+		function(v){
+			var r = JSON.parse(v);
+			var cntCreated = 0;
+			var cntUpdated = 0;
+			//console.log(r);	
+			r.items.forEach(function(i){
+				if(i.update.status == 201){
+					cntCreated++;
+				}else{
+					cntUpdated++;
+				}
+			});
+			
+			console.log("Created: " + cntCreated + ", Updated: " + cntUpdated);
+			
+			return v
+		},
+		function(e){
+			console.log(e);
+			throw e
+		}
+	)
 }
 
 function deleteDocs(url){
@@ -478,3 +513,4 @@ module.exports.saveFilterRanges = saveFilterRanges
 module.exports.deleteFilterRanges = deleteFilterRanges
 module.exports.getGeeklistFilters = getGeeklistFilters
 module.exports.finalizeDb = finalizeDb
+module.exports.updateSearch = updateSearch

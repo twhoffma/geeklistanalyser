@@ -21,7 +21,8 @@
 	"middleware":
 		{
 			"limit": 100,
-			"baseuri": "/geeklistmonitor/data", 
+			"baseuri": "", 
+			"dev_baseuri": "/geeklistmonitor", 
 			"memcached_uri": "localhost:11211"
 		}
 }

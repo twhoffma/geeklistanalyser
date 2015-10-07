@@ -426,7 +426,13 @@ db.getGeeklists(true, false).then(
 	function(boardgames){
 		console.log("Saving all boardgames to DB.");
 			
-		return db.saveBoardgames(boardgames).fail(
+		return db.saveBoardgames(boardgames).then(
+				function(){
+					console.log("Updating search engine");
+					
+					return db.updateSearch(boardgames)
+				}
+			).fail(
 			function(err){
 				console.log("Failed to have some boardgames");
 				console.log(err);
