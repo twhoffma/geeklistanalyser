@@ -47,7 +47,7 @@ function isDefaultSlider(sliderId){
 	var sliderValues = s.slider('getValue');
 	var sliderMin = s.slider('getAttribute', 'min');
 	var sliderMax = s.slider('getAttribute', 'max');
-
+	
 	return (sliderValues[0] === sliderMin && sliderValues[1] === sliderMax);
 }
 
@@ -119,8 +119,7 @@ function loadGeeklistFilters(geeklistid){
 						max: doc.maxyearpublished, 
 						value: [doc.minyearpublished, doc.maxyearpublished], 
 						tooltip: 'always', 
-						tooltip_split: true,
-						scale: 'logarithmic'
+						tooltip_split: true
 					});
 			e.slider('refresh');
 		}	

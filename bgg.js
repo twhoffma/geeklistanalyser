@@ -30,13 +30,13 @@ function Boardgame(boardgameId){
 
 function getGeeklist(geeklistId){
 	console.log("Getting geeklist " + geeklistId + " from BGG");
-	return qrequest.qrequest("GET", geeklistURL + geeklistId)
+	return qrequest.qrequest("GET", geeklistURL + geeklistId, null, null, true, 0)
 }
 
 function getBoardgame(boardgameId){
 	//console.log("Looking up " + boardgameId + " at BGG..");
 	
-	return qrequest.qrequest("GET", boardgameURL + boardgameId, null, null).then(
+	return qrequest.qrequest("GET", boardgameURL + boardgameId, null, null, true, 0).then(
 		function(val){
 			var $ = cheerio.load(val);
 			var boardgames = [];

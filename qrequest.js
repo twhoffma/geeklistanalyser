@@ -1,9 +1,16 @@
+require('http').globalAgent.maxSockets = 5;
+require('https').globalAgent.maxSockets = 5;
+
 request = require('request');
 q = require('q');
 
-function qrequest(method, url, data, headers){
+
+
+function qrequest(method, url, data, headers, use_fallback, fallback_iter){
 	var p = q.defer();
 	
+	use_fallback = use_fallback || false;
+	fallback_iter = fallback_iter || 0;
 	method = method.toUpperCase();
 	
 	if(method === "GET"){
@@ -11,12 +18,31 @@ function qrequest(method, url, data, headers){
 			if(!error && response.statusCode >= 200 && response.statusCode < 300){
 				p.resolve(response.body);
 			}else{
-				console.log("failed url: " + url);
 				console.log(error);
-				//console.log(error);
-				//console.log(body);
-				console.log("Returning error");
-				p.reject(response.statusCode);	
+				if(!error){
+					console.log(response.statusCode);	
+				}
+				if(use_fallback && fallback_iter < 5 &&  ((error && error.code == 'ECONNRESET') || response.statusCode == 503)){
+					console.log("Trying to back off " + fallback_iter);
+					//console.log(error.code);
+					
+					setTimeout(function(){
+						console.log("Running again.."); 
+						return qrequest(method, url, data, headers, true, fallback_iter+1).then(function(v){
+							p.resolve(v);
+						},
+							function(e){
+								throw e
+							}
+						)
+					}, 1000*(1 + Math.random())*10*(fallback_iter+1)); 
+				}else{
+					console.log("failed url: " + url);
+					console.log(error);
+					console.log(fallback_iter);
+					console.log(use_fallback);
+					p.reject(error);	
+				}
 			}
 		});
 	}else if(method === "PUT" || method === "POST"){

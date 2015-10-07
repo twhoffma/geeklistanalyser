@@ -23,17 +23,27 @@ function getCompactURL(){
 }
 
 function generateUuids(num){
-		//XXX: In reality, this can only fetch 1000 ids at a time - so this needs to be patched.
-		var idURL = dbURL + '/_uuids?count=' + num;
-	
-		return qrequest.qrequest("GET", idURL, null, null).then(
-			function(ret){
-				return JSON.parse(ret).uuids
-			}).fail(
-				function(res){
-					console.log("UUID Failed: " + res.statusCode)
-				}
-			)
+		var p = [];
+		
+		while(num > 0){
+			//XXX: In reality, this can only fetch 1000 ids at a time - so this needs to be patched.
+			var idURL = dbURL + '/_uuids?count=' + Math.min(num, 1000);
+		
+			p.push(qrequest.qrequest("GET", idURL, null, null).then(
+				function(ret){
+					return JSON.parse(ret).uuids
+				}).fail(
+					function(res){
+						console.log("UUID Failed: " + res.statusCode)
+						throw res.statusCode
+					}
+				)
+			);
+				
+			num -= Math.min(1000, num);
+		}
+		
+		return q.all(p).then(function(v){return v.reduce(function(prev, curr){ return prev.concat(curr)})}, [])
 }
 
 function updateSearch(boardgames){
