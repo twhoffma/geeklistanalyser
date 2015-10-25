@@ -144,6 +144,21 @@ function loadGeeklist(geeklistid, limit, skip, filter, sort){
 	if(skip === 0){
 		list.empty();
 		setLoadButtonState(true);
+		
+		var qs = "?id=" + geeklistid;
+
+		['boardgamedesigner', 'boardgameartist', 'boardgamemechanic', 'boardgamecategory', 'boardgamepublisher', 'releasetype'].forEach(function(e){
+			if($('#'+e).val() !== null && $('#'+e).val() !== ''){
+				qs += "&" + e + "=" + $('#'+e).val();
+   		 	}
+		});
+		
+		qs += "&sortby=" + sortby;
+		qs += "&sortby_asc=" + sortby_asc 
+		
+		var location = window.history.location || window.location;
+		history.pushState(null, null, location.protocol + '//' + location.host + location.pathname + qs);
+		
 	}
 	
 	list.append("<tr id=\"spinner\"><td colspan=\"9\"><img src=\"img/spiffygif_30x30.gif\"</td></tr>");

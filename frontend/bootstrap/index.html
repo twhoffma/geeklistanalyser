@@ -29,6 +29,7 @@
 	<script src="js/frontend.js"></script>
 	<script src="js/bootstrap-slider.min.js"></script>
 	<script src="js/bootstrap-select.min.js"></script>
+	<script src="js/history.min.js"></script>
 	<script>
 		var selectedGeeklist = 0;
 		
@@ -40,7 +41,55 @@
 		$(document).ready(function(){
 			getGeeklists();
 			enableMenuButtons(false);
-	
+			
+			//Check if a geeklist is requested in URL
+			if(window.location.search){
+				var qs = window.location.search.substring(1);
+				
+				var params = qs.split("&").reduce(
+					function(prev, curr){
+						var p = curr.split("="); 
+						prev[p[0]] = decodeURIComponent(p[1]);
+
+						return prev
+					}, 
+					{}
+				);
+				
+				if(params["id"] && params["id"] | 0 == params["id"]){
+					loadGeeklistFilters(params["id"]);
+					resetFilters();
+					resetSorting();
+
+					selectedGeeklist = params["id"];
+
+					//vanillaJS - just for fun.
+					//If other parameters are set, populate sorting and filters
+					Object.keys(params).filter(function(k){return k !== "id"}).forEach(function(k){
+						var e = $('#' + k);
+						if(e){
+							if(["boardgameartist", "boardgamedesigner", "boardgamemechanic", "boardgamecategory", "releasetype", "boardgamepublisher"].indexOf(k) > -1)
+							{
+								e.selectpicker('val', params[k]);
+								console.log(k);
+							}else if(["playingtime", "numplayers", "yearpublished"].indexOf(k) > 0){
+								var s = e.slider();
+								s.slider("setValue", JSON.parse(params[k]));	
+							}else{
+								e.val(params[k]);
+							}
+
+						}
+					});
+					
+					//Load geeklist
+					loadGeeklist(params["id"], 10, 0);
+					
+					enableMenuButtons(true);
+					setLoadButtonState(true);
+				}
+			}
+				
 			$('#loadmore').on("click", function(){
 				loadGeeklist(selectedGeeklist, 10, $('.gameline').length);
 			});
@@ -60,7 +109,6 @@
 			});
 
 			$('.selects').on("click", function(e){
-				//e.preventDefault();
 				e.stopPropagation();
 			});
 			
