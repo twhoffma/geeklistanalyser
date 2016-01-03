@@ -56,6 +56,8 @@
 					{}
 				);
 				
+				console.log("Query string: " + qs);
+					
 				if(params["id"] && params["id"] | 0 == params["id"]){
 					loadGeeklistFilters(params["id"]);
 					resetFilters();
@@ -66,19 +68,35 @@
 					//vanillaJS - just for fun.
 					//If other parameters are set, populate sorting and filters
 					Object.keys(params).filter(function(k){return k !== "id"}).forEach(function(k){
-						var e = $('#' + k);
+						var e;
+						if(k === "sortby_asc"){
+							e = $('#' + k + "[value=" + params[k] + "]");
+							console.log('XXX Bug! #' + k + "[value='" + params[k] + "']");
+						}else{
+							e = $('#' + k);
+						}
+						
 						if(e){
 							if(["boardgameartist", "boardgamedesigner", "boardgamemechanic", "boardgamecategory", "releasetype", "boardgamepublisher"].indexOf(k) > -1)
 							{
+								//Some kind of bug preventing value from being set
 								e.selectpicker('val', params[k]);
-								console.log(k);
+								console.log("yay! " + k);
+								e.val(params[k]);
+								console.log(e.val());
+								console.log(params[k]);	
 							}else if(["playingtime", "numplayers", "yearpublished"].indexOf(k) > 0){
 								var s = e.slider();
 								s.slider("setValue", JSON.parse(params[k]));	
+							}else if(["sortby_asc"].indexOf(k) > 0){
+								e.prop("checked", true);
+								//e.val(params[k]);
 							}else{
+								console.log("#" + k + ": " + params[k]);
 								e.val(params[k]);
 							}
 
+							e.change();
 						}
 					});
 					
@@ -118,10 +136,12 @@
 
 			$('#sortingModal').on('change', 'input,select', function(e){
 				$('.glyphicon-sort-by-attributes').css('color', isDefaultSorting() ? 'black' : 'red');
+				console.log("sorting change triggered!");
 			});
 			
 			$('#filteringModal').on('change', 'input,select', function(e){
 				$('.glyphicon-filter').css('color', isDefaultFilters() ? 'black' : 'red');
+				console.log("filtering change triggered!");
 			});
 
 			$('#resetSorting').on('click', function(){

@@ -102,11 +102,13 @@ app.use(uri + '/data/getGeeklist', function(req, res, next){
 		
 		//TODO: Add cleaning of data before moving on.
 		
+		console.log("Sort options:" + sortby + " " + (sortby_asc ? "ASC" : "DESC"));
+		
 		if(filterJSON != ''){
-			console.log("Using filters");
+			console.log("Fetch method: Search engine");
 			console.log(filterJSON);
-			console.log(sortby);
-			console.log(sortby_asc);
+			//console.log(sortby);
+			//console.log(sortby_asc);
 				
 			//TODO: You need to use try/catch here..
 			var filters = JSON.parse(p.filters);
@@ -133,7 +135,7 @@ app.use(uri + '/data/getGeeklist', function(req, res, next){
 				}
 			);
 		}else{
-			console.log('using non-filtered');
+			console.log('Fetch method: Database');
 			
 			db.getGeeklist(p.geeklistId, skip, limit, sortby, sortby_asc).then(
 				function(reply){

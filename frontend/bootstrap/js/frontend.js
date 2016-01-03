@@ -138,7 +138,9 @@ function loadGeeklist(geeklistid, limit, skip, filter, sort){
 	var filterby = {};
 	var sortby = $("#sortby").val();
 	var sortby_asc = $("input[name='sortby_asc']:checked").val();
-	
+		
+	console.log(sortby + " " + sortby_asc);
+		
 	var list = $('#games');
 	
 	if(skip === 0){
@@ -150,12 +152,17 @@ function loadGeeklist(geeklistid, limit, skip, filter, sort){
 		['boardgamedesigner', 'boardgameartist', 'boardgamemechanic', 'boardgamecategory', 'boardgamepublisher', 'releasetype'].forEach(function(e){
 			if($('#'+e).val() !== null && $('#'+e).val() !== ''){
 				qs += "&" + e + "=" + $('#'+e).val();
-   		 	}
+   		 	}else{
+				console.log(e);
+				console.log($('#'+e).val());
+				console.log($('#' + e).selectpicker().val());
+			}
 		});
 		
 		qs += "&sortby=" + sortby;
 		qs += "&sortby_asc=" + sortby_asc 
 		
+		console.log(qs);	
 		var location = window.history.location || window.location;
 		history.pushState(null, null, location.protocol + '//' + location.host + location.pathname + qs);
 		

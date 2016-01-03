@@ -1,8 +1,15 @@
 cheerio = require('cheerio');
 qrequest = require('./qrequest.js');
+q = require('q');
 
 var geeklistURL = 'https://www.boardgamegeek.com/xmlapi/geeklist/';
 var boardgameURL = 'https://www.boardgamegeek.com/xmlapi/boardgame/';
+
+var queueGeeklists = [];
+var queueBoardgames = [];
+
+var fetchingGeeklist = false;
+var fetchingBoardgame = false;
 
 function Boardgame(boardgameId){
 	this.type = "boardgame";
@@ -29,8 +36,35 @@ function Boardgame(boardgameId){
 }
 
 function getGeeklist(geeklistId){
-	console.log("Getting geeklist " + geeklistId + " from BGG");
 	return qrequest.qrequest("GET", geeklistURL + geeklistId, null, null, true, 0)
+	
+	/*
+	var p = q.defer();
+
+	console.log("Getting geeklist " + geeklistId + " from BGG");
+	
+	if(fetchingGeeklist){
+		queueGeeklists.push({id: geeklistId, p: p});
+	}else{
+		fetchingGeeklist = true;
+		
+		
+		//return qrequest.qrequest("GET", geeklistURL + geeklistId, null, null, true, 0).then(function(val){
+		return qrequest.qrequest("GET", geeklistURL + d.id, null, null, true, 0).then(function(val){
+			fetchingGeeklist = false;
+			
+			var d = queueGeeklists.shift();
+			
+			p.resolve(val).then(function(){
+				getGeeklist(d.id).then(function(val){
+					d.p.resolve(val);
+				});
+			}) 
+		})
+	}
+	
+	return p.promise
+	*/
 }
 
 function getBoardgame(boardgameId){

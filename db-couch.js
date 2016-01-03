@@ -116,7 +116,9 @@ function deleteDocs(url){
 				}
 			)
 		}
-	) 	
+	).catch(function(e){
+		console.log(e);
+	});	
 }
 
 function getDocs(viewURL){
@@ -240,7 +242,7 @@ function getGeeklist(geeklistId, skip, num, sortby, asc){
 		case 'name':
 			viewname = 'geeklist_by_name';
 			break;
-		case 'year':
+		case 'yearpublished':
 			viewname = 'geeklist_by_year';
 			break;
 		case 'thumbs': 
@@ -310,6 +312,7 @@ function deleteFilterRanges(geeklistId, analysisDate){
 	url = url.replace(/\{id\}/g, geeklistId);
 	url = url.replace(/\{date\}/g, Date.parse(analysisDate));
 	
+	console.log(url);	
 	return deleteDocs(url)
 }
 

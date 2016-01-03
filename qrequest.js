@@ -4,7 +4,25 @@ require('https').globalAgent.maxSockets = 5;
 request = require('request');
 q = require('q');
 
+var numRequests = 0;
+var reqQueue = [];
 
+function backoff(method, url, data, headers, use_fallback, fallback_iter){
+	var p = q.defer();
+	
+	setTimeout(function(){
+		qrequest(method, url, data, headers, true, fallback_iter+1).then(
+			function(v){
+				p.resolve(v);
+			},
+			function(e){
+				p.reject(e);
+			}
+		, 1000*(1 + Math.random())*10*(fallback_iter+1));
+	});
+	
+	return p.promise 
+}
 
 function qrequest(method, url, data, headers, use_fallback, fallback_iter){
 	var p = q.defer();
@@ -13,19 +31,76 @@ function qrequest(method, url, data, headers, use_fallback, fallback_iter){
 	fallback_iter = fallback_iter || 0;
 	method = method.toUpperCase();
 	
+	
 	if(method === "GET"){
+		//Queue
+		/*
+		reqQueue.push({"url": url, "deferred": p});
+		
+		//If num live requests is less than the max and we are at the first invoc of the req	
+		if(fallback_iter === 0){
+			p.promise.finally(
+				function(){
+					var qr;
+					
+					if(reqQueue.length > 0){
+						qr = reqQueue.shift();
+					
+						qrequest("GET", qr.url, null, null, true, 0).then(
+							function(v){
+								qr.deferred.resolve(v);
+							}
+						)
+					}
+				}
+			);
+			
+			//If num running requests is less than max
+			if(numRequests < 5){
+				numRequests++;
+			
+				//run request
+
+				numRequests--;
+			}
+		}
+		*/
+		
+		//Run request
 		request(url, function(error, response, body){
-			if(!error && response.statusCode >= 200 && response.statusCode < 300){
+			if(!error && response.statusCode == 200){
 				p.resolve(response.body);
+			}else if(!error && response.statusCode == 202){
+				//The request was accepted. This implies server rendering. Try back-off.
+				console.log("202. Backing off #" + fallback_iter);
+				backoff(method, url, data, headers, true, fallback_iter).then(
+					function(v){
+						p.resolve(v);
+					}
+				).catch(function(e){
+					p.reject(e);
+				});
 			}else{
 				console.log(error);
 				if(!error){
 					console.log(response.statusCode);	
 				}
+				
 				if(use_fallback && fallback_iter < 5 &&  ((error && error.code == 'ECONNRESET') || response.statusCode == 503)){
-					console.log("Trying to back off " + fallback_iter);
+					console.log("503/Hangup: Backing off #" + fallback_iter);
 					//console.log(error.code);
 					
+					backoff(method, url, data, headers, true, fallback_iter).then(
+						function(v){
+							p.resolve(v);
+						}
+					).catch(
+						function(e){
+							p.reject(e);
+						}
+					);
+					
+					/*
 					setTimeout(function(){
 						console.log("Running again.."); 
 						return qrequest(method, url, data, headers, true, fallback_iter+1).then(function(v){
@@ -36,11 +111,12 @@ function qrequest(method, url, data, headers, use_fallback, fallback_iter){
 							}
 						)
 					}, 1000*(1 + Math.random())*10*(fallback_iter+1)); 
+					*/
 				}else{
 					console.log("failed url: " + url);
 					console.log(error);
-					console.log(fallback_iter);
-					console.log(use_fallback);
+					console.log("Fallback iteration: #" + fallback_iter);
+					console.log("Fallback active: " + use_fallback);
 					p.reject(error);	
 				}
 			}
@@ -70,8 +146,9 @@ function qrequest(method, url, data, headers, use_fallback, fallback_iter){
 				}else{
 					console.log(method.toUpperCase() + " error: " + response.statusCode);
 					console.log(method.toUpperCase() + " error: " + body);
+					console.log(method.toUpperCase() + " url: " + url);
 						
-					console.log("Failed data: " + data);
+					//console.log("Failed data: " + data);
 					
 					p.reject(body);
 				}
@@ -90,8 +167,9 @@ function qrequest(method, url, data, headers, use_fallback, fallback_iter){
 				}else{
 					console.log("DELETE error: " + response.statusCode);
 					console.log("DELETE error: " + body);
+					console.log(method.toUpperCase() + " url: " + url);
 						
-					console.log("Failed data: " + data);
+					//console.log("Failed data: " + data);
 					
 					p.reject("ERROR");
 				}

@@ -410,7 +410,9 @@ db.getGeeklists(true, false).then(
 			console.log(geeklistid);	
 			p.push(db.deleteFilterRanges(geeklistid, currentDate).then(
 				function() {
-					return db.saveFilterRanges(filterValues).then(
+					var fv = filterValues.filter(function(e){return e.objectid === geeklistid});
+					
+					return db.saveFilterRanges([fv[0]]).then(
 						function() { 
 							//TODO: Could return anything.
 							return boardgames
