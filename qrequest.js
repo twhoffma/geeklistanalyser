@@ -4,22 +4,27 @@ require('https').globalAgent.maxSockets = 5;
 request = require('request');
 q = require('q');
 
+var maxNumBackoffs = 5;
 var numRequests = 0;
 var reqQueue = [];
 
 function backoff(method, url, data, headers, use_fallback, fallback_iter){
 	var p = q.defer();
 	
-	setTimeout(function(){
-		qrequest(method, url, data, headers, true, fallback_iter+1).then(
-			function(v){
-				p.resolve(v);
-			},
-			function(e){
-				p.reject(e);
-			}
-		, 1000*(1 + Math.random())*10*(fallback_iter+1));
-	});
+	if(fallback_iter <= maxNumBackoffs){ 
+		setTimeout(function(){
+			qrequest(method, url, data, headers, true, fallback_iter+1).then(
+				function(v){
+					p.resolve(v);
+				},
+				function(e){
+					p.reject(e);
+				}
+			, 1000*(1 + Math.random())*Math.exp(fallback_iter+1));
+		});
+	}else{
+		p.reject("Max number of backoffs reached!");
+	}
 	
 	return p.promise 
 }
@@ -35,7 +40,6 @@ function qrequest(method, url, data, headers, use_fallback, fallback_iter){
 	if(method === "GET"){
 		//Queue
 		/*
-		reqQueue.push({"url": url, "deferred": p});
 		
 		//If num live requests is less than the max and we are at the first invoc of the req	
 		if(fallback_iter === 0){
@@ -43,6 +47,8 @@ function qrequest(method, url, data, headers, use_fallback, fallback_iter){
 				function(){
 					var qr;
 					
+					numRequests--;
+						
 					if(reqQueue.length > 0){
 						qr = reqQueue.shift();
 					
@@ -61,7 +67,8 @@ function qrequest(method, url, data, headers, use_fallback, fallback_iter){
 			
 				//run request
 
-				numRequests--;
+			}else{
+				reqQueue.push({"url": url, "deferred": p});
 			}
 		}
 		*/
@@ -86,7 +93,7 @@ function qrequest(method, url, data, headers, use_fallback, fallback_iter){
 					console.log(response.statusCode);	
 				}
 				
-				if(use_fallback && fallback_iter < 5 &&  ((error && error.code == 'ECONNRESET') || response.statusCode == 503)){
+				if(use_fallback && ((error && error.code == 'ECONNRESET') || response.statusCode == 503)){
 					console.log("503/Hangup: Backing off #" + fallback_iter);
 					//console.log(error.code);
 					
@@ -99,19 +106,6 @@ function qrequest(method, url, data, headers, use_fallback, fallback_iter){
 							p.reject(e);
 						}
 					);
-					
-					/*
-					setTimeout(function(){
-						console.log("Running again.."); 
-						return qrequest(method, url, data, headers, true, fallback_iter+1).then(function(v){
-							p.resolve(v);
-						},
-							function(e){
-								throw e
-							}
-						)
-					}, 1000*(1 + Math.random())*10*(fallback_iter+1)); 
-					*/
 				}else{
 					console.log("failed url: " + url);
 					console.log(error);
