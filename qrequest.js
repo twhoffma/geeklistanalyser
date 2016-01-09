@@ -4,6 +4,7 @@ require('https').globalAgent.maxSockets = 5;
 request = require('request');
 q = require('q');
 
+var maxRequests = 5;
 var maxNumBackoffs = 5;
 var numRequests = 0;
 var reqQueue = [];
@@ -42,7 +43,9 @@ function qrequest(method, url, data, headers, use_fallback, fallback_iter){
 		/*
 		
 		//If num live requests is less than the max and we are at the first invoc of the req	
-		if(fallback_iter === 0){
+		if(use_fallback && fallback_iter === 0){
+			//How to prevent this from happening again when it is called recursively?
+			//We only want this to be the end of the very first promise created for each request.
 			p.promise.finally(
 				function(){
 					var qr;
@@ -51,8 +54,9 @@ function qrequest(method, url, data, headers, use_fallback, fallback_iter){
 						
 					if(reqQueue.length > 0){
 						qr = reqQueue.shift();
-					
-						qrequest("GET", qr.url, null, null, true, 0).then(
+						
+						console.log("Getting new one in queue");	
+						qrequest("GET", qr.url, null, null, true, 1).then(
 							function(v){
 								qr.deferred.resolve(v);
 							}
@@ -61,15 +65,19 @@ function qrequest(method, url, data, headers, use_fallback, fallback_iter){
 				}
 			);
 			
-			//If num running requests is less than max
-			if(numRequests < 5){
-				numRequests++;
-			
-				//run request
+		}
+		
+		//XXX:But this will fail and increment the counter when backing off...
+		//If num running requests is less than max
+		//TODO: make num requests domain dependent.
+		if(numRequests <= maxRequests){
+			numRequests++;
+		
+			//run request
 
-			}else{
-				reqQueue.push({"url": url, "deferred": p});
-			}
+			//.finally will take the new item and execute.
+		}else{
+			reqQueue.push({"url": url, "deferred": p});
 		}
 		*/
 		
