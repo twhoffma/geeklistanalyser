@@ -51,7 +51,7 @@ function qrequest(method, url, data, headers, use_fallback, fallback_iter, useQu
 					if(reqQueue.length > 0){
 						qr = reqQueue.shift();
 						
-						console.log("[UQ] " + reqQueue.length + " left in queue.");	
+						console.log("[UQ] " + reqQueue.length + " left in queue. [" + url + "]");	
 						//We fake one iteration to prevent this from being added recursively..
 						qrequest("GET", qr.url, null, null, true, 0, useQueue, true).then(
 							function(v){
@@ -84,14 +84,17 @@ function qrequest(method, url, data, headers, use_fallback, fallback_iter, useQu
 					p.resolve(response.body);
 				}else if(!error && response.statusCode == 202){
 					//The request was accepted. This implies server rendering. Try back-off.
-					console.log("202. Backing off #" + fallback_iter);
+					console.log("202. Backing off #" + fallback_iter + "[" + url + "]");
+					
+					//XXX: There is a bug here where when backing off, request is queued immediately.	
 					backoff(method, url, data, headers, true, fallback_iter, useQueue, isQueued).then(
 						function(v){
 							p.resolve(v);
+						},
+						function(e){
+							p.reject(e);
 						}
-					).catch(function(e){
-						p.reject(e);
-					});
+					);
 				}else{
 					console.log(error);
 					if(!error){
@@ -99,14 +102,13 @@ function qrequest(method, url, data, headers, use_fallback, fallback_iter, useQu
 					}
 					
 					if(use_fallback && ((error && error.code == 'ECONNRESET') || response.statusCode == 503)){
-						console.log("503/Hangup: Backing off #" + fallback_iter);
+						console.log("503/Hangup: Backing off #" + fallback_iter + "[" + url + "]");
 						//console.log(error.code);
-						
+						//XXX: There is a bug here where when backing off, request is queued immediately.	
 						backoff(method, url, data, headers, true, fallback_iter, useQueue, isQueued).then(
 							function(v){
 								p.resolve(v);
-							}
-						).catch(
+							},
 							function(e){
 								p.reject(e);
 							}
@@ -123,7 +125,7 @@ function qrequest(method, url, data, headers, use_fallback, fallback_iter, useQu
 			//.finally will take the new item and execute.
 		}else{
 			reqQueue.push({"url": url, "deferred": p});
-			console.log("[Q] " + reqQueue.length + " left in queue.");	
+			console.log("[Q] " + reqQueue.length + " left in queue. [" + url + "]");	
 		}
 	}else if(method === "PUT" || method === "POST"){
 		var r = {
