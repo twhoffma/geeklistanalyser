@@ -407,7 +407,7 @@ db.getGeeklists(true, false).then(
 		var p = [];
 
 		geeklists.forEach(function(geeklistid){
-			console.log(geeklistid);	
+			//console.log(geeklistid);	
 			p.push(db.deleteFilterRanges(geeklistid, currentDate).then(
 				function() {
 					var fv = filterValues.filter(function(e){return e.objectid === geeklistid});

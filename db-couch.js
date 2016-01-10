@@ -107,9 +107,9 @@ function deleteDocs(url){
 				}
 			);
 
-			return q.allSettled(
+			return q.allSettled(p).then(
 				function(success){
-					console.log(success.length + " deleted");
+					//console.log(success.length + " deleted");
 				},
 				function(fails){
 					console.log(fails);
@@ -312,7 +312,6 @@ function deleteFilterRanges(geeklistId, analysisDate){
 	url = url.replace(/\{id\}/g, geeklistId);
 	url = url.replace(/\{date\}/g, Date.parse(analysisDate));
 	
-	console.log(url);	
 	return deleteDocs(url)
 }
 

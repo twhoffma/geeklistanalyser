@@ -9,12 +9,12 @@ var maxNumBackoffs = 5;
 var numRequests = 0;
 var reqQueue = [];
 
-function backoff(method, url, data, headers, use_fallback, fallback_iter){
+function backoff(method, url, data, headers, use_fallback, fallback_iter, useQueue, isQueued){
 	var p = q.defer();
 	
 	if(fallback_iter <= maxNumBackoffs){ 
 		setTimeout(function(){
-			qrequest(method, url, data, headers, true, fallback_iter+1).then(
+			qrequest(method, url, data, headers, true, fallback_iter+1, useQueue, isQueued).then(
 				function(v){
 					p.resolve(v);
 				},
@@ -30,22 +30,18 @@ function backoff(method, url, data, headers, use_fallback, fallback_iter){
 	return p.promise 
 }
 
-function qrequest(method, url, data, headers, use_fallback, fallback_iter){
+function qrequest(method, url, data, headers, use_fallback, fallback_iter, useQueue, isQueued){
 	var p = q.defer();
 	
 	use_fallback = use_fallback || false;
 	fallback_iter = fallback_iter || 0;
 	method = method.toUpperCase();
-	
+	isQueued = isQueued || false;
+	useQueue = useQueue || false;
 	
 	if(method === "GET"){
 		//Queue
-		/*
-		
-		//If num live requests is less than the max and we are at the first invoc of the req	
-		if(use_fallback && fallback_iter === 0){
-			//How to prevent this from happening again when it is called recursively?
-			//We only want this to be the end of the very first promise created for each request.
+		if(!isQueued && useQueue){
 			p.promise.finally(
 				function(){
 					var qr;
@@ -55,74 +51,80 @@ function qrequest(method, url, data, headers, use_fallback, fallback_iter){
 					if(reqQueue.length > 0){
 						qr = reqQueue.shift();
 						
-						console.log("Getting new one in queue");	
-						qrequest("GET", qr.url, null, null, true, 1).then(
+						console.log("[UQ] " + reqQueue.length + " left in queue.");	
+						//We fake one iteration to prevent this from being added recursively..
+						qrequest("GET", qr.url, null, null, true, 0, useQueue, true).then(
 							function(v){
 								qr.deferred.resolve(v);
+							},
+							function(e){
+								qr.deferred.reject(e);
 							}
-						)
+						).catch(
+							function(e){
+								qr.deferred.reject(e);
+							}
+						);
 					}
 				}
 			);
-			
 		}
 		
 		//XXX:But this will fail and increment the counter when backing off...
-		//If num running requests is less than max
 		//TODO: make num requests domain dependent.
-		if(numRequests <= maxRequests){
-			numRequests++;
-		
-			//run request
-
-			//.finally will take the new item and execute.
-		}else{
-			reqQueue.push({"url": url, "deferred": p});
-		}
-		*/
-		
-		//Run request
-		request(url, function(error, response, body){
-			if(!error && response.statusCode == 200){
-				p.resolve(response.body);
-			}else if(!error && response.statusCode == 202){
-				//The request was accepted. This implies server rendering. Try back-off.
-				console.log("202. Backing off #" + fallback_iter);
-				backoff(method, url, data, headers, true, fallback_iter).then(
-					function(v){
-						p.resolve(v);
-					}
-				).catch(function(e){
-					p.reject(e);
-				});
-			}else{
-				console.log(error);
-				if(!error){
-					console.log(response.statusCode);	
-				}
-				
-				if(use_fallback && ((error && error.code == 'ECONNRESET') || response.statusCode == 503)){
-					console.log("503/Hangup: Backing off #" + fallback_iter);
-					//console.log(error.code);
-					
-					backoff(method, url, data, headers, true, fallback_iter).then(
+		//If num running requests is less than max
+		if(numRequests <= maxRequests || !useQueue){
+			if(fallback_iter === 0 && useQueue){
+				numRequests++;
+			}
+			
+			//Run request
+			request(url, function(error, response, body){
+				if(!error && response.statusCode == 200){
+					p.resolve(response.body);
+				}else if(!error && response.statusCode == 202){
+					//The request was accepted. This implies server rendering. Try back-off.
+					console.log("202. Backing off #" + fallback_iter);
+					backoff(method, url, data, headers, true, fallback_iter, useQueue, isQueued).then(
 						function(v){
 							p.resolve(v);
 						}
-					).catch(
-						function(e){
-							p.reject(e);
-						}
-					);
+					).catch(function(e){
+						p.reject(e);
+					});
 				}else{
-					console.log("failed url: " + url);
 					console.log(error);
-					console.log("Fallback iteration: #" + fallback_iter);
-					console.log("Fallback active: " + use_fallback);
-					p.reject(error);	
+					if(!error){
+						console.log(response.statusCode);	
+					}
+					
+					if(use_fallback && ((error && error.code == 'ECONNRESET') || response.statusCode == 503)){
+						console.log("503/Hangup: Backing off #" + fallback_iter);
+						//console.log(error.code);
+						
+						backoff(method, url, data, headers, true, fallback_iter, useQueue, isQueued).then(
+							function(v){
+								p.resolve(v);
+							}
+						).catch(
+							function(e){
+								p.reject(e);
+							}
+						);
+					}else{
+						console.log("failed url: " + url);
+						console.log(error);
+						console.log("Fallback iteration: #" + fallback_iter);
+						console.log("Fallback active: " + use_fallback);
+						p.reject(error);	
+					}
 				}
-			}
-		});
+			});
+			//.finally will take the new item and execute.
+		}else{
+			reqQueue.push({"url": url, "deferred": p});
+			console.log("[Q] " + reqQueue.length + " left in queue.");	
+		}
 	}else if(method === "PUT" || method === "POST"){
 		var r = {
 				method: method,

@@ -36,41 +36,13 @@ function Boardgame(boardgameId){
 }
 
 function getGeeklist(geeklistId){
-	return qrequest.qrequest("GET", geeklistURL + geeklistId, null, null, true, 0)
-	
-	/*
-	var p = q.defer();
-
-	console.log("Getting geeklist " + geeklistId + " from BGG");
-	
-	if(fetchingGeeklist){
-		queueGeeklists.push({id: geeklistId, p: p});
-	}else{
-		fetchingGeeklist = true;
-		
-		
-		//return qrequest.qrequest("GET", geeklistURL + geeklistId, null, null, true, 0).then(function(val){
-		return qrequest.qrequest("GET", geeklistURL + d.id, null, null, true, 0).then(function(val){
-			fetchingGeeklist = false;
-			
-			var d = queueGeeklists.shift();
-			
-			p.resolve(val).then(function(){
-				getGeeklist(d.id).then(function(val){
-					d.p.resolve(val);
-				});
-			}) 
-		})
-	}
-	
-	return p.promise
-	*/
+	//Look up a geeklist - use queueing
+	return qrequest.qrequest("GET", geeklistURL + geeklistId, null, null, true, 0, true)
 }
 
 function getBoardgame(boardgameId){
-	//console.log("Looking up " + boardgameId + " at BGG..");
-	
-	return qrequest.qrequest("GET", boardgameURL + boardgameId, null, null, true, 0).then(
+	//Look up board games - use queuing.
+	return qrequest.qrequest("GET", boardgameURL + boardgameId, null, null, true, 0, true).then(
 		function(val){
 			var $ = cheerio.load(val);
 			var boardgames = [];
