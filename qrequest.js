@@ -9,20 +9,23 @@ var maxNumBackoffs = 5;
 var numRequests = 0;
 var reqQueue = [];
 
-function backoff(method, url, data, headers, use_fallback, fallback_iter, useQueue, isQueued){
+function backoff(method, url, data, headers, use_fallback, fallback_iter, useQueue, isQueued, lastResult){
 	var p = q.defer();
+	var delay = (1 + Math.random())*Math.exp(fallback_iter+1);
 	
-	if(fallback_iter <= maxNumBackoffs){ 
+	if(fallback_iter <= maxNumBackoffs){
+		console.log(delay + "s [" + url + "]");
+		
 		setTimeout(function(){
-			qrequest(method, url, data, headers, true, fallback_iter+1, useQueue, isQueued).then(
+			qrequest(method, url, data, headers, true, fallback_iter+1, useQueue, isQueued, lastResult).then(
 				function(v){
 					p.resolve(v);
 				},
 				function(e){
 					p.reject(e);
 				}
-			, 1000*(1 + Math.random())*Math.exp(fallback_iter+1));
-		});
+			);
+		}, 1000*delay);
 	}else{
 		p.reject("Max number of backoffs reached!");
 	}
@@ -30,7 +33,30 @@ function backoff(method, url, data, headers, use_fallback, fallback_iter, useQue
 	return p.promise 
 }
 
-function qrequest(method, url, data, headers, use_fallback, fallback_iter, useQueue, isQueued){
+function nextRequest(){
+	var qr;
+		
+	if(reqQueue.length > 0){
+		qr = reqQueue.shift();
+		
+		console.log("[UQ] " + reqQueue.length + " left in queue. [" + url + "]");	
+		
+		qrequest("GET", qr.url, null, null, true, 0, useQueue, true).then(
+			function(v){
+				qr.deferred.resolve(v);
+			},
+			function(e){
+				qr.deferred.reject(e);
+			}
+		).catch(
+			function(e){
+				qr.deferred.reject(e);
+			}
+		);
+	}
+}
+
+function qrequest(method, url, data, headers, use_fallback, fallback_iter, useQueue, isQueued, lastResult){
 	var p = q.defer();
 	
 	use_fallback = use_fallback || false;
@@ -38,16 +64,18 @@ function qrequest(method, url, data, headers, use_fallback, fallback_iter, useQu
 	method = method.toUpperCase();
 	isQueued = isQueued || false;
 	useQueue = useQueue || false;
+	lastResult = lastResult || 0;
 	
 	if(method === "GET"){
 		//Queue
 		if(!isQueued && useQueue){
 			p.promise.finally(
 				function(){
-					var qr;
-					
 					numRequests--;
-						
+					//nextRequest();
+					
+					
+					var qr;
 					if(reqQueue.length > 0){
 						qr = reqQueue.shift();
 						
@@ -66,14 +94,14 @@ function qrequest(method, url, data, headers, use_fallback, fallback_iter, useQu
 							}
 						);
 					}
+					
 				}
 			);
 		}
 		
-		//XXX:But this will fail and increment the counter when backing off...
 		//TODO: make num requests domain dependent.
 		//If num running requests is less than max
-		if(numRequests <= maxRequests || !useQueue){
+		if(numRequests < maxRequests || !useQueue || fallback_iter > 0){
 			if(fallback_iter === 0 && useQueue){
 				numRequests++;
 			}
@@ -86,32 +114,29 @@ function qrequest(method, url, data, headers, use_fallback, fallback_iter, useQu
 					//The request was accepted. This implies server rendering. Try back-off.
 					console.log("202. Backing off #" + fallback_iter + "[" + url + "]");
 					
-					//XXX: There is a bug here where when backing off, request is queued immediately.	
-					backoff(method, url, data, headers, true, fallback_iter, useQueue, isQueued).then(
-						function(v){
-							p.resolve(v);
-						},
-						function(e){
-							p.reject(e);
-						}
+					if(lastResult === 503){
+						fallback_iter = 1;
+					}
+					
+					//XXX: If this is the result after a 503, it inherits the retry number instead of resetting.
+					backoff(method, url, data, headers, true, fallback_iter, useQueue, isQueued, 202).then(
+						function(v){p.resolve(v);},
+						function(e){p.reject(e);}
 					);
 				}else{
+					/*
 					console.log(error);
 					if(!error){
 						console.log(response.statusCode);	
 					}
+					*/
 					
 					if(use_fallback && ((error && error.code == 'ECONNRESET') || response.statusCode == 503)){
 						console.log("503/Hangup: Backing off #" + fallback_iter + "[" + url + "]");
-						//console.log(error.code);
-						//XXX: There is a bug here where when backing off, request is queued immediately.	
-						backoff(method, url, data, headers, true, fallback_iter, useQueue, isQueued).then(
-							function(v){
-								p.resolve(v);
-							},
-							function(e){
-								p.reject(e);
-							}
+						
+						backoff(method, url, data, headers, true, fallback_iter, useQueue, isQueued, 503).then(
+							function(v){p.resolve(v);},
+							function(e){p.reject(e);}
 						);
 					}else{
 						console.log("failed url: " + url);
