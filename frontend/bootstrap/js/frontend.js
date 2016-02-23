@@ -1,3 +1,4 @@
+/*
 var filterDropdownIds = ['boardgameartist', 'boardgamedesigner', 'boardgamemechanic', 'boardgamecategory', 'releasetype', 'boardgamepublisher'];
 
 function setLoadButtonState(enabled){
@@ -144,8 +145,6 @@ function loadGeeklist(geeklistid, limit, skip, filter, sort){
 	var list = $('#games');
 	
 	if(skip === 0){
-		list.empty();
-		setLoadButtonState(true);
 		
 		var qs = "?id=" + geeklistid;
 
@@ -331,3 +330,4 @@ function getGeeklists(){
 		}
 	});	
 }
+*/

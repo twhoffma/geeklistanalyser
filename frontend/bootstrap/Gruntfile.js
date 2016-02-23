@@ -47,6 +47,9 @@ module.exports = function(grunt) {
 							'node_modules/bootstrap-multiselect/dist/js/bootstrap-multiselect.js',
 							'node_modules/bootstrap-select/dist/js/bootstrap-select.min.js',
 							'node_modules/html5-history-api/history.min.js',
+							'./js/data.js',
+							'./js/ui.js',
+							'./js/app.js',
 						],
 						dest: '/var/www/hoffy.no/geeklistmonitor/js/',
 						filter: 'isFile'
