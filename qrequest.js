@@ -4,6 +4,18 @@ require('https').globalAgent.maxSockets = 5;
 request = require('request');
 q = require('q');
 
+/*
+var logColors = {
+		colors: {
+			'warn': yellow,
+			'info': green,
+			'error': red
+		}
+	};
+*/
+
+var winston = require('winston');
+
 var maxRequests = 5;
 var maxNumBackoffs = 5;
 var numRequests = 0;
@@ -14,7 +26,7 @@ function backoff(method, url, data, headers, use_fallback, fallback_iter, useQue
 	var delay = (1 + Math.random())*Math.exp(fallback_iter+1);
 	
 	if(fallback_iter <= maxNumBackoffs){
-		console.log(delay + "s [" + url + "]");
+		winston.info(delay + "s [" + url + "]");
 		
 		setTimeout(function(){
 			qrequest(method, url, data, headers, true, fallback_iter+1, useQueue, isQueued, lastResult).then(
@@ -28,6 +40,7 @@ function backoff(method, url, data, headers, use_fallback, fallback_iter, useQue
 		}, 1000*delay);
 	}else{
 		p.reject("Max number of backoffs reached!");
+		winston.error("Max number of backoffs reached!");
 	}
 	
 	return p.promise 
@@ -39,7 +52,7 @@ function nextRequest(){
 	if(reqQueue.length > 0){
 		qr = reqQueue.shift();
 		
-		console.log("[UQ] " + reqQueue.length + " left in queue. [" + url + "]");	
+		winston.info("[UQ] " + reqQueue.length + " left in queue. [" + url + "]");	
 		
 		qrequest("GET", qr.url, null, null, true, 0, useQueue, true).then(
 			function(v){
@@ -79,7 +92,7 @@ function qrequest(method, url, data, headers, use_fallback, fallback_iter, useQu
 					if(reqQueue.length > 0){
 						qr = reqQueue.shift();
 						
-						console.log("[UQ] " + reqQueue.length + " left in queue. [" + url + "]");	
+						winston.info("[UQ] " + reqQueue.length + " left in queue. [" + url + "]");	
 						//We fake one iteration to prevent this from being added recursively..
 						qrequest("GET", qr.url, null, null, true, 0, useQueue, true).then(
 							function(v){
@@ -112,7 +125,7 @@ function qrequest(method, url, data, headers, use_fallback, fallback_iter, useQu
 					p.resolve(response.body);
 				}else if(!error && response.statusCode == 202){
 					//The request was accepted. This implies server rendering. Try back-off.
-					console.log("202. Backing off #" + fallback_iter + "[" + url + "]");
+					winston.info("202. Backing off #" + fallback_iter + "/" + maxNumBackoffs +  " [" + url + "]");
 					
 					if(lastResult === 503){
 						fallback_iter = 1;
@@ -132,17 +145,17 @@ function qrequest(method, url, data, headers, use_fallback, fallback_iter, useQu
 					*/
 					
 					if(use_fallback && ((error && error.code == 'ECONNRESET') || response.statusCode == 503)){
-						console.log("503/Hangup: Backing off #" + fallback_iter + "[" + url + "]");
+						winston.warn("503/Hangup: Backing off #" + fallback_iter + "/" + maxNumBackoffs + " [" + url + "]");
 						
 						backoff(method, url, data, headers, true, fallback_iter, useQueue, isQueued, 503).then(
 							function(v){p.resolve(v);},
 							function(e){p.reject(e);}
 						);
 					}else{
-						console.log("failed url: " + url);
-						console.log(error);
-						console.log("Fallback iteration: #" + fallback_iter);
-						console.log("Fallback active: " + use_fallback);
+						winston.error("failed url: " + url);
+						winston.error(error);
+						winston.error("Fallback iteration: #" + fallback_iter);
+						winston.error("Fallback active: " + use_fallback);
 						p.reject(error);	
 					}
 				}
@@ -150,7 +163,7 @@ function qrequest(method, url, data, headers, use_fallback, fallback_iter, useQu
 			//.finally will take the new item and execute.
 		}else{
 			reqQueue.push({"url": url, "deferred": p});
-			console.log("[Q] " + reqQueue.length + " left in queue. [" + url + "]");	
+			winston.info("[Q] " + reqQueue.length + " left in queue. [" + url + "]");	
 		}
 	}else if(method === "PUT" || method === "POST"){
 		var r = {
@@ -175,9 +188,9 @@ function qrequest(method, url, data, headers, use_fallback, fallback_iter, useQu
 					p.resolve(body);
 					
 				}else{
-					console.log(method.toUpperCase() + " error: " + response.statusCode);
-					console.log(method.toUpperCase() + " error: " + body);
-					console.log(method.toUpperCase() + " url: " + url);
+					winston.error(method.toUpperCase() + " error: " + response.statusCode);
+					winston.error(method.toUpperCase() + " error: " + body);
+					winston.error(method.toUpperCase() + " url: " + url);
 						
 					//console.log("Failed data: " + data);
 					
@@ -196,9 +209,9 @@ function qrequest(method, url, data, headers, use_fallback, fallback_iter, useQu
 				if(response.statusCode == 200){
 					p.resolve(true);
 				}else{
-					console.log("DELETE error: " + response.statusCode);
-					console.log("DELETE error: " + body);
-					console.log(method.toUpperCase() + " url: " + url);
+					winston.error("DELETE error: " + response.statusCode);
+					winston.error("DELETE error: " + body);
+					winston.error(method.toUpperCase() + " url: " + url);
 						
 					//console.log("Failed data: " + data);
 					

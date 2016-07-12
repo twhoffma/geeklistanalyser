@@ -6,8 +6,18 @@
       "name": "Essen 2015 collection of lists",
       "group": "Essen",
       "year": 2015,
-      "update": true,
+      "update": false,
       "objectid": 187433,
+      "visible": true
+    },
+    {
+      "_id": "204856",
+      "type": "geeklist",
+      "name": "Essen 2016 collection of lists",
+      "group": "Essen",
+      "year": 2016,
+      "update": true,
+      "objectid": 204856,
       "visible": true
     }
   ]

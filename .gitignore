@@ -35,3 +35,4 @@ public
 *.stderr
 *.stdout
 *.out
+*.dump
