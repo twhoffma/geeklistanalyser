@@ -41,6 +41,64 @@ function GeeklistStat(geeklistid, statDate){
 	this.minListLength = 0;
 };
 
+var boardgameStats = [];
+var geeklistStats = [];
+
+function getBoardgameStats(geeklistId){
+	return boardgameStats.filter(function(e){
+			return e.geeklistid == geeklistId
+		});
+}
+
+function getGeeklistStats(geeklistId){
+	
+	return geeklistStats.filter(function(e){
+		return e.objectid == geeklistId
+	});
+}
+
+function getBoardgameStat(geeklistId, boardgameId, currentDate, postDate, editDate){
+	var l = boardgameStats.filter(function(e){
+		return e.objectid == boardgameId && e.geeklistid == geeklistId
+	});
+	var i;
+
+	if(l.length === 0){
+		i = new BoardgameStat(boardgameId, geeklistId, currentDate, postDate, editDate);
+		boardgameStats.push(i);
+	}else{
+		i = l[0];
+		
+		//The first post defines creation time.
+		if(Date.parse(i.postdate) > postDate){
+			i.postdate = moment(postDate).format(c.format.dateandtime);
+		}
+		
+		//The latest editdate is the one that is used.
+		if(Date.parse(i.editdate) < editDate){
+			i.editdate = moment(editDate).format(c.format.dateandtime);
+		} 
+	}
+
+	return i
+}
+
+function getGeeklistStat(geeklistId, currentDate){
+	var l = geeklistStats.filter(function(e){
+		return e.objectid == geeklistId
+	});
+	var i;
+		
+	if(l.length === 0){
+		i = new GeeklistStat(geeklistId, currentDate);
+		geeklistStats.push(l);
+	}else{
+		i = l[0];
+	}
+
+	return i
+}
+
 function BoardgameStat(boardgameid, geeklistid, analysisdate, postdate, editdate){
 	this.objectid = boardgameid;
 	this.geeklistid = geeklistid;
@@ -54,9 +112,11 @@ function BoardgameStat(boardgameid, geeklistid, analysisdate, postdate, editdate
 	this.editdate = moment(editdate).format(c.format.dateandtime);
 }
 
+//XXX: Rewrite, should contain rootGeeklist, parentGeeklist, currentGeeklist, visitedGeeklists, boardgameStats, geeklistStats.
 function getGeeklistData(geeklistid, subgeeklistid, geeklists, boardgameStats, geeklistStats){
 	var p = q.defer();
 	var promises = [];
+	
 	
 	//Get the geeklistStats for parent list
 	var geeklistStatList = geeklistStats.filter(function(e){
@@ -72,7 +132,12 @@ function getGeeklistData(geeklistid, subgeeklistid, geeklists, boardgameStats, g
 	}else{
 		geeklistStat = geeklistStatList[0];
 	}
-
+	
+	
+	//TODO: GeeklistStat for the parent list (should be root)
+	//geeklistStat = getGeeklistStat(geeklistid, currentDate);
+	
+	//TODO: Most stats are broken.
 	//Populate geeklist stats
 	geeklistStat.depth += 1;
 	
@@ -89,6 +154,7 @@ function getGeeklistData(geeklistid, subgeeklistid, geeklists, boardgameStats, g
 						var postdate = Date.parse($(this).attr('postdate'));
 						var editdate = Date.parse($(this).attr('editdate'));
 						
+							
 						var bgStats = boardgameStats.filter(function(e){
 							return e.objectid == bgId && e.geeklistid == geeklistid
 						});
@@ -112,6 +178,9 @@ function getGeeklistData(geeklistid, subgeeklistid, geeklists, boardgameStats, g
 							} 
 						}
 						
+						//TODO:
+						//var bgStat = getBoardgameStat(bgId, geeklistid, currentDate, postdate, editdate);
+							
 						//Here we tally all stats.
 						bgStat.cnt++;
 						bgStat.thumbs += thumbs;
@@ -151,6 +220,7 @@ function getGeeklistData(geeklistid, subgeeklistid, geeklists, boardgameStats, g
 					}
 					
 					p.resolve({bgStats: boardgameStats, glStats: geeklistStats});
+					//p.resolve({bgStats: getBoardgameStats(), glStats: getGeeklistStats()});
 				},
 				function(err){
 					console.log(err);
