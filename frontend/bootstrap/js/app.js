@@ -93,11 +93,12 @@
 				loadGeeklist(selectedGeeklist, true);
 			});
 			
-			/*
 			$('#filteringModal').on('shown.bs.modal', function (e) {
-				ui.refreshFilters();
+				//The bug seems related to that the modal dialog is not visible..
+				//ui.refreshFilters();
+				ui.setFilters(filter);
 			});
-			*/
+			
 			/*
 			$('.selects').on("click", function(e){
 				e.stopPropagation();

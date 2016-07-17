@@ -40,19 +40,21 @@ function init_ui(){
 					}
 				});	
 				
-				qs += "&sortby=" + sorting.sortby;
-				qs += "&ascending=" + sorting.ascending; 
-			
+				if(sorting != undefined){
+					if(sorting.sortby != undefined){	
+						qs += "&sortby=" + sorting.sortby;
+					}
+					if(sorting.ascending != undefined){
+						qs += "&ascending=" + sorting.ascending;
+					}
+				}
+				
 				var location = window.history.location || window.location;
 				history.pushState(null, null, location.protocol + '//' + location.host + location.pathname + qs);
 			}
 			
 		},
 		
-		'populateFilterAndSorting': function populateFilterAndSorting(h){
-			//XXX: Stub
-		},
-
 		'getSorting': function getSorting(){
 			return {
 				'sortby': $("#sortby").val(),
@@ -128,8 +130,12 @@ function init_ui(){
 					if(filter[e.name] != undefined){
 						console.log("Found " + e.name);
 						el = $('#'+e.name);
-						el.val(filter[e.name]);
-						//el.selectpicker('val', ""+filter[e.name]);
+						//el.val(""+filter[e.name]);
+						//$(el).selectpicker('refresh');
+						//el.selectpicker();
+						//el.selectpicker('val', parseInt(filter[e.name]));
+						//el.selectpicker('val', "Jim Winslow");
+						//el.selectpicker("refresh");
 					}
 				/*
 				}else if(e.type === 'slider'){
@@ -146,9 +152,11 @@ function init_ui(){
 		},
 		
 		'refreshFilters': function refreshFilters(){
+			//https://github.com/silviomoreto/bootstrap-select/issues/1167
+			$('#boardgamedesigner').selectpicker('val', '298');
 			filternames.forEach(function(e){
 				if(e.type === 'text'){
-					$('#'+e.name).selectpicker('refresh');
+					//$('#'+e.name).selectpicker('val', 'refresh');
 				/*
 				}else if(e.type === 'slider'){
 					var v = getSliderValue(e.name);

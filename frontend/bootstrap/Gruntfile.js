@@ -72,8 +72,7 @@ module.exports = function(grunt) {
       		js_frontend: {
         		src: [
         		  	'./bower_components/jquery/dist/jquery.js',
-       			  	'./bower_components/bootstrap/dist/js/bootstrap.js',
-        			'./js/frontend.js'
+       			  	'./bower_components/bootstrap/dist/js/bootstrap.js'
         		],
         		dest: '/var/www/hoffy.no/geeklistmonitor/js/frontend.js'
       		},
