@@ -3,6 +3,8 @@
 		var ui;
 		var data;
 		var selectedGeeklist = 0;
+		var sorting;
+		var filter;
 		
 		$(document).ready(function(){
 			ui = init_ui();
@@ -14,13 +16,13 @@
 
 			
 			var h = ui.getHistory();
-			console.log(h);
 			
 			if(h.id != undefined){
 				selectedGeeklist = h.id;
 				
 				if(h.sorting != undefined){
 					ui.setSorting(h.sorting);
+					sorting = h.sorting;
 				}
 				
 				data.getGeeklistFilters(h.id).then(function(r){
@@ -32,25 +34,15 @@
 				if(h.filters != undefined){
 					ui.setFilters(h.filters);
 					console.log(h.filters);
+					filter = h.filters;
 				}
 				
-				loadGeeklist(h.id);
+				loadGeeklist(h.id, false);
 			}	
 				
 
 			/*
 			enableMenuButtons(false);
-			
-			//If deep-linking
-			if(Object.keys(h).length !== 0){
-				//XXX: Need to populate filter and sorting menu
-				ui.populateFilterAndSorting(h);
-					
-				data.getGeeklist(h['id'], 0, h['filter'], h['sort'], h['sortby_asc']).then(function(v){
-					ui.renderGeeklist(v, h['sort']);
-				});
-			}
-				
 			*/
 			
 			$('#loadmore').on("click", function(){
@@ -63,7 +55,7 @@
 			});
 				
 			$('.dropdown-menu').on("click", ".geeklist-menu-item", function(){
-				loadGeeklist(this.dataset.geeklistid);
+				loadGeeklist(this.dataset.geeklistid, true);
 				/*
 				var sorting;
 				
@@ -98,9 +90,14 @@
 			});
 			
 			$('button#sort,button#filter').on("click", function(){
-				loadGeeklist();
+				loadGeeklist(selectedGeeklist, true);
 			});
 			
+			/*
+			$('#filteringModal').on('shown.bs.modal', function (e) {
+				ui.refreshFilters();
+			});
+			*/
 			/*
 			$('.selects').on("click", function(e){
 				e.stopPropagation();
@@ -133,9 +130,9 @@
 			});
 			*/
 			
-			function loadGeeklist(geeklistId){
-				var sorting;
-				var filter;
+			function loadGeeklist(geeklistId, isUser){
+				//var sorting;
+				//var filter;
 				//enableMenuButtons(false);
 				
 				if(geeklistId != undefined){
@@ -152,9 +149,12 @@
 				ui.enableSpinner();
 				*/
 				
-				if(selectedGeeklist != 0){	
-					sorting = ui.getSorting();
-					filter = ui.getFilters();
+				if(selectedGeeklist != 0){
+					if(isUser === true){
+						sorting = ui.getSorting();
+						filter = ui.getFilters();
+					}
+					
 					ui.setHistory(selectedGeeklist, 0, 0, filter, sorting);
 					
 					//console.log(filters);

@@ -4,11 +4,11 @@
   "description": "",
   "main": "Gruntfile.js",
   "dependencies": {
-    "bootstrap-multiselect": "^0.9.13-1",
-    "bootstrap-select": "^1.7.4",
-    "bootstrap-slider": "^5.1.0",
+    "bootstrap-multiselect": "^0.9.13",
+    "bootstrap-select": "^1.10.0",
+    "bootstrap-slider": "^5.3.6",
     "grunt": "^0.4.5",
-    "html5-history-api": "^4.2.4"
+    "html5-history-api": "^4.2.7"
   },
   "devDependencies": {
     "grunt-contrib-concat": "^0.5.1",

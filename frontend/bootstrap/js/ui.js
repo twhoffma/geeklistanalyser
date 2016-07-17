@@ -121,11 +121,34 @@ function init_ui(){
 		},
 			
 		'setFilters': function setFilters(filter){
+			var el;
+			
 			filternames.forEach(function(e){
 				if(e.type === 'text'){
 					if(filter[e.name] != undefined){
-						$('#'+e.name).val(filter[e.name]);
+						console.log("Found " + e.name);
+						el = $('#'+e.name);
+						el.val(filter[e.name]);
+						//el.selectpicker('val', ""+filter[e.name]);
 					}
+				/*
+				}else if(e.type === 'slider'){
+					var v = getSliderValue(e.name);
+					
+					v.each(function(f){
+						filter[f.name] = f.value;
+					});	
+				*/
+				}
+    		});
+			
+			
+		},
+		
+		'refreshFilters': function refreshFilters(){
+			filternames.forEach(function(e){
+				if(e.type === 'text'){
+					$('#'+e.name).selectpicker('refresh');
 				/*
 				}else if(e.type === 'slider'){
 					var v = getSliderValue(e.name);
