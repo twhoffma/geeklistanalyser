@@ -322,7 +322,7 @@ function saveFilterRanges(filterValue){
 function getGeeklistFilters(geeklistid){
 	var url = getViewURL('geeklistfilters', 'geeklistfilters')+'?start_key=[{id}, {}]&end_key=[{id}]&include_docs=true&descending=true';
 	url = url.replace(/\{id\}/g, geeklistid);
-	
+	console.log(url);	
 	return getDocs(url)	
 }
 

@@ -43,7 +43,7 @@ app.use(uri + '/data/getGeeklistFilters', function(req, res, next){
 	if(p.geeklistid != undefined){
 		db.getGeeklistFilters(p.geeklistid).then(
 			function(val){
-				var r = JSON.stringify(val);
+				var r = JSON.stringify(val[0].doc);
 				
 				cacheResponse(req._parsedUrl.href, r);
 					
