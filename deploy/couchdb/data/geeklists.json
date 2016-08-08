@@ -151,6 +151,16 @@
       "visible": true
     },
     {
+      "_id": "193588",
+      "type": "geeklist",
+      "name": "SPIEL 2016 Preview",
+      "group": "Essen",
+      "year": 2016,
+      "update": true,
+      "objectid": 193588,
+      "visible": true
+    },
+    {
       "_id": "630",
       "type": "geeklist",
       "name": "Nürnberg 2002 Canonical List",

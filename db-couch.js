@@ -397,16 +397,16 @@ function srchBoardgames(geeklistid, filters, sortby, sortby_asc, skip, lim){
 	}
 	
 	//Number of players
-	if(filters["playersmin"] != undefined || filters["playersmax"] != undefined){
+	if(filters["numplayersmin"] != undefined || filters["numplayersmax"] != undefined){
 		q['query']['bool']['minimum_should_match'] = 1;
 		q['query']['bool']['should'] = [];
-		q['query']['bool']['should'].push(filterRange("minplayers", filters["playersmin"] || -Infinity, filters["playersmax"] || Infinity));
-		q['query']['bool']['should'].push(filterRange("maxplayers", filters["playersmin"] || -Infinity, filters["playersmax"] || Infinity));
+		q['query']['bool']['should'].push(filterRange("minplayers", filters["numplayersmin"] || -Infinity, filters["numplayersmax"] || Infinity));
+		q['query']['bool']['should'].push(filterRange("maxplayers", filters["numplayersmin"] || -Infinity, filters["numplayersmax"] || Infinity));
 	}
 		
 	//Year published
-	if(filters["minyearpublished"] != undefined || filters["maxyearpublished"] != undefined){
-		q['query']['bool']['must'].push(filterRange("yearpublished", filters["minyearpublished"] || -Infinity, filters["maxyearpublished"] || Infinity));
+	if(filters["yearpublishedmin"] != undefined || filters["yearpublishedmin"] != undefined){
+		q['query']['bool']['must'].push(filterRange("yearpublished", filters["yearpublishedmin"] || -Infinity, filters["yearpublishedmax"] || Infinity));
 	}
 	
 	//Sorting

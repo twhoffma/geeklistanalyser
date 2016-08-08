@@ -18,7 +18,8 @@ function init_data(){
 			})
 		},
 		
-		'getGeeklist': function getGeeklist(geeklistid, skip, filter, sorting){
+		'getGeeklist': function getGeeklist(geeklistid, skip, filter, sorting = {}){
+			/*
 			var filternames = [
 				'boardgamedesigner', 
 				'boardgameartist', 
@@ -33,6 +34,7 @@ function init_data(){
 				'minyearpublished', 
 				'maxyearpublished'
 			]; 
+			*/
 			
 			skip = skip || 0;
 			filter = filter || {};

@@ -14,12 +14,15 @@ function FilterValue(analysisDate, geeklistId){
 	this.type = 'filtervalue';
 	this.analysisDate = analysisDate;
 	this.objectid = geeklistId;
-	this.maxplaytime = -Infinity; 
-	this.minplaytime = Infinity;
-	this.maxplayers = -Infinity; 
-	this.minplayers = Infinity;
-	this.maxyearpublished = -Infinity; 
-	this.minyearpublished = Infinity;
+	this.playingtime = {'min': Infinity, 'max': -Infinity}
+	this.numplayers = {'min': Infinity, 'max': -Infinity}
+	this.yearpublished = {'min': Infinity, 'max': -Infinity}
+	//this.maxplaytime = -Infinity; 
+	//this.minplaytime = Infinity;
+	//this.maxplayers = -Infinity; 
+	//this.minplayers = Infinity;
+	//this.maxyearpublished = -Infinity; 
+	//this.minyearpublished = Infinity;
 	this.boardgamedesigner = []; 
 	this.boardgameartist = [];
 	this.boardgamecategory = []; 
@@ -464,13 +467,13 @@ db.getGeeklists(true, false).then(
 					}, filterValue[prop]).sort(function(a, b){return (a.name > b.name)});
 				});
 				
-				filterValue.maxplaytime = Math.max(filterValue.maxplaytime, boardgame.maxplaytime || -Infinity, boardgame.playingtime || -Infinity);
-				filterValue.minplaytime = Math.min(filterValue.minplaytime, boardgame.minplaytime || Infinity, boardgame.playingtime || Infinity);
-				filterValue.maxplayers = Math.max(filterValue.maxplayers, boardgame.maxplayers || -Infinity);
-				filterValue.minplayers = Math.min(filterValue.minplayers, boardgame.minplayers || Infinity);
+				filterValue.playingtime.max = Math.max(filterValue.playingtime.max, boardgame.maxplaytime || -Infinity, boardgame.playingtime || -Infinity);
+				filterValue.playingtime.min = Math.min(filterValue.playingtime.min, boardgame.minplaytime || Infinity, boardgame.playingtime || Infinity);
+				filterValue.numplayers.max = Math.max(filterValue.numplayers.max, boardgame.maxplayers || -Infinity);
+				filterValue.numplayers.min = Math.min(filterValue.numplayers.min, boardgame.minplayers || Infinity);
 				
-				filterValue.maxyearpublished = Math.max(filterValue.maxyearpublished, boardgame.yearpublished || -Infinity);
-				filterValue.minyearpublished = Math.min(filterValue.minyearpublished, boardgame.yearpublished || Infinity);
+				filterValue.yearpublished.max = Math.max(filterValue.yearpublished.max, boardgame.yearpublished || -Infinity);
+				filterValue.yearpublished.min = Math.min(filterValue.yearpublished.min, boardgame.yearpublished || Infinity);
 			}
 		}
 		

@@ -1,19 +1,19 @@
 function init_ui(){
 	var fn = {};
 	var filternames = [
-		{'name': 'boardgamedesigner', 'type': 'text'},
-		{'name': 'boardgameartist',  'type': 'text'},
-		{'name': 'boardgamemechanic',  'type': 'text'},
-		{'name': 'boardgamecategory',  'type': 'text'},
-		{'name': 'boardgamepublisher',  'type': 'text'},
-		{'name': 'releasetype', 'type': 'text'},
+		{'name': 'boardgamedesigner', 'type': 'selectpicker'},
+		{'name': 'boardgameartist',  'type': 'selectpicker'},
+		{'name': 'boardgamemechanic',  'type': 'selectpicker'},
+		{'name': 'boardgamecategory',  'type': 'selectpicker'},
+		{'name': 'boardgamepublisher',  'type': 'selectpicker'},
+		{'name': 'releasetype', 'type': 'dropdown'},
 		{'name': 'playingtime', 'type': 'slider'},
-		{'name': 'players', 'type': 'slider'},
+		{'name': 'numplayers', 'type': 'slider'},
 		{'name': 'yearpublished', 'type': 'slider'},
 		{'name': 'playingtimemin', 'type': 'sliderValue'},
 		{'name': 'playingtimemax', 'type': 'sliderValue'},
-		{'name': 'playersmin', 'type': 'sliderValue'},
-		{'name': 'playersmax', 'type': 'sliderValue'},
+		{'name': 'numplayersmin', 'type': 'sliderValue'},
+		{'name': 'numplayersmax', 'type': 'sliderValue'},
 		{'name': 'yearpublishedmin', 'type': 'sliderValue'},
 		{'name': 'yearpublishedmax', 'type': 'sliderValue'}
 	]; 
@@ -26,6 +26,29 @@ function init_ui(){
 		'releasetype', 
 		'boardgamepublisher'
 	];
+
+	var sortingDefault = {
+		'sortby': 'crets',
+		'ascending': 0
+	};
+	
+	function getSliderValue(id){
+		var filter = [];
+		
+		var s = $('input#' + id).slider();
+		var val = s.slider('getValue');
+		var min = s.slider('getAttribute', 'min');
+		var max = s.slider('getAttribute', 'max');
+			
+		if(val[0] > min){
+			filter.push({'name': id + 'min', 'value': val[0]});
+		}
+
+		if(val[1] < max){
+			filter.push({'name': id + 'max', 'value': val[1]});
+		}
+		return filter
+	}
 	
 	fn = {
 		'setHistory': function setHistory(geeklistid, limit, skip, filter, sorting){
@@ -59,12 +82,15 @@ function init_ui(){
 			return {
 				'sortby': $("#sortby").val(),
 				'ascending': $("input[name='sortby_asc']:checked").val()
-			}
+			};
 		},
 		
-		'setSorting': function setSorting(sorting){
-			var sortby = sorting.sortby || 'crets';
-			var ascending = sorting.ascending || 0;
+		'setSorting': function setSorting(sorting = {}){
+			var sortby;
+			var ascending;
+			
+			sortby = sorting.sortby || sortingDefault.sortby;
+			ascending = sorting.ascending || sortingDefault.ascending;
 			
 			$("#sortby").val(sortby);
 			$("input[name='sortby_asc']:checked").val(ascending);
@@ -106,18 +132,33 @@ function init_ui(){
 		'populateFilters': function populateFilters(r){
 			filternames.forEach(function(e){
 				if(r[e.name] != undefined){
-					
+					var v = r[e.name];	
 					var el = $('#' + e.name);
-					el.find('option').remove();
-					el.append('<option value="">Any</option>');
-					
-					r[e.name].forEach(function(f){
-						el.append('<option value="' + f.objectid + '">' + f.name + '</option>');
-					});
-
-					el.selectpicker('refresh');
+					if(e.type === 'selectpicker' || e.type === 'dropdown'){
+						el.find('option').remove();
+						el.append('<option value="">Any</option>');
+						
+						v.forEach(function(f){
+							el.append('<option value="' + f.objectid + '">' + f.name + '</option>');
+						});
+						
+						if(e.type === 'selectpicker'){
+							el.selectpicker('refresh');
+						}
+					}else if(e.type === 'slider'){
+						el.slider({
+							min: v.min, 
+							max: v.max, 
+							value: [v.min, v.max], 
+							tooltip: 'always', 
+							tooltip_split: true,
+							scale: 'logarithmic'
+						});
+						el.slider('refresh');
+						
+						//setSliderValue(r[e.name]);
+					}
 				}else{
-					//console.log(e.name);
 				}
 			});		
 		},
@@ -126,89 +167,63 @@ function init_ui(){
 			var el;
 			
 			filternames.forEach(function(e){
-				if(e.type === 'text'){
-					if(filter[e.name] != undefined){
-						console.log("Found " + e.name);
-						el = $('#'+e.name);
-						//el.val(""+filter[e.name]);
-						//$(el).selectpicker('refresh');
-						//el.selectpicker();
-						//el.selectpicker('val', parseInt(filter[e.name]));
-						//el.selectpicker('val', "Jim Winslow");
-						//el.selectpicker("refresh");
-					}
-				/*
-				}else if(e.type === 'slider'){
-					var v = getSliderValue(e.name);
+				if(filter[e.name] != undefined){
+					el = $('#'+e.name);
+
 					
-					v.each(function(f){
-						filter[f.name] = f.value;
-					});	
-				*/
-				}
+					if(e.type === 'selectpicker'){
+						el.selectpicker('val', parseInt(filter[e.name]));
+					}else if(e.type === 'dropdown'){
+						el.val(filter[e.name]);
+					}else if(e.type === 'slider'){
+						var s = $('input#' + e.name).slider();
+						var min = parseInt(filter[e.name + 'min'] || s.slider('getAttribute', 'min'));
+						var max = parseInt(filter[e.name + 'max'] || s.slider('getAttribute', 'max'));
+						var v = [min, max];
+						s.slider('setValue', v);
+					}
+				} 
     		});
-			
-			
 		},
 		
+		/*	
 		'refreshFilters': function refreshFilters(){
 			//https://github.com/silviomoreto/bootstrap-select/issues/1167
 			$('#boardgamedesigner').selectpicker('val', '298');
 			filternames.forEach(function(e){
 				if(e.type === 'text'){
 					//$('#'+e.name).selectpicker('val', 'refresh');
-				/*
 				}else if(e.type === 'slider'){
 					var v = getSliderValue(e.name);
 					
 					v.each(function(f){
 						filter[f.name] = f.value;
 					});	
-				*/
 				}
     		});
 		},
-			
+		*/	
+		
 		'getFilters': function getFilters(){
 			var filter = {};	
 				
 			filternames.forEach(function(e){
-				if(e.type === 'text'){
+				if(e.type === 'selectpicker' || e.type === 'dropdown'){
 					if($('#'+e.name).val() !== null && $('#'+e.name).val() !== ''){
 						filter[e.name] = $('#'+e.name).val();
 					}
-				/*
 				}else if(e.type === 'slider'){
 					var v = getSliderValue(e.name);
-					
-					v.each(function(f){
+					v.forEach(function(f){
 						filter[f.name] = f.value;
 					});
-				*/	
 				}
     		});
 			
 			return filter
 		},
 		
-		'getSliderValue': function getSliderValue(id){
-			var filter = [];
-			
-			var s = $('#' + id).slider();	
-			var sVal = s.slider('getValue');
-			var sMin = s.slider('getAttribute', 'min');
-			var sMax = s.slider('getAttribute', 'max');
-			
-			if(sVal[0] > sMin){
-				filter.push({'name': id + 'min', 'value': sVal[0]});
-			}
-
-			if(sVal[1] < sMax){
-				filter.push({'name': id + 'max', 'value': sVal[1]});
-			}
-
-			return filter
-		},
+		//'getSliderValue': getSliderValue,
 		
 		'enableMenuButtons': function enableMenuButtons(enabled){
 			$('button#menuBtnSort').prop('disabled', !enabled);
@@ -227,10 +242,12 @@ function init_ui(){
 			
 			$("#spinner").remove();
 			
+			/*	
 			if(r.length === 0){
 				setLoadButtonState(false);
 			}
-
+			*/
+			
 			sortby = sortby || '';
 				
 			for(i = 0; i < r.length; i++){
@@ -341,8 +358,9 @@ function init_ui(){
 		},
 
 		'resetSorting': function resetSorting(){
-			$('#sortby').val('crets');
-			$('.glyphicon-sort-by-attributes').css('color', 'black');
+			//setSorting();
+			//$('#sortby').val('crets');
+			//$('.glyphicon-sort-by-attributes').css('color', 'black');
 		},
 		
 		'renderMenuGeeklists': function renderMenuGeeklists(r){
@@ -377,25 +395,5 @@ function init_ui(){
 		}
 	}
 	
-	/*
-	fn['getHistory'] = getHistory;	
-	fn['setHistory'] = setHistory;
-	
-	fn['getFilters'] = getFilters;	
-	fn['isDefaultFilters'] = isDefaultFilters;
-	fn['isDefaultSlider'] = isDefaultSlider;
-	fn['resetFilters'] = resetFilters;
-	
-	fn['getSorting'] = getSorting;	
-	fn['isDefaultSorting'] = isDefaultSorting;
-	fn['resetSorting'] = resetSorting;
-	
-	fn['populateFilterAndSorting'] = populateFilterAndSorting;
-	fn['renderGeeklist'] = renderGeeklist;
-	fn['renderMenuGeeklists'] = renderMenuGeeklists;
-	
-	fn['enableMenuButtons'] = enableMenuButtons;
-	fn['setLoadButtonState'] = setLoadButtonState;
-	*/
 	return fn
 }

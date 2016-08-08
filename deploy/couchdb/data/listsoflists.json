@@ -18,7 +18,8 @@
       "year": 2016,
       "update": true,
       "objectid": 204856,
-      "visible": true
+      "visible": true,
+	  "excluded_geeklists": [211885, 209962, 210472, 210225, 211886]
     }
   ]
 }

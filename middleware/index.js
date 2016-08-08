@@ -43,11 +43,15 @@ app.use(uri + '/data/getGeeklistFilters', function(req, res, next){
 	if(p.geeklistid != undefined){
 		db.getGeeklistFilters(p.geeklistid).then(
 			function(val){
-				var r = JSON.stringify(val[0].doc);
+				if(val.length > 0){
+					var r = JSON.stringify(val[0].doc);
 				
-				cacheResponse(req._parsedUrl.href, r);
+					cacheResponse(req._parsedUrl.href, r);
 					
-				res.end(r);
+					res.end(r);
+				}else{
+					res.end("{}");
+				}
 			}
 		).catch(function(e){
 			console.log("Error!");

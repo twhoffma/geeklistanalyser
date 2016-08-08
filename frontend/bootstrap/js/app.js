@@ -25,14 +25,9 @@
 					sorting = h.sorting;
 				}
 				
-				data.getGeeklistFilters(h.id).then(function(r){
-					//console.log(r);
-					ui.populateFilters(r);
-				});
-				
-				//TODO: Parse filters
+				//Parse filters
 				if(h.filters != undefined){
-					ui.setFilters(h.filters);
+					//ui.setFilters(h.filters);
 					console.log(h.filters);
 					filter = h.filters;
 				}
@@ -49,44 +44,14 @@
 				//var filter = ui.getFilters();
 				//var sorts = ui.getSorting();
 				
-				data.getGeeklist(selectedGeeklist, $('.gameline').length).then(function(r){
+				console.log("loading more from " + selectedGeeklist);	
+				data.getGeeklist(selectedGeeklist, $('.gameline').length, filter, sorting).then(function(r){
 					ui.renderGeeklist(r, '', selectedGeeklist, false);
 				});
 			});
 				
 			$('.dropdown-menu').on("click", ".geeklist-menu-item", function(){
-				loadGeeklist(this.dataset.geeklistid, true);
-				/*
-				var sorting;
-				
-				selectedGeeklist = this.dataset.geeklistid;
-				
-				sorting = ui.getSorting();
-				console.log(sorting);
-				
-				data.getGeeklist(selectedGeeklist).then(function(r){
-					ui.renderGeeklist(r, '', selectedGeeklist, true);
-				});
-				
-			
-					//enableMenuButtons(false);
-				*/
-						
-				/*
-				data.loadGeeklistFilters(selectedGeeklist).then(function(r){
-					
-				});
-				
-				ui.resetFilters();
-				ui.resetSorting();
-				ui.enableSpinner();
-				*/
-
-				/*	
-				$('#listname').html($(this).text());
-				enableMenuButtons(true);
-				setLoadButtonState(true);
-				*/
+				loadGeeklist(this.dataset.geeklistid, false);
 			});
 			
 			$('button#sort,button#filter').on("click", function(){
@@ -95,7 +60,6 @@
 			
 			$('#filteringModal').on('shown.bs.modal', function (e) {
 				//The bug seems related to that the modal dialog is not visible..
-				//ui.refreshFilters();
 				ui.setFilters(filter);
 			});
 			
@@ -136,9 +100,41 @@
 				//var filter;
 				//enableMenuButtons(false);
 				
-				if(geeklistId != undefined){
+				
+				if(geeklistId === undefined){
+					return 
+				}else if(selectedGeeklist !== geeklistId){
+					console.log("reset. New geeklist. Is " + geeklistId + " was " + selectedGeeklist);	
 					selectedGeeklist = geeklistId;
+					
+					filters = {};
+					sorting = ui.sortingDefault;
+					
 				}
+
+				if(isUser === true){
+					console.log("user");
+					sorting = ui.getSorting();
+					filter = ui.getFilters();
+					
+				}else{
+					data.getGeeklistFilters(selectedGeeklist).then(function(r){
+						console.log("non-user/menu reload " + selectedGeeklist);
+						//console.log(r);
+						ui.populateFilters(r);
+							
+						//ui.resetFilters(filter);
+						ui.setSorting(sorting);
+							
+						return true
+					});
+				}
+				
+				ui.setHistory(selectedGeeklist, 0, 0, filter, sorting);
+				
+				data.getGeeklist(selectedGeeklist, 0, filter, sorting).then(function(r){
+					ui.renderGeeklist(r, '', selectedGeeklist, true);
+				});
 				
 				/*
 				data.loadGeeklistFilters(selectedGeeklist).then(function(r){
@@ -150,10 +146,13 @@
 				ui.enableSpinner();
 				*/
 				
+				/*
 				if(selectedGeeklist != 0){
 					if(isUser === true){
 						sorting = ui.getSorting();
 						filter = ui.getFilters();
+						
+						console.log(sorting);
 					}
 					
 					ui.setHistory(selectedGeeklist, 0, 0, filter, sorting);
@@ -164,6 +163,7 @@
 						ui.renderGeeklist(r, '', selectedGeeklist, true);
 					});
 				}
+				*/
 			}
 		});
 	}
