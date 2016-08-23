@@ -12,7 +12,8 @@
 	<link href="css/bootstrap.min.css" rel="stylesheet">
 	<link href="css/bootstrap-slider.min.css" rel="stylesheet">
 	<link href="css/bootstrap-select.min.css" rel="stylesheet">
-
+	
+	<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" />
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -33,136 +34,6 @@
 	<script src="js/ui.js"></script>
 	<script src="js/data.js"></script>
 	<script src="js/app.js"></script>
-	
-	<!--	
-	<script>
-		var selectedGeeklist = 0;
-		
-		function enableMenuButtons(enabled){
-			$('button#menuBtnSort').prop('disabled', !enabled);
-			$('button#menuBtnFilter').prop('disabled', !enabled);
-		}		
-	
-		$(document).ready(function(){
-			getGeeklists();
-			enableMenuButtons(false);
-			
-			//Check if a geeklist is requested in URL
-			if(window.location.search){
-				var qs = window.location.search.substring(1);
-				
-				var params = qs.split("&").reduce(
-					function(prev, curr){
-						var p = curr.split("="); 
-						prev[p[0]] = decodeURIComponent(p[1]);
-
-						return prev
-					}, 
-					{}
-				);
-				
-				console.log("Query string: " + qs);
-					
-				if(params["id"] && params["id"] | 0 == params["id"]){
-					loadGeeklistFilters(params["id"]);
-					resetFilters();
-					resetSorting();
-
-					selectedGeeklist = params["id"];
-
-					//vanillaJS - just for fun.
-					//If other parameters are set, populate sorting and filters
-					Object.keys(params).filter(function(k){return k !== "id"}).forEach(function(k){
-						var e;
-						if(k === "sortby_asc"){
-							e = $('#' + k + "[value=" + params[k] + "]");
-							console.log('XXX Bug! #' + k + "[value='" + params[k] + "']");
-						}else{
-							e = $('#' + k);
-						}
-						
-						if(e){
-							if(["boardgameartist", "boardgamedesigner", "boardgamemechanic", "boardgamecategory", "releasetype", "boardgamepublisher"].indexOf(k) > -1)
-							{
-								//Some kind of bug preventing value from being set
-								e.selectpicker('val', params[k]);
-								console.log("yay! " + k);
-								e.val(params[k]);
-								console.log(e.val());
-								console.log(params[k]);	
-							}else if(["playingtime", "numplayers", "yearpublished"].indexOf(k) > 0){
-								var s = e.slider();
-								s.slider("setValue", JSON.parse(params[k]));	
-							}else if(["sortby_asc"].indexOf(k) > 0){
-								e.prop("checked", true);
-								//e.val(params[k]);
-							}else{
-								console.log("#" + k + ": " + params[k]);
-								e.val(params[k]);
-							}
-
-							e.change();
-						}
-					});
-					
-					//Load geeklist
-					loadGeeklist(params["id"], 10, 0);
-					
-					enableMenuButtons(true);
-					setLoadButtonState(true);
-				}
-			}
-				
-			$('#loadmore').on("click", function(){
-				loadGeeklist(selectedGeeklist, 10, $('.gameline').length);
-			});
-			
-			$('.dropdown-menu').on("click", ".geeklist-menu-item", function(){
-				enableMenuButtons(false);
-				
-				selectedGeeklist = this.dataset.geeklistid;
-				loadGeeklistFilters(selectedGeeklist);	
-				resetFilters();
-				resetSorting();
-				loadGeeklist(selectedGeeklist, 10, 0);
-			
-				$('#listname').html($(this).text());
-				enableMenuButtons(true);
-				setLoadButtonState(true);
-			});
-
-			$('.selects').on("click", function(e){
-				e.stopPropagation();
-			});
-			
-			$('button#sort,button#filter').on("click", function(){
-				loadGeeklist(selectedGeeklist, 10, 0);
-			});
-
-			$('#sortingModal').on('change', 'input,select', function(e){
-				$('.glyphicon-sort-by-attributes').css('color', isDefaultSorting() ? 'black' : 'red');
-				console.log("sorting change triggered!");
-			});
-			
-			$('#filteringModal').on('change', 'input,select', function(e){
-				$('.glyphicon-filter').css('color', isDefaultFilters() ? 'black' : 'red');
-				console.log("filtering change triggered!");
-			});
-
-			$('#resetSorting').on('click', function(){
-				resetSorting();
-			});
-			
-			$('#resetFilters').on('click', function(){
-				resetFilters();
-			});
-
-			['#boardgamepublisher', '#boardgamedesigner'].forEach(function(e){
-				$(e).selectpicker();
-			});
-		});
-	</script>
-	-->
 	
 	<nav class="navbar navbar-default">
   		<div class="container-fluid">
@@ -198,18 +69,21 @@
       			</form>
 				-->
       			<ul class="nav navbar-nav navbar-right">
+					<button type="button" class="btn btn-link btn-large" data-toggle="modal" data-target="#modSortingAndFilters" id="menuBtnSort" alt="Options"><i class="fa fa-cogs" aria-hidden="true"></i>Options</button>
+					<!--
 					<button type="button" class="btn btn-link btn-sm" data-toggle="modal" data-target="#sortingModal" id="menuBtnSort"><span class="glyphicon glyphicon-sort-by-attributes"></span>Sorting</button>
 					<button type="button" class="btn btn-link btn-sm" data-toggle="modal" data-target="#filteringModal" id="menuBtnFilter"><span class="glyphicon glyphicon-filter"></span>Filters</button>
 					<button type="button" class="btn btn-link btn-sm" data-toggle="modal" data-target="#infoModal" id="menuBtnInfo"><span class="glyphicon glyphicon-info-sign"></span>Info</button>
 					<button type="button" class="btn btn-link btn-sm"><span class="glyphicon glyphicon-stats"></span>Graphs</button>
+					-->
       			</ul>
     		</div><!-- /.navbar-collapse -->
   		</div><!-- /.container-fluid -->
 	</nav>
+	<!--
 	<div id="sortingModal" class="modal fade" role="dialog">
  		<div class="modal-dialog">
 
-    		<!-- Modal content-->
     		<div class="modal-content">
       			<div class="modal-header">
         			<button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -239,10 +113,120 @@
 			</div>
 		</div>
 	</div>
+	-->
+	<div id="modSortingAndFilters" class="modal fade" role="dialog">
+ 		<div class="modal-dialog">
+			
+    		<div class="modal-content">
+      			<div class="modal-header">
+					<button type="button" class="btn btn-default" data-dismiss="modal" id="apply">Apply</button>
+        			<button type="button" class="close" data-dismiss="modal">&times;</button>
+      			</div>
+				<div class="modal-body">
+					<ul class="nav nav-tabs" id="optionTabs">
+  	  	  	  	  	  <li class="active"><a data-toggle="tab" href="#tabSorting">Sorting</a></li>
+  	  	  	  	  	  <li><a data-toggle="tab" href="#tabFilters">Filters</a></li>
+  	  	  	  	  	  <li><a data-toggle="tab" href="#tabInfo">Info</a></li>
+					</ul>
+					
+					<div class="tab-content">
+  	  	  				<div id="tabSorting" class="tab-pane fade in active" role=tabpanel">
+    						<h3>Sorting</h3>
+      						<div>
+								<!--
+								<button type="button" class="btn btn-link btn-sm" style="float:right;" id="resetSorting"><i class="fa fa-reset" aria-hidden="true">Reset</button>
+								-->
+								<form>
+            						<li>
+										<select id="sortby">
+											<option value="crets" selected>Addition time</option>
+											<option value="name">Name</option>
+											<option value="cnt">Count</option>
+											<option value="thumbs">Thumbs</option>
+											<option value="yearpublished">Year</option>
+										</select>
+									</li>	
+									<li>
+										<input type="radio" name="sortby_asc" value="1">Ascending</input>
+										<input type="radio" name="sortby_asc" value="0" checked="checked">Descending</input>
+									</li>
+								</form>
+      						</div>
+						</div>
+  	  					<div id="tabFilters" class="tab-pane fade" role="tabpanel">
+    						<h3>Filters</h3>
+							<div>
+								<!--
+								<button type="button" class="btn btn-link btn-sm" style="float:right;" id="resetFilters"><i class="fa fa-reset" aria-hidden="true" />Reset</button>
+								-->
+								<form>
+									<div class="form-group">
+										<label for="boardgamedesigner">Designer</label>
+										<select id="boardgamedesigner" class="form-control" data-live-search="true"></select>
+									</div>
+									<div class="form-group">
+										<label for="boardgamepublisher">Publisher</label>
+										<select id="boardgamepublisher" class="form-control" data-live-search="true"></select>
+									</div>
+									<div class="form-group">
+										<label for="boardgameartist">Artist</label>
+										<select id="boardgameartist" class="form-control" data-live-search="true"></select>
+									</div>
+									<div class="form-group">
+										<label for="boardgamemechanic">Mechanic</label>
+										<select id="boardgamemechanic" class="form-control" data-live-search="true"></select>
+									</div>
+									<div class="form-group">
+										<label for="boardgamecategory">Category</label>
+										<select id="boardgamecategory" class="form-control" data-live-search="true"></select>
+									</div>
+									<div class="form-group">
+											<label for="releasetype">
+											<select id="releasetype" class="form-control">
+												<option value="">All</option>
+												<option value="boardgame">Boardgames</option>
+												<option value="expansion">Expansions</option>
+												<option value="collection">Collections</option>
+												<option value="reimplementation">Reimplementations</option>
+												<option value="integration">Integrates with..</option>
+											</select>
+									</div>
+									<div class="form-group">
+										<label for="playingtime">Playing Time</label>
+										<input id="playingtime" data-slider-id='playingtime' type="text" data-slider-min="0" data-slider-max="0" data-slider-step="10" data-slider-value="[0,0]"/>
+									</div>
+									<div class="form-group">
+										<label for="numplayers">Number of players</label>
+										<input id="numplayers" data-slider-id='numplayer' type="text" data-slider-min="0" data-slider-max="0" data-slider-step="1" data-slider-value="[0,0]"/>
+									</div>
+									<div class="form-group">
+										<label for="yearpublished">Year Published</label>
+										<!-- <input id="minyearpublished-manual" type="number" step="1" />  -->
+										<input id="yearpublished" data-slider-id='yearpublished' type="text" data-slider-min="0" data-slider-max="0" data-slider-step="1" data-slider-value="[0,0]"/>
+										<!-- <input id="maxyearpublished-manual" type="number" step="1" />  -->
+									</div>
+								</form>
+							</div>
+  	  					</div>
+  	  					<div id="tabInfo" class="tab-pane fade" role=tabpanel">
+    						<h3>Info</h3>
+      						<p>All data is taken for free from BoardGameGeek's XMLAPI. As with that data, this data is strictly for non-commerical use and should not be altered.</p>
+							<p>I made it to get my ducks in a row before Essen 2015 and to learn new technologies. I won't guarantee anything about what you see here. It may be counting right, it may be wrong. In the case where lists-of-lists are available, some lists have been excluded to avoid "poisoning" the data.</p>
+							<p>Please do not try to exploit or crash my server. It's probably not that hard - but we're all friends here right?</p>
+							<p>If you want to play around with the code you can find it on <a href="https://github.com/twhoffma/geeklistanalyser" target="_blank">GitHub</a>.</p>
+  	  	  	  			</div>
+ 					</div>
+				</div>
+      			<div class="modal-footer">
+        			<button type="button" class="btn btn-default" data-dismiss="modal" id="apply">Apply</button>
+      			</div>
+			</div>
+		</div>
+	</div>
+	<!--
 	<div id="filteringModal" class="modal fade" role="dialog">
  		<div class="modal-dialog">
 
-    		<!-- Modal content-->
     		<div class="modal-content">
       			<div class="modal-header">
         			<button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -292,9 +276,7 @@
 						</div>
 						<div class="form-group">
 							<label for="yearpublished">Year Published</label>
-							<!-- <input id="minyearpublished-manual" type="number" step="1" />  -->
 							<input id="yearpublished" data-slider-id='yearpublished' type="text" data-slider-min="0" data-slider-max="0" data-slider-step="1" data-slider-value="[0,0]"/>
-							<!-- <input id="maxyearpublished-manual" type="number" step="1" />  -->
 						</div>
 					</form>
       			</div>
@@ -304,11 +286,12 @@
 			</div>
 		</div>
 	</div>
+	-->
 	<!-- This is the BGG attribution and should be visible on each page load-->
+	<!--
 	<div id="infoModal" class="modal fade" role="dialog">
  		<div class="modal-dialog">
 
-    		<!-- Modal content-->
     		<div class="modal-content">
       			<div class="modal-header">
         			<button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -325,6 +308,7 @@
 			</div>
 		</div>
 	</div>
+	-->
 	<div class="alert alert-warning alert-dismissible" role="alert" id="bggAttribution">
   		<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
   		All this beautiful data is provided by BoardGameGeek and their BGG XML API. You may not use this data or system for commercial purposes or modify the data in any way. Please be nice and respect it ;)

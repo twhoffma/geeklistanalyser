@@ -54,20 +54,35 @@
 				loadGeeklist(this.dataset.geeklistid, false);
 			});
 			
-			$('button#sort,button#filter').on("click", function(){
+			$('button#sort,button#filter,button#apply').on("click", function(){
 				loadGeeklist(selectedGeeklist, true);
 			});
 			
-			$('#filteringModal').on('shown.bs.modal', function (e) {
+			$('#tabFilters').on('shown.bs.tab', function (e) {
 				//The bug seems related to that the modal dialog is not visible..
 				ui.setFilters(filter);
 			});
 			
-			/*
+			$('#resetSorting').on('click', function(){
+				ui.resetSorting();
+			});
+			
+			$('#resetFilters').on('click', function(){
+				ui.resetFilters();
+			});
+
+			$('#optionTabs a').click(function (e) {
+  				e.preventDefault();
+  				$(this).tab('show');
+				console.log("changed tab");
+			})
+			/*	
 			$('.selects').on("click", function(e){
 				e.stopPropagation();
 			});
+			*/
 			
+			/*
 			$('button#sort,button#filter').on("click", function(){
 				loadGeeklist(selectedGeeklist, 10, 0);
 			});
@@ -82,13 +97,6 @@
 				console.log("filtering change triggered!");
 			});
 
-			$('#resetSorting').on('click', function(){
-				ui.resetSorting();
-			});
-			
-			$('#resetFilters').on('click', function(){
-				ui.resetFilters();
-			});
 
 			['#boardgamepublisher', '#boardgamedesigner'].forEach(function(e){
 				$(e).selectpicker();

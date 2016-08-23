@@ -348,9 +348,6 @@ function init_ui(){
 		'resetFilters': function resetFilters(){
 			filterDropdownIds.forEach(function(v){
 				$('#' + v).selectpicker('val', '');
-				//var e = $('#' + v).selectpicker('val', '');
-				
-				//e.Value("");
 			});
 
 
@@ -359,7 +356,8 @@ function init_ui(){
 
 		'resetSorting': function resetSorting(){
 			//setSorting();
-			//$('#sortby').val('crets');
+			$('#sortby').val('crets');
+			$('input[name="sortby_asc"][value="0"]').prop("checked", true);
 			//$('.glyphicon-sort-by-attributes').css('color', 'black');
 		},
 		
