@@ -115,9 +115,8 @@
 					console.log("reset. New geeklist. Is " + geeklistId + " was " + selectedGeeklist);	
 					selectedGeeklist = geeklistId;
 					
-					filters = {};
+					filter = {};
 					sorting = ui.sortingDefault;
-					
 				}
 
 				if(isUser === true){
