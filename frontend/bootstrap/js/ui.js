@@ -35,11 +35,19 @@ function init_ui(){
 	function getSliderValue(id){
 		var filter = [];
 		
-		var s = $('input#' + id).slider();
+		//var s = $('input#' + id).slider();
+		var s = $('#' + id).slider();
 		var val = s.slider('getValue');
 		var min = s.slider('getAttribute', 'min');
 		var max = s.slider('getAttribute', 'max');
-			
+		
+		/*	
+		console.log(id);	
+		console.log(val);
+		console.log(min);	
+		console.log(max);	
+		*/
+		
 		if(val[0] > min){
 			filter.push({'name': id + 'min', 'value': val[0]});
 		}
@@ -47,7 +55,7 @@ function init_ui(){
 		if(val[1] < max){
 			filter.push({'name': id + 'max', 'value': val[1]});
 		}
-		return filter
+		return filter;
 	}
 	
 	fn = {
@@ -63,11 +71,11 @@ function init_ui(){
 					}
 				});	
 				
-				if(sorting != undefined){
-					if(sorting.sortby != undefined){	
+				if(sorting !== undefined){
+					if(sorting.sortby !== undefined){	
 						qs += "&sortby=" + sorting.sortby;
 					}
-					if(sorting.ascending != undefined){
+					if(sorting.ascending !== undefined){
 						qs += "&ascending=" + sorting.ascending;
 					}
 				}
@@ -108,7 +116,7 @@ function init_ui(){
 						var k = p[0];
 						
 						//Only include parameters that have a value
-						if(p.length = 2){
+						if(p.length === 2){
 							var v = decodeURIComponent(p[1]);
 								
 							if(filternames.filter(function(e){return e.name === k}).length > 0){ 
@@ -131,7 +139,7 @@ function init_ui(){
 		
 		'populateFilters': function populateFilters(r){
 			filternames.forEach(function(e){
-				if(r[e.name] != undefined){
+				if(r[e.name] !== undefined){
 					var v = r[e.name];	
 					var el = $('#' + e.name);
 					if(e.type === 'selectpicker' || e.type === 'dropdown'){
@@ -167,7 +175,7 @@ function init_ui(){
 			var el;
 			
 			filternames.forEach(function(e){
-				if(filter[e.name] != undefined){
+				if(filter[e.name] !== undefined){
 					el = $('#'+e.name);
 
 					

@@ -116,7 +116,7 @@ function BoardgameStat(boardgameid, geeklistid, analysisdate, postdate, editdate
 }
 
 //XXX: Rewrite, should contain rootGeeklist, parentGeeklist, currentGeeklist, visitedGeeklists, boardgameStats, geeklistStats.
-function getGeeklistData(geeklistid, subgeeklistid, geeklists, boardgameStats, geeklistStats){
+function getGeeklistData(geeklistid, subgeeklistid, geeklists, boardgameStats, geeklistStats, excluded){
 	var p = q.defer();
 	var promises = [];
 	
@@ -127,7 +127,8 @@ function getGeeklistData(geeklistid, subgeeklistid, geeklists, boardgameStats, g
 	});
 	
 	var geeklistStat;
-	
+	excluded = excluded || [];
+		
 	//XXX: Find out why this is just not passed as a single object to be updated 
 	if(geeklistStatList.length === 0){
 		geeklistStat = new GeeklistStat(geeklistid, currentDate);
@@ -196,8 +197,10 @@ function getGeeklistData(geeklistid, subgeeklistid, geeklists, boardgameStats, g
 							return e.objectid == glId
 						});
 						
+						var isExcluded = (excluded.filter(function(e){return e === parseInt(glId)}).length > 0);
+							
 						//Prevent infinite loops by checking where we've been
-						if(gl.length == 0){
+						if(gl.length === 0 && !isExcluded){
 							console.log('Loading list: ' + glId);
 							geeklists.push({objectid: glId});
 							
@@ -208,6 +211,8 @@ function getGeeklistData(geeklistid, subgeeklistid, geeklists, boardgameStats, g
 									console.log(err);
 								}
 							));
+						}else if(isExcluded){
+							console.log(glId + " is excluded");	
 						}
 						
 						geeklistStat.numLists++;
@@ -317,7 +322,7 @@ db.getGeeklists(true, false).then(
 		var p = [];
 		
 		geeklists.forEach(function(geeklist, i){
-			p.push(getGeeklistData(geeklist.objectid, geeklist.objectid, [], [], []));
+			p.push(getGeeklistData(geeklist.objectid, geeklist.objectid, [], [], [], geeklist.excluded));
 		});
 		console.log("Num lists: " + p.length)	
 		return q.allSettled(p)

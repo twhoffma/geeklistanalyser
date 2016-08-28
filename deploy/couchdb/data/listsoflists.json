@@ -8,7 +8,8 @@
       "year": 2015,
       "update": false,
       "objectid": 187433,
-      "visible": true
+      "visible": true,
+	  "excluded": [] 
     },
     {
       "_id": "204856",
@@ -19,7 +20,7 @@
       "update": true,
       "objectid": 204856,
       "visible": true,
-	  "excluded_geeklists": [211885, 209962, 210472, 210225, 211886]
+	  "excluded": [211885,209962,210472,210225,211886,211820,211782,211353,193588,212177, 212564,209966,209967,209968] 
     }
   ]
 }

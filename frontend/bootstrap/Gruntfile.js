@@ -22,7 +22,8 @@ module.exports = function(grunt) {
 						expand: true,
 						flatten: true, 
 						src: [
-							'bower_components/bootstrap/dist/css/*', 
+							'bower_components/bootstrap/dist/css/*',
+							'node_modules/jquery-ui/themes/base/slider.css', 
 							'node_modules/bootstrap-slider/dist/css/*',
 							'node_modules/bootstrap-multiselect/dist/css/bootstrap-multiselect.css',
 							'node_modules/bootstrap-select/dist/css/bootstrap-select.min.css',
@@ -43,12 +44,14 @@ module.exports = function(grunt) {
 						expand: true,
 						flatten: true,
 						src: [
+							'node_modules/jquery-ui/ui/jquery-1-7.js',
 							'node_modules/bootstrap-slider/dist/bootstrap-slider.min.js',
 							'node_modules/bootstrap-multiselect/dist/js/bootstrap-multiselect.js',
 							'node_modules/bootstrap-select/dist/js/bootstrap-select.min.js',
 							'node_modules/html5-history-api/history.min.js',
 							'./js/data.js',
 							'./js/ui.js',
+							'./js/ui.slider.js',
 							'./js/app.js',
 						],
 						dest: '/var/www/hoffy.no/geeklistmonitor/js/',
@@ -69,13 +72,24 @@ module.exports = function(grunt) {
 			options: {
             	separator: ';',
       		},
-      		js_frontend: {
+			'default':	{
         		src: [
         		  	'./bower_components/jquery/dist/jquery.js',
        			  	'./bower_components/bootstrap/dist/js/bootstrap.js'
         		],
         		dest: '/var/www/hoffy.no/geeklistmonitor/js/frontend.js'
-      		},
+      			},
+			'jquery-ui-custom':	{
+				src: [
+					'./node_modules/jquery-ui/ui/jquery-1.7.js',
+					'./node_modules/jquery-ui/ui/core.js',
+					'./node_modules/jquery-ui/ui/widget.js',
+					'./node_modules/jquery-ui/ui/keycode.js',
+					'./node_modules/jquery-ui/ui/widgets/mouse.js',
+					'./node_modules/jquery-ui/ui/widgets/slider.js',
+				],
+				dest: '/var/www/hoffy.no/geeklistmonitor/js/jquery-ui-custom.js'
+			}
 		},
         cssmin: {
 			target: {

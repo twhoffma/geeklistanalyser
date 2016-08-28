@@ -9,7 +9,8 @@
 		$(document).ready(function(){
 			ui = init_ui();
 			data = init_data();
-			
+			sliders = init_sliders();
+				
 			data.getGeeklists().then(function(r){
 				ui.renderMenuGeeklists(r);
 			});
@@ -123,7 +124,7 @@
 					console.log("user");
 					sorting = ui.getSorting();
 					filter = ui.getFilters();
-					
+					console.log(filter);	
 				}else{
 					data.getGeeklistFilters(selectedGeeklist).then(function(r){
 						console.log("non-user/menu reload " + selectedGeeklist);
