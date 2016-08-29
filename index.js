@@ -193,10 +193,7 @@ function getGeeklistData(geeklistid, subgeeklistid, geeklists, boardgameStats, g
 					}
 				}else if($(this).attr('objecttype') == 'geeklist'){
 						var glId = $(this).attr('objectid');
-						var gl = geeklists.filter(function(e){
-							return e.objectid == glId
-						});
-						
+						var gl = geeklists.filter(function(e){return e.objectid == glId});
 						var isExcluded = (excluded.filter(function(e){return e === parseInt(glId)}).length > 0);
 							
 						//Prevent infinite loops by checking where we've been
@@ -205,7 +202,7 @@ function getGeeklistData(geeklistid, subgeeklistid, geeklists, boardgameStats, g
 							geeklists.push({objectid: glId});
 							
 							//TODO: Is not capturing return values ok? Is it proper form?	
-							promises.push(getGeeklistData(geeklistid, glId, geeklists, boardgameStats, geeklistStats).fail(
+							promises.push(getGeeklistData(geeklistid, glId, geeklists, boardgameStats, geeklistStats, excluded).fail(
 								function(err){ 
 									console.log("Error loading geeklist of geeklist:");
 									console.log(err);

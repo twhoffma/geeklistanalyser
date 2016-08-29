@@ -351,6 +351,26 @@
       "visible": false
     },
     {
+      "_id": "212782",
+      "type": "geeklist",
+      "name": "Essen SPIEL 2016 no shipping math trade",
+      "group": "Essen - Trade Lists",
+      "year": 2016,
+      "update": true,
+      "objectid": 212782,
+      "visible": true
+    },
+    {
+      "_id": "211885",
+      "type": "geeklist",
+      "name": "The Essen 2016 no-shipping auction list",
+      "group": "Essen - Trade Lists",
+      "year": 2016,
+      "update": true,
+      "objectid": 211885,
+      "visible": true
+    },
+    {
       "_id": "191095",
       "type": "geeklist",
       "name": "XMLAPI Test 2",
