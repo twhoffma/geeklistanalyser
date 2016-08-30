@@ -9,7 +9,7 @@
 		$(document).ready(function(){
 			ui = init_ui();
 			data = init_data();
-			sliders = init_sliders();
+			//sliders = init_sliders();
 				
 			data.getGeeklists().then(function(r){
 				ui.renderMenuGeeklists(r);
@@ -36,6 +36,12 @@
 				loadGeeklist(h.id, false);
 			}	
 				
+  			$("body").on("change", ".min,.max", function(e){
+				var min = $(this).parent().children(".min").val();
+				var max = $(this).parent().children(".max").val();
+				console.log("Manual input changed: " + min + " - " + max);
+				$(this).parent().children(".filterslider").slider("values", [min, max]);
+			});
 
 			/*
 			enableMenuButtons(false);
@@ -59,9 +65,20 @@
 				loadGeeklist(selectedGeeklist, true);
 			});
 			
-			$('#tabFilters').on('shown.bs.tab', function (e) {
+			$('body').on('shown.bs.tab', "#optionTabs a", function (e) {
 				//The bug seems related to that the modal dialog is not visible..
+				console.log("ping!");
 				ui.setFilters(filter);
+				/*
+				console.log("attaching event..");	
+  				$("input").off("change", ".min,.max", false);
+  				$("input").on("change", ".min,.max", function(){
+					var min = $(this).parent().children(".min").val();
+					var max = $(this).parent().children(".max").val();
+					console.log("yo! change: " + min + " - " + max);
+					$(this).parent().children("div.filterslider").slider("values", [min, max]);
+				});
+				*/
 			});
 			
 			$('#resetSorting').on('click', function(){
@@ -73,7 +90,7 @@
 			});
 
 			$('#optionTabs a').click(function (e) {
-  				e.preventDefault();
+  				//e.preventDefault();
   				$(this).tab('show');
 				console.log("changed tab");
 			})
@@ -132,8 +149,9 @@
 						console.log("non-user/menu reload " + selectedGeeklist);
 						//console.log(r);
 						ui.populateFilters(r);
+						
 							
-						//ui.resetFilters(filter);
+						ui.setFilters(filter);
 						ui.setSorting(sorting);
 							
 						return true

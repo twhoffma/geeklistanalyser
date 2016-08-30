@@ -8,9 +8,8 @@
     <title>Geeklist Analyzer</title>
 
     <!-- Bootstrap -->
+   <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">	
     <link href="css/frontend.css" rel="stylesheet">
-    <!-- <link href="css/slider.css" rel="stylesheet"> -->
-	
 	<link href="css/bootstrap.min.css" rel="stylesheet">
 	<link href="css/bootstrap-slider.min.css" rel="stylesheet">
 	<link href="css/bootstrap-select.min.css" rel="stylesheet">
@@ -29,10 +28,15 @@
     <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>-->
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <!--<script src="js/bootstrap.min.js"></script>-->
-	<script src="js/frontend.js"></script>
+	<script src="js/jquery.js"></script>
+	<script src="js/widget.js"></script>
+	<script src="js/mouse.js"></script>
+	<script src="js/keycode.js"></script>
+	<script src="js/slider.js"></script>
 	<!-- <script src="js/jquery-1-7.js"></script>-->
 	<!-- <script src="js/jquery-ui-custom.js"></script>-->
-	<script src="js/bootstrap-slider.min.js"></script>
+	<script src="js/bootstrap.js"></script>
+	<!-- <script src="js/bootstrap-slider.min.js"></script>-->
 	<script src="js/bootstrap-select.min.js"></script>
 	<script src="js/history.min.js"></script>
 	<script src="js/ui.js"></script>
@@ -40,6 +44,7 @@
 	<script src="js/app.js"></script>
 	<script src="js/ui.slider.js"></script>
 		
+	
 	<nav class="navbar navbar-default">
   		<div class="container-fluid">
     		<!-- Brand and toggle get grouped for better mobile display -->
@@ -158,18 +163,26 @@
 									</div>
 									<div class="form-group">
 										<label for="playingtime">Playing Time</label>
-										<input id="playingtime" class="rangeslider" data-slider-id='playingtime' type="text" data-slider-min="0" data-slider-max="0" data-slider-step="10" data-slider-value="[0,0]"/>
-										<input class="minman"></input>
-										<input class="maxman"></input>
+										<!-- <input id="playingtime" class="rangeslider" data-slider-id='playingtime' type="text" data-slider-min="0" data-slider-max="0" data-slider-step="10" data-slider-value="[0,0]"/>-->
+										<div id="playingtime" class="filterslider"></div>
+										<input class="min"></input>
+										<input class="max"></input>
 									</div>
 									<div class="form-group">
 										<label for="numplayers">Number of players</label>
-										<input id="numplayers" data-slider-id='numplayer' type="text" data-slider-min="0" data-slider-max="0" data-slider-step="1" data-slider-value="[0,0]"/>
+										<!--<input id="numplayers" data-slider-id='numplayer' type="text" data-slider-min="0" data-slider-max="0" data-slider-step="1" data-slider-value="[0,0]"/>-->
+										<div id="numplayers" class="filterslider"></div>
+										<input class="min"></input>
+										<input class="max"></input>
 									</div>
 									<div class="form-group">
 										<label for="yearpublished">Year Published</label>
 										<!-- <input id="minyearpublished-manual" type="number" step="1" />  -->
-										<input id="yearpublished" data-slider-id='yearpublished' type="text" data-slider-min="0" data-slider-max="0" data-slider-step="1" data-slider-value="[0,0]"/>
+										<!--<input id="yearpublished" data-slider-id='yearpublished' type="text" data-slider-min="0" data-slider-max="0" data-slider-step="1" data-slider-value="[0,0]"/> -->
+										<div id="yearpublished" class="filterslider"></div>
+
+										<input class="min"></input>
+										<input class="max"></input>
 										<!-- <input id="maxyearpublished-manual" type="number" step="1" />  -->
 									</div>
 								</form>
@@ -219,7 +232,7 @@
 	<!-- The actual list -->
 	<div id="geeklist">
 		<h1 id="geeklistname"></h1>
-		
+		<div id="slider-range"></div>	
 		<table class="table table-striped table-bordered">
 			<thead>
 				<tr>

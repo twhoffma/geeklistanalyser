@@ -10,12 +10,12 @@ function init_ui(){
 		{'name': 'playingtime', 'type': 'slider'},
 		{'name': 'numplayers', 'type': 'slider'},
 		{'name': 'yearpublished', 'type': 'slider'},
-		{'name': 'playingtimemin', 'type': 'sliderValue'},
-		{'name': 'playingtimemax', 'type': 'sliderValue'},
-		{'name': 'numplayersmin', 'type': 'sliderValue'},
-		{'name': 'numplayersmax', 'type': 'sliderValue'},
-		{'name': 'yearpublishedmin', 'type': 'sliderValue'},
-		{'name': 'yearpublishedmax', 'type': 'sliderValue'}
+		{'name': 'playingtimemin', 'type': 'sliderValue', 'related': 'playingtime'},
+		{'name': 'playingtimemax', 'type': 'sliderValue', 'related': 'playingtime'},
+		{'name': 'numplayersmin', 'type': 'sliderValue', 'related': 'numplayers'},
+		{'name': 'numplayersmax', 'type': 'sliderValue', 'related': 'numplayers'},
+		{'name': 'yearpublishedmin', 'type': 'sliderValue', 'related': 'yearpublished'},
+		{'name': 'yearpublishedmax', 'type': 'sliderValue', 'related': 'yearpublished'}
 	]; 
 	
 	var filterDropdownIds = [
@@ -36,10 +36,12 @@ function init_ui(){
 		var filter = [];
 		
 		//var s = $('input#' + id).slider();
-		var s = $('#' + id).slider();
-		var val = s.slider('getValue');
-		var min = s.slider('getAttribute', 'min');
-		var max = s.slider('getAttribute', 'max');
+		var s = $('#' + id);
+		var val = s.slider("values");
+		//var val = s.slider('getValue');
+		var min = s.slider( "option", "min" );
+		var max = s.slider( "option", "max" );
+		//var max = s.slider('getAttribute', 'max');
 		
 		/*	
 		console.log(id);	
@@ -142,6 +144,8 @@ function init_ui(){
 				if(r[e.name] !== undefined){
 					var v = r[e.name];	
 					var el = $('#' + e.name);
+					
+					
 					if(e.type === 'selectpicker' || e.type === 'dropdown'){
 						el.find('option').remove();
 						el.append('<option value="">Any</option>');
@@ -154,6 +158,7 @@ function init_ui(){
 							el.selectpicker('refresh');
 						}
 					}else if(e.type === 'slider'){
+						/*
 						el.slider({
 							min: v.min, 
 							max: v.max, 
@@ -162,7 +167,21 @@ function init_ui(){
 							tooltip_split: true,
 							scale: 'logarithmic'
 						});
-						el.slider('refresh');
+						*/
+    					el.slider({
+      	  	  	  	  	  range: true,
+      	  	  	  	  	  min: v.min,
+      	  	  	  	  	  max: v.max,
+      	  	  	  	  	  values: [v.min, v.max],
+      	  	  	  	  	  change: function( event, ui ) {
+							$(this).parent().children("input.min").val(ui.values[0]);
+							$(this).parent().children("input.max").val(ui.values[1]);
+        					//console.log(ui.values[ 0 ] + " - " + ui.values[ 1 ]);
+      	  	  	  	  	  }
+    					});
+
+						el.parent().children("input.min").val(v.min);
+						el.parent().children("input.max").val(v.max);
 						
 						//setSliderValue(r[e.name]);
 					}
@@ -178,17 +197,20 @@ function init_ui(){
 				if(filter[e.name] !== undefined){
 					el = $('#'+e.name);
 
-					
+					console.log(e.name + " " + e.type);
 					if(e.type === 'selectpicker'){
 						el.selectpicker('val', parseInt(filter[e.name]));
 					}else if(e.type === 'dropdown'){
 						el.val(filter[e.name]);
-					}else if(e.type === 'slider'){
-						var s = $('input#' + e.name).slider();
-						var min = parseInt(filter[e.name + 'min'] || s.slider('getAttribute', 'min'));
-						var max = parseInt(filter[e.name + 'max'] || s.slider('getAttribute', 'max'));
+					}else if(e.type === 'sliderValue'){
+						//var min = parseInt(filter[e.name + 'min'] || s.slider('getAttribute', 'min'));
+						//var max = parseInt(filter[e.name + 'max'] || s.slider('getAttribute', 'max'));
+						var s = $('#' + e.related);
+						var min = parseInt(filter[e.related + 'min'] || s.slider('option', 'min'));
+						var max = parseInt(filter[e.related + 'max'] || s.slider('option', 'max'));
+						console.log("set filter: " + min + " - " + max);
 						var v = [min, max];
-						s.slider('setValue', v);
+						s.slider('values', v);
 					}
 				} 
     		});
