@@ -116,6 +116,8 @@
 					console.log("reset. New geeklist. Is " + geeklistId + " was " + selectedGeeklist);	
 					selectedGeeklist = geeklistId;
 					
+					//TODO: Get geeklist info and stats..
+					
 					filter = {};
 					sorting = ui.sortingDefault;
 				}
