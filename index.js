@@ -406,9 +406,9 @@ db.getGeeklists(true, false).then(
 		).then(
 			function(boardgames){
 				//Populate the latest geeklist stat for each boardgame
-				
+			
 				console.log("Adding most recent stats to boardgame data");
-				
+					
 				boardgames.forEach(function(boardgame){
 					bgStats.filter(function(e){return e.objectid === boardgame.objectid}).forEach(function(bgStat){
 						var geeklist = boardgame.geeklists.filter(function(e){return e.objectid === bgStat.geeklistid});
@@ -446,16 +446,21 @@ db.getGeeklists(true, false).then(
 			
 		return db.saveBoardgames(boardgames).then(
 				function(){
+					console.log("Running update function in CouchDB for stats");
+					return db.updateBoardgameStats([boardgames[0].geeklists[0].latest]);
+				}
+			).then(
+				function(){
 					console.log("Updating search engine");
 					
 					return db.updateSearch(boardgames)
 				}
 			).catch(
-			function(err){
-				console.log("Failed to have some boardgames");
-				console.log(err);
-			}
-		)
+				function(err){
+					console.log("Failed to have some boardgames");
+					console.log(err);
+				}
+			)
 	}
 ).then(
 	function(v) { 

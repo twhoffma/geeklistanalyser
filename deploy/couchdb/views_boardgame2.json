@@ -1,0 +1,15 @@
+[
+  {
+    "_id": "_design/boardgame2",
+    "_rev": "3-24db496f9f4d1ebacca2cdda69ebfaf8",
+    "language": "javascript",
+    "views": {
+      "boardgame": {
+        "map": "function(doc) {\n  if(doc.type = 'boardgame'){\n  \tif(doc.geeklists.length > 0){\n      \t  emit(doc.objectid, null);\n  \t}\n  }\n}"
+      }
+    },
+    "updates": {
+      "updatestats": "function(doc, req) {\n       if (!doc || doc.type !== 'boardgame') {\n         return [null, 'No doc found'];\n       }\n       var stats = JSON.parse(req.body);\n       var g = doc.geeklists.filter(function(e){ return e.objectid === stats.geeklistid});\n       g[0].latest = stats;\n       return [doc, 'Document Updated'];\n     }\n"
+    }
+  }
+]

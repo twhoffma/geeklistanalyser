@@ -18,19 +18,30 @@ function getViewURL(dsndoc, view){
 	return dbURL + '/' + dbName + '/_design/' + dsndoc + '/_view/' + view
 }
 
+function getUpdateURL(dsndoc, view){
+	return dbURL + '/' + dbName + '/_design/' + dsndoc + '/_update/' + view
+}
+
 function getCompactURL(){
 	return dbURL + '/' + dbName + '/_compact'
 }
 
 function generateUuids(num){
 		var p = [];
-		
+		num = parseInt(num);
+			
 		while(num > 0){
 			//XXX: In reality, this can only fetch 1000 ids at a time - so this needs to be patched.
 			var idURL = dbURL + '/_uuids?count=' + Math.min(num, 1000);
-		
+			console.log(idURL);
+				
 			p.push(qrequest.qrequest("GET", idURL, null, null).then(
 				function(ret){
+					if(num === 1){
+						console.log("Single uuid returned:");
+						console.log(JSON.parse(ret))
+					}
+
 					return JSON.parse(ret).uuids
 				}).fail(
 					function(res){
@@ -150,6 +161,7 @@ function getDoc(viewURL){
 }
 
 function saveDocs(docs){
+	console.log("num to save:" + docs.length);
 	return generateUuids(docs.length).then(
 		function(uuids){
 			var promises = [];
@@ -157,10 +169,13 @@ function saveDocs(docs){
 			docs.forEach(function(doc, i){
 					var docId;
 					
-					if(doc._id === undefined){
-						docId = uuids.pop();
-					}else{
+					if(doc._id){
 						docId = doc._id;
+					}else if(doc.type === "boardgame" || doc.type === "geeklist"){
+						//These are proper things at BGG, so they get to keep their id.
+						docId = doc.objectid;
+					}else{
+						docId = uuids.pop();
 					}
 					
 					var docURL = dbURL + "/" + dbName + "/" + docId;
@@ -191,13 +206,49 @@ function saveDocs(docs){
 			);
 
 			return q.all(promises)
-		}
-	).fail(
+		},
 		function(err){
 			console.log("No uuids");
+		}
+	).catch(
+		function(err){
 			console.log(err);
 		}
 	)	
+}
+
+//TODO: Dummy function
+function updateDocs(urls, docs){
+	var promises = [];
+				
+	docs.forEach(function(doc, i){
+		var url = urls[i];
+		console.log(url);
+		
+		
+		promises.push(qrequest.qrequest("PUT", url, JSON.stringify(doc)).then(
+				function(res){
+					var reply = JSON.parse(res);
+					
+					if(reply.ok){
+						return true
+					}else{
+						console.log(reply);
+						throw "DB failed to save"
+					}
+				}
+			).catch(
+				function(e){
+					console.log("Failed to update doc: " + doc.objectid);
+					
+					throw e
+				}
+			)
+		);
+	});
+	
+	//<database>/_design/<design>/_update/<function>/<docid>
+	return q.all(promises)
 }
 
 /* --- Boardgame -- */
@@ -288,6 +339,19 @@ function getBoardgameStats(geeklistId, boardgameId){
 
 function saveBoardgameStats(boardgameStats){
 	return saveDocs(boardgameStats)
+}
+
+//TODO: Dummy implementation
+function updateBoardgameStats(boardgameStats){
+	var urls = [];
+	
+	boardgameStats.forEach(
+		function(boardgameStat){ 
+			urls.push(getUpdateURL('boardgame2', 'updatestats') + '/' + boardgameStats[0].objectid);
+		}
+	);
+	
+	return updateDocs(urls, boardgameStats)
 }
 
 /* --- Geeklist statistics --- */
@@ -588,3 +652,4 @@ module.exports.updateSearch = updateSearch
 module.exports.getGeeklistFiltersComponents = getGeeklistFiltersComponents
 module.exports.getGeeklistFiltersMinMax = getGeeklistFiltersMinMax
 module.exports.getGeeklistFiltersLive = getGeeklistFiltersLive
+module.exports.updateBoardgameStats = updateBoardgameStats
