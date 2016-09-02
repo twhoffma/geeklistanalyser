@@ -180,7 +180,8 @@ function saveDocs(docs){
 							}
 						).catch(
 							function(e){
-								console.log("Failed to save doc: " + JSON.stringify(doc));
+								console.log("Failed to save doc: " + doc._id);
+								//console.log("Failed to save doc: " + JSON.stringify(doc));
 								
 								throw e
 							}
@@ -319,11 +320,65 @@ function saveFilterRanges(filterValue){
 	return saveDocs(filterValue)
 }
 
+function getGeeklistFiltersMinMax(geeklistid){
+	var url = getViewURL('geeklistfilters', 'geeklistfilters_min_max')+'?reduce=true&group_level=2&start_key=[{id}]&end_key=[{id}, {}]';
+	url = url.replace(/\{id\}/g, geeklistid);
+	return getDocs(url)	
+}
+
+function getGeeklistFiltersComponents(geeklistid){
+	var url = getViewURL('geeklistfilters', 'geeklistfilters_components')+'?reduce=true&group_level=3&start_key=[{id}]&end_key=[{id}, {}]';
+	url = url.replace(/\{id\}/g, geeklistid);
+	return getDocs(url)	
+}
+
 function getGeeklistFilters(geeklistid){
 	var url = getViewURL('geeklistfilters', 'geeklistfilters')+'?start_key=[{id}, {}]&end_key=[{id}]&include_docs=true&descending=true';
 	url = url.replace(/\{id\}/g, geeklistid);
-	console.log(url);	
+	//console.log(url);	
 	return getDocs(url)	
+}
+
+function getGeeklistFiltersLive(geeklistid){
+	function FilterValue(geeklistId){
+		this.type = 'filtervalue';
+		this.objectid = geeklistId;
+		this.playingtime = {'min': Infinity, 'max': -Infinity}
+		this.numplayers = {'min': Infinity, 'max': -Infinity}
+		this.yearpublished = {'min': Infinity, 'max': -Infinity}
+		this.boardgamedesigner = []; 
+		this.boardgameartist = [];
+		this.boardgamecategory = []; 
+		this.boardgamemechanic = [];
+		this.boardgamepublisher = [];
+	}
+	
+	//Creating filter values	
+	var filterValue = new FilterValue(geeklistid);
+	
+	return getGeeklistFiltersComponents(geeklistid).then(
+		function(comp){
+			for(var j=0; j < comp.length; j++){
+				var f = comp[j].key[1];
+				var v = comp[j].key[2];
+				
+				filterValue[f].push(v);
+			}
+			
+			return getGeeklistFiltersMinMax(geeklistid) 	
+		}
+	).then(
+		function(minmax){
+			for(var j=0; j < minmax.length; j++){
+				var f = minmax[j].key[1];
+				
+				filterValue[f].min = minmax[j].value.min;
+				filterValue[f].max = minmax[j].value.max;
+			}
+			
+			return [{"doc": filterValue}]
+		}
+	);
 }
 
 function finalizeDb(){
@@ -530,3 +585,6 @@ module.exports.deleteFilterRanges = deleteFilterRanges
 module.exports.getGeeklistFilters = getGeeklistFilters
 module.exports.finalizeDb = finalizeDb
 module.exports.updateSearch = updateSearch
+module.exports.getGeeklistFiltersComponents = getGeeklistFiltersComponents
+module.exports.getGeeklistFiltersMinMax = getGeeklistFiltersMinMax
+module.exports.getGeeklistFiltersLive = getGeeklistFiltersLive

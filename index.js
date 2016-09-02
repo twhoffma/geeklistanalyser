@@ -17,12 +17,6 @@ function FilterValue(analysisDate, geeklistId){
 	this.playingtime = {'min': Infinity, 'max': -Infinity}
 	this.numplayers = {'min': Infinity, 'max': -Infinity}
 	this.yearpublished = {'min': Infinity, 'max': -Infinity}
-	//this.maxplaytime = -Infinity; 
-	//this.minplaytime = Infinity;
-	//this.maxplayers = -Infinity; 
-	//this.minplayers = Infinity;
-	//this.maxyearpublished = -Infinity; 
-	//this.minyearpublished = Infinity;
 	this.boardgamedesigner = []; 
 	this.boardgameartist = [];
 	this.boardgamecategory = []; 
@@ -46,6 +40,7 @@ function GeeklistStat(geeklistid, statDate){
 
 var boardgameStats = [];
 var geeklistStats = [];
+var geeklists = [];
 
 function getBoardgameStats(geeklistId){
 	return boardgameStats.filter(function(e){
@@ -116,7 +111,8 @@ function BoardgameStat(boardgameid, geeklistid, analysisdate, postdate, editdate
 }
 
 //XXX: Rewrite, should contain rootGeeklist, parentGeeklist, currentGeeklist, visitedGeeklists, boardgameStats, geeklistStats.
-function getGeeklistData(geeklistid, subgeeklistid, geeklists, boardgameStats, geeklistStats, excluded){
+//function getGeeklistData(geeklistid, subgeeklistid, geeklists, boardgameStats, geeklistStats, excluded){
+function getGeeklistData(geeklistid, subgeeklistid, visitedGeeklists, boardgameStats, geeklistStats, excluded){
 	var p = q.defer();
 	var promises = [];
 	
@@ -193,18 +189,20 @@ function getGeeklistData(geeklistid, subgeeklistid, geeklists, boardgameStats, g
 					}
 				}else if($(this).attr('objecttype') == 'geeklist'){
 						var glId = $(this).attr('objectid');
-						var gl = geeklists.filter(function(e){return e.objectid == glId});
+						//var gl = visitedGeeklists.filter(function(e){return e.objectid == glId});
+						var isVisited = (visitedGeeklists.filter(function(e){return e.objectid == glId}).length > 0);
 						var isExcluded = (excluded.filter(function(e){return e === parseInt(glId)}).length > 0);
 							
 						//Prevent infinite loops by checking where we've been
-						if(gl.length === 0 && !isExcluded){
-							console.log('Loading list: ' + glId);
-							geeklists.push({objectid: glId});
+						//if(gl.length === 0 && !isExcluded){
+						if(!isVisited && !isExcluded){
+							console.log('Loading sublist: ' + glId);
+							visitedGeeklists.push({objectid: glId});
 							
 							//TODO: Is not capturing return values ok? Is it proper form?	
-							promises.push(getGeeklistData(geeklistid, glId, geeklists, boardgameStats, geeklistStats, excluded).fail(
+							promises.push(getGeeklistData(geeklistid, glId, visitedGeeklists, boardgameStats, geeklistStats, excluded).fail(
 								function(err){ 
-									console.log("Error loading geeklist of geeklist:");
+									console.log("Error loading sublist:");
 									console.log(err);
 								}
 							));
@@ -315,13 +313,15 @@ function getBoardgameData(boardgameIds){
  * Run main algorithm
  */
 db.getGeeklists(true, false).then(
-	function(geeklists){
+	function(loadedGeeklists){
 		var p = [];
+		geeklists = loadedGeeklists;
 		
 		geeklists.forEach(function(geeklist, i){
 			p.push(getGeeklistData(geeklist.objectid, geeklist.objectid, [], [], [], geeklist.excluded));
 		});
 		console.log("Num lists: " + p.length)	
+		
 		return q.allSettled(p)
 	}
 ).then(
@@ -366,12 +366,12 @@ db.getGeeklists(true, false).then(
 				)
 			);
 
-			console.log("Done saving stats");
 		
 		});
 		
 		return q.all(pBgStats.concat(pGlStats)).then(
 			function(){
+				console.log("Done saving stats");
 				return bgStats
 			}).catch(
 				function(err){
@@ -389,6 +389,8 @@ db.getGeeklists(true, false).then(
 	}
 ).then(
 	function(bgStats){
+		console.log("Loading boardgame data");
+		
 		return getBoardgameData(bgStats.map(
 				function(e){return e.objectid}
 			).reduce(
@@ -403,6 +405,10 @@ db.getGeeklists(true, false).then(
 			)
 		).then(
 			function(boardgames){
+				//Populate the latest geeklist stat for each boardgame
+				
+				console.log("Adding most recent stats to boardgame data");
+				
 				boardgames.forEach(function(boardgame){
 					bgStats.filter(function(e){return e.objectid === boardgame.objectid}).forEach(function(bgStat){
 						var geeklist = boardgame.geeklists.filter(function(e){return e.objectid === bgStat.geeklistid});
@@ -436,76 +442,6 @@ db.getGeeklists(true, false).then(
 	}
 ).then(
 	function(boardgames){
-		var filterValues = [];
-		var geeklists = [];
-		
-		console.log("Saving filtervalues");	
-		for(var i = 0; i < boardgames.length; i++){
-			var boardgame = boardgames[i];
-			
-			for(var j=0; j < boardgame.geeklists.length; j++){
-				var geeklistid = boardgame.geeklists[j].objectid;
-				var fv = filterValues.filter(function(e){return e.objectid === geeklistid});
-				var filterValue;
-				
-				if(geeklists.indexOf(geeklistid) === -1){
-					geeklists.push(geeklistid);
-				}
-					
-				if(fv.length === 0){
-					filterValue = new FilterValue(currentDate, geeklistid);
-					filterValues.push(filterValue);
-				}else{
-					filterValue = fv[0];
-				}
-
-				['boardgameartist', 'boardgamedesigner', 'boardgamecategory', 'boardgamemechanic', 'boardgamepublisher'].forEach(function(prop){
-					filterValue[prop] = boardgame[prop].reduce(function(prev, curr){
-						if(prev.filter(function(e){return e.objectid === curr.objectid}).length === 0){
-							return prev.concat(curr)
-						}else{
-							return prev
-						}
-					}, filterValue[prop]).sort(function(a, b){return (a.name > b.name)});
-				});
-				
-				filterValue.playingtime.max = Math.max(filterValue.playingtime.max, boardgame.maxplaytime || -Infinity, boardgame.playingtime || -Infinity);
-				filterValue.playingtime.min = Math.min(filterValue.playingtime.min, boardgame.minplaytime || Infinity, boardgame.playingtime || Infinity);
-				filterValue.numplayers.max = Math.max(filterValue.numplayers.max, boardgame.maxplayers || -Infinity);
-				filterValue.numplayers.min = Math.min(filterValue.numplayers.min, boardgame.minplayers || Infinity);
-				
-				filterValue.yearpublished.max = Math.max(filterValue.yearpublished.max, boardgame.yearpublished || -Infinity);
-				filterValue.yearpublished.min = Math.min(filterValue.yearpublished.min, boardgame.yearpublished || Infinity);
-			}
-		}
-		
-		var p = [];
-
-		geeklists.forEach(function(geeklistid){
-			//console.log(geeklistid);	
-			p.push(db.deleteFilterRanges(geeklistid, currentDate).then(
-				function() {
-					var fv = filterValues.filter(function(e){return e.objectid === geeklistid});
-					
-					return db.saveFilterRanges([fv[0]]).then(
-						function() { 
-							//TODO: Could return anything.
-							return boardgames
-						},
-						function(err){
-							console.log("Failed to save some stats");
-							console.log(err);
-						}
-					)
-				}
-			));
-		});
-
-		console.log("Done saving filtervalues");	
-		return q.allSettled(p).then(function(){ return boardgames })
-	}
-).then(
-	function(boardgames){
 		console.log("Saving all boardgames to DB.");
 			
 		return db.saveBoardgames(boardgames).then(
@@ -514,7 +450,7 @@ db.getGeeklists(true, false).then(
 					
 					return db.updateSearch(boardgames)
 				}
-			).fail(
+			).catch(
 			function(err){
 				console.log("Failed to have some boardgames");
 				console.log(err);
@@ -526,8 +462,101 @@ db.getGeeklists(true, false).then(
 		return db.finalizeDb()
 	}
 ).then(
+	//function(boardgames){
+	function(){
+		var p = [];
+		var filterValues = [];
+		
+		for(var i = 0; i < geeklists.length; i++){
+			var p1;
+			var geeklistid = geeklists[i].objectid;	
+			console.log("Generating geeklist filtervalues for " + geeklistid);
+
+			//Creating filter values	
+			var filterValue = new FilterValue(currentDate, geeklistid);
+			filterValues.push(filterValue);
+			
+			p1 = db.getGeeklistFiltersComponents(geeklistid).then(
+				function(comp){
+					for(var j=0; j < comp.length; j++){
+						var f = comp[j].key[1];
+						var v = comp[j].key[2];
+						
+						filterValue[f].push(v);
+					}
+					
+					return db.getGeeklistFiltersMinMax(geeklistid) 	
+				}
+			).then(
+				function(minmax){
+					for(var j=0; j < minmax.length; j++){
+						var f = minmax[j].key[1];
+						
+						filterValue[f].min = minmax[j].value.min;
+						filterValue[f].max = minmax[j].value.max;
+					}
+					return filterValue
+				}
+			).then(
+				function(fv){
+					console.log("deleting fv");
+					return db.deleteFilterRanges(fv.objectid, fv.analysisDate).then(function(){return fv})
+				}
+			).then(
+				function(fv){
+					console.log("saving fv");
+					//BUG: Why no UUIDS? Document update conflict when fetching! 
+					return db.saveFilterRanges([fv]).then(function(){return true})
+				}
+			).catch(
+				function(err){
+					console.log("Failed to save filter");
+					console.log(err);
+				}
+			);
+
+			p.push(p1);
+		}
+		/*
+		geeklists.forEach(function(geeklist){
+			//console.log(geeklistid);	
+			p.push(db.deleteFilterRanges(geeklist.objectid, currentDate).then(
+				function() {
+					var fv = filterValues.filter(function(e){return e.objectid === geeklist.objectid});
+					
+					return db.saveFilterRanges([fv[0]]).then(
+						function() { 
+							//TODO: Could return anything.
+							//return boardgames
+							return true
+						},
+						function(err){
+							console.log("Failed to save filter");
+							console.log(err);
+						}
+					)
+				}
+			));
+		});
+		*/
+		return q.allSettled(p).then(
+			function(){ 
+				console.log("Done saving filtervalues");	
+				return true 
+			}
+		)
+	}
+).then(
+	function(v) { 
+		return db.finalizeDb()
+	}
+).then(
 	function(v){
-		console.log("All done!");
+		var startTime = moment(currentTime, c.format.dateandtime);
+		var now = moment();
+		
+		var timeTaken = moment(moment.duration(now.diff(startTime))).format("hh:mm:ss");
+		console.log("All done in " + timeTaken);
 		return true
 	}
 ).catch(

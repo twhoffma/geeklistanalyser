@@ -93,14 +93,16 @@
 					<button type="button" class="btn btn-default btn-block btn-primary" data-dismiss="modal" id="apply">Apply</button>
       			</div>
 				<div class="modal-body">
+					<!--
 					<ul class="nav nav-tabs" id="optionTabs">
   	  	  	  	  	  <li class="active"><a data-toggle="tab" href="#tabSorting">Sorting</a></li>
   	  	  	  	  	  <li><a data-toggle="tab" href="#tabFilters">Filters</a></li>
   	  	  	  	  	  <li><a data-toggle="tab" href="#tabInfo">Info</a></li>
 					</ul>
+					-->
 					
-					<div class="tab-content">
-  	  	  				<div id="tabSorting" class="tab-pane fade in active" role=tabpanel">
+					<!--<div class="tab-content">-->
+  	  	  			<!--	<div id="tabSorting" class="tab-pane fade in active" role=tabpanel">-->
     						<h3>Sorting</h3>
       						<div>
 								<!--
@@ -108,7 +110,7 @@
 								-->
 								<form>
             						<li>
-										<select id="sortby">
+										<select id="sortby" class="form-control">
 											<option value="crets" selected>Addition time</option>
 											<option value="name">Name</option>
 											<option value="cnt">Count</option>
@@ -117,13 +119,18 @@
 										</select>
 									</li>	
 									<li>
+										<label class="radio-inline">
 										<input type="radio" name="sortby_asc" value="1">Ascending</input>
+										</label>
+										<label class="radio-inline">
 										<input type="radio" name="sortby_asc" value="0" checked="checked">Descending</input>
+										</label>
 									</li>
 								</form>
       						</div>
-						</div>
-  	  					<div id="tabFilters" class="tab-pane fade" role="tabpanel">
+						<!-- </div>
+  	  					<div id="tabFilters" class="tab-pane fade" role="tabpanel"> -->
+						
     						<h3>Filters</h3>
 							<div>
 								<!--
@@ -164,14 +171,14 @@
 									<div class="form-group">
 										<label for="playingtime">Playing Time</label>
 										<!-- <input id="playingtime" class="rangeslider" data-slider-id='playingtime' type="text" data-slider-min="0" data-slider-max="0" data-slider-step="10" data-slider-value="[0,0]"/>-->
-										<div id="playingtime" class="filterslider"></div>
+										<div id="playingtime" class="filterslider" style="margin-bottom:1em;width:90%;"></div>
 										<input class="min"></input>
 										<input class="max"></input>
 									</div>
 									<div class="form-group">
 										<label for="numplayers">Number of players</label>
 										<!--<input id="numplayers" data-slider-id='numplayer' type="text" data-slider-min="0" data-slider-max="0" data-slider-step="1" data-slider-value="[0,0]"/>-->
-										<div id="numplayers" class="filterslider"></div>
+										<div id="numplayers" class="filterslider" style="margin-bottom:1em;width:90%;"></div>
 										<input class="min"></input>
 										<input class="max"></input>
 									</div>
@@ -179,7 +186,7 @@
 										<label for="yearpublished">Year Published</label>
 										<!-- <input id="minyearpublished-manual" type="number" step="1" />  -->
 										<!--<input id="yearpublished" data-slider-id='yearpublished' type="text" data-slider-min="0" data-slider-max="0" data-slider-step="1" data-slider-value="[0,0]"/> -->
-										<div id="yearpublished" class="filterslider"></div>
+										<div id="yearpublished" class="filterslider" style="margin-bottom:1em;width:90%;"></div>
 
 										<input class="min"></input>
 										<input class="max"></input>
@@ -187,18 +194,18 @@
 									</div>
 								</form>
 							</div>
-  	  					</div>
-  	  					<div id="tabInfo" class="tab-pane fade" role=tabpanel">
+  	  					<!-- </div>-->
+  	  					<!-- <div id="tabInfo" class="tab-pane fade" role=tabpanel">-->
     						<h3>Info</h3>
       						<p>All data is taken for free from BoardGameGeek's XMLAPI. As with that data, this data is strictly for non-commerical use and should not be altered.</p>
 							<p>I made it to get my ducks in a row before Essen 2015 and to learn new technologies. I won't guarantee anything about what you see here. It may be counting right, it may be wrong. In the case where lists-of-lists are available, some lists have been excluded to avoid "poisoning" the data.</p>
 							<p>Please do not try to exploit or crash my server. It's probably not that hard - but we're all friends here right?</p>
 							<p>If you want to play around with the code you can find it on <a href="https://github.com/twhoffma/geeklistanalyser" target="_blank">GitHub</a>.</p>
-  	  	  	  			</div>
- 					</div>
+  	  	  	  			<!--</div>-->
+ 					<!--</div>-->
 				</div>
       			<div class="modal-footer">
-        			<button type="button" class="btn btn-default btn-block" data-dismiss="modal" id="apply">Apply</button>
+        			<button type="button" class="btn btn-default btn-block btn-primary" data-dismiss="modal" id="apply">Apply</button>
       			</div>
 			</div>
 		</div>

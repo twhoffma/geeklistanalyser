@@ -41,7 +41,8 @@ app.use(uri + '/data/getGeeklistFilters', function(req, res, next){
 	//TODO: Needs to clean incoming data.
 	
 	if(p.geeklistid != undefined){
-		db.getGeeklistFilters(p.geeklistid).then(
+		db.getGeeklistFiltersLive(p.geeklistid).then(
+		//db.getGeeklistFilters(p.geeklistid).then(
 			function(val){
 				if(val.length > 0){
 					var r = JSON.stringify(val[0].doc);

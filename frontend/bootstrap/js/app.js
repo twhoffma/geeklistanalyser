@@ -65,7 +65,8 @@
 				loadGeeklist(selectedGeeklist, true);
 			});
 			
-			$('body').on('shown.bs.tab', "#optionTabs a", function (e) {
+			//$('body').on('shown.bs.tab', "#optionTabs a", function (e) {
+			$('body').on('shown.bs.modal', "#modSortingAndFilters", function (e) {
 				//The bug seems related to that the modal dialog is not visible..
 				console.log("ping!");
 				ui.setFilters(filter);
