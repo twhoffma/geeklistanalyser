@@ -130,6 +130,7 @@ function deleteDocs(url){
 
 			return q.allSettled(p).then(
 				function(success){
+					return true
 					//console.log(success.length + " deleted");
 				},
 				function(fails){
@@ -179,10 +180,11 @@ function saveDocs(docs){
 			docs.forEach(function(doc, i){
 					var docId;
 					
-					if(doc._id){
+					if(doc._id !== undefined){
 						docId = doc._id;
 						if(doc.type === "filtervalue"){
 							console.log("selected _id");
+							//console.log(doc);
 						}
 					}else if(doc.type === "boardgame" || doc.type === "geeklist"){
 						//These are proper things at BGG, so they get to keep their id.

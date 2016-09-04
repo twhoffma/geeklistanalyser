@@ -317,6 +317,7 @@ function generateFilterValues(){
 	
 	for(var i = 0; i < geeklists.length; i++){
 		var p1;
+		//BUG: Something wrong here.
 		var geeklistid = geeklists[i].objectid;	
 		console.log("Generating geeklist filtervalues for " + geeklistid);
 
@@ -324,6 +325,7 @@ function generateFilterValues(){
 		var filterValue = new FilterValue(currentDate, geeklistid);
 		filterValues.push(filterValue);
 		
+		console.log("1. " + geeklistid + " " + filterValue._id);
 		//p1 = db.getGeeklistFiltersComponents(geeklistid).then(
 		p1 = datamgr.getGeeklistFiltersComponents(geeklistid).then(
 			function(comp){
@@ -335,6 +337,7 @@ function generateFilterValues(){
 					filterValue[f].push(v);
 				}
 				
+				console.log("2. " + filterValue.objectid + " " + filterValue._id);
 				return datamgr.getGeeklistFiltersMinMax(geeklistid) 	
 				//return db.getGeeklistFiltersMinMax(geeklistid) 	
 			}
@@ -346,19 +349,23 @@ function generateFilterValues(){
 					filterValue[f].min = minmax[j].value.min;
 					filterValue[f].max = minmax[j].value.max;
 				}
+
+				console.log("3. " + filterValue.objectid + " " + filterValue._id);
+				
 				return filterValue
 			}
 		).then(
 			function(fv){
 				console.log("deleting fv");
-				console.log(fv);
+				console.log("4. " + fv.objectid + " " + fv._id);
 				return datamgr.deleteFilterRanges(fv.objectid, fv.analysisDate).then(function(){return fv})
 				//return db.deleteFilterRanges(fv.objectid, fv.analysisDate).then(function(){return fv})
 			}
 		).then(
 			function(fv){
 				console.log("saving fv");
-				console.log(fv);
+				//console.log(fv);
+				console.log("5. " + fv.objectid + " " + fv._id);
 				//BUG: Why no UUIDS? Document update conflict when fetching! 
 				return datamgr.saveFilterRanges([fv]).then(function(){return true})
 				//return db.saveFilterRanges([fv]).then(function(){return true})
