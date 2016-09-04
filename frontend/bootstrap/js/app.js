@@ -138,6 +138,9 @@
 					
 					filter = {};
 					sorting = ui.sortingDefault;
+
+					//Clear list in UI preemptively. Looks better since it doesn't look like it is hanging.
+					ui.clearGeeklist();
 				}
 
 				if(isUser === true){
@@ -160,7 +163,7 @@
 				}
 				
 				ui.setHistory(selectedGeeklist, 0, 0, filter, sorting);
-				
+				ui.displaySpinner(true);
 				data.getGeeklist(selectedGeeklist, 0, filter, sorting).then(function(r){
 					ui.renderGeeklist(r, '', selectedGeeklist, true);
 				});

@@ -32,6 +32,15 @@ function init_ui(){
 		'ascending': 0
 	};
 	
+	function displaySpinner(visible){
+		if(visible === true){
+			$("#games").append("<tr id=\"spinner\"><td colspan=\"9\"><img src=\"img/spiffygif_30x30.gif\"</td></tr>");
+		}else{
+			$("#games").children('#spinner').remove();
+		}
+		
+	}
+		
 	function getSliderValue(id){
 		var filter = [];
 		
@@ -259,7 +268,12 @@ function init_ui(){
 			$('button#menuBtnSort').prop('disabled', !enabled);
 			$('button#menuBtnFilter').prop('disabled', !enabled);
 		},
-				
+		
+		'clearGeeklist': function clearGeeklist(){
+			$('#games').children().remove();
+		},
+		
+		'displaySpinner': displaySpinner,
 		'renderGeeklist': function renderGeeklist(r, sortby, geeklistid, clear){
 			var prevSortTerm = "";
 			var currentTerm = "";
@@ -270,7 +284,7 @@ function init_ui(){
 				list.children().remove();
 			}
 			
-			$("#spinner").remove();
+			displaySpinner(false);	
 			
 			/*	
 			if(r.length === 0){

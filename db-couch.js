@@ -5,14 +5,16 @@ c = JSON.parse(fs.readFileSync('localconfig.json', 'utf8'));
 var dbURL = "http://" + c.db.dbaddr + ":" + c.db.dbport;
 var dbName = c.db.dbname;
 
+/*
 var srchURL = "http://" + c.elastic.addr + ":" + c.elastic.port;
 var srchIndex = c.elastic.srchIndex;
 var srchType = c.elastic.srchType;
 
-/* --- Generic functions --- */
+// --- Generic functions --- 
 function getSrchURL(){
 	return srchURL + "/" + srchIndex + "/" + srchType + "/_search" 
 }
+*/
 
 function getViewURL(dsndoc, view){
 	return dbURL + '/' + dbName + '/_design/' + dsndoc + '/_view/' + view
@@ -34,10 +36,11 @@ function generateUuids(num){
 			//XXX: In reality, this can only fetch 1000 ids at a time - so this needs to be patched.
 			var idURL = dbURL + '/_uuids?count=' + Math.min(num, 1000);
 			console.log(idURL);
+			var orgNum = num;
 				
 			p.push(qrequest.qrequest("GET", idURL, null, null).then(
 				function(ret){
-					if(num === 1){
+					if(orgNum === 1){
 						console.log("Single uuid returned:");
 						console.log(JSON.parse(ret))
 					}
@@ -57,16 +60,22 @@ function generateUuids(num){
 		return q.all(p).then(function(v){return v.reduce(function(prev, curr){ return prev.concat(curr)})}, [])
 }
 
-function updateSearch(boardgames){
+/*
+function updateSearch(docs){
 	var url = srchURL + "/_bulk"
 	var bulk_request = [];
 	var p = [];
 	var h = {};
 
-	boardgames.forEach(function(boardgame){
-			h = {'update': {"_id": boardgame._id, "_type": "boardgame", "_index": "boardgames"}};
+	docs.forEach(function(doc){
+			var idx;
+			if(doc.type === "boardgame"){
+				idx = "boardgames";
+			}
+			
+			h = {'update': {"_id": doc._id, "_type": doc.type, "_index": idx}};
 			bulk_request.push(JSON.stringify(h));
-			bulk_request.push(JSON.stringify({"doc": boardgame, "doc_as_upsert": true}));
+			bulk_request.push(JSON.stringify({"doc": doc, "doc_as_upsert": true}));
 	});
 	
 	return qrequest.qrequest("POST", url, bulk_request.join("\n") + "\n", {"Content-Type": "application/json"}).then(
@@ -83,7 +92,7 @@ function updateSearch(boardgames){
 				}
 			});
 			
-			console.log("Created: " + cntCreated + ", Updated: " + cntUpdated);
+			console.log("[SearchEngine] Created: " + cntCreated + ", Updated: " + cntUpdated);
 			
 			return v
 		},
@@ -93,6 +102,7 @@ function updateSearch(boardgames){
 		}
 	)
 }
+*/
 
 function deleteDocs(url){
 	var p = [];
@@ -171,14 +181,29 @@ function saveDocs(docs){
 					
 					if(doc._id){
 						docId = doc._id;
+						if(doc.type === "filtervalue"){
+							console.log("selected _id");
+						}
 					}else if(doc.type === "boardgame" || doc.type === "geeklist"){
 						//These are proper things at BGG, so they get to keep their id.
 						docId = doc.objectid;
+						if(doc.type === "filtervalue"){
+							console.log("selected objectid");
+						}
 					}else{
 						docId = uuids.pop();
+						if(doc.type === "filtervalue"){
+							console.log("popped uuid");
+						}
 					}
 					
 					var docURL = dbURL + "/" + dbName + "/" + docId;
+					
+					if(doc.type === "filtervalue"){
+						console.log("Saving filter value");
+						console.log(docURL);
+						console.log(docId + " vs " + doc._id);
+					}
 						
 					promises.push(qrequest.qrequest("PUT", docURL, JSON.stringify(doc)).then(
 							function(res){
@@ -252,6 +277,7 @@ function updateDocs(urls, docs){
 }
 
 /* --- Boardgame -- */
+/*
 function getBoardgame(boardgameId){
 	var boardgameViewURL = getViewURL('boardgame', 'boardgame') + '?include_docs=true&key=\"' + boardgameId + "\"";
 	return getDoc(boardgameViewURL).fail(function(v){ throw boardgameId})
@@ -261,9 +287,10 @@ function getBoardgame(boardgameId){
 function saveBoardgames(boardgames){
 	return saveDocs(boardgames)
 }
-
+*/
 
 /* --- Geeklist --- */
+/*
 function getGeeklists(updateable, visible){
 	var url = getViewURL('geeklists', 'geeklists') + '?include_docs=true'
 	
@@ -324,7 +351,7 @@ function getGeeklist(geeklistId, skip, num, sortby, asc){
 	return getDocs(url)
 }
 
-/* --- Boardgame statistics --- */
+// --- Boardgame statistics --- 
 function deleteBoardgameStats(geeklistId, analysisDate){
 	var url = getViewURL('boardgamestats', 'boardgamestats')+'?startkey=[{id}, \"{date}\"]&endkey=[{id}, \"{date}\", {}]&include_docs=true';
 	url = url.replace(/\{id\}/g, geeklistId);
@@ -354,7 +381,7 @@ function updateBoardgameStats(boardgameStats){
 	return updateDocs(urls, boardgameStats)
 }
 
-/* --- Geeklist statistics --- */
+// --- Geeklist statistics --- 
 function deleteGeeklistStats(geeklistId, analysisDate){
 	var url = getViewURL('geekliststats', 'geekliststats')+'?key=[{id}, \"{date}\"]&include_docs=true';
 	url = url.replace(/\{id\}/g, geeklistId);
@@ -444,6 +471,7 @@ function getGeeklistFiltersLive(geeklistid){
 		}
 	);
 }
+*/
 
 function finalizeDb(){
 	var url = getCompactURL();
@@ -451,6 +479,7 @@ function finalizeDb(){
 	return qrequest.qrequest("POST", url, null, {"Content-Type": "application/json"})
 }
 
+/*
 //Search by filtering and sort result
 function srchBoardgames(geeklistid, filters, sortby, sortby_asc, skip, lim){
 	var q = {};
@@ -634,7 +663,8 @@ function filterRange(name, min, max){
 
 	return q
 }
-
+*/
+/*
 module.exports.saveBoardgames = saveBoardgames
 module.exports.getBoardgame = getBoardgame
 module.exports.getGeeklists = getGeeklists
@@ -653,3 +683,17 @@ module.exports.getGeeklistFiltersComponents = getGeeklistFiltersComponents
 module.exports.getGeeklistFiltersMinMax = getGeeklistFiltersMinMax
 module.exports.getGeeklistFiltersLive = getGeeklistFiltersLive
 module.exports.updateBoardgameStats = updateBoardgameStats
+*/
+
+module.exports.getViewURL = getViewURL
+module.exports.getUpdateURL = getUpdateURL
+module.exports.getCompactURL = getCompactURL
+
+module.exports.deleteDocs = deleteDocs
+module.exports.getDocs = getDocs
+module.exports.getDoc = getDoc
+module.exports.saveDocs = saveDocs
+module.exports.updateDocs = updateDocs
+
+module.exports.finalizeDb = finalizeDb
+

@@ -3,7 +3,8 @@ var http = require('http')
 var bodyParser = require('body-parser')
 var compression = require('compression')
 var qs = require('qs')
-var db = require('../db-couch')
+//var db = require('../db-couch')
+var datamgr = require('../datamgr.js')
 var Memcached = require('memcached')
 
 var fs = require('fs');
@@ -41,7 +42,8 @@ app.use(uri + '/data/getGeeklistFilters', function(req, res, next){
 	//TODO: Needs to clean incoming data.
 	
 	if(p.geeklistid != undefined){
-		db.getGeeklistFiltersLive(p.geeklistid).then(
+		datamgr.getGeeklistFiltersLive(p.geeklistid).then(
+		//db.getGeeklistFiltersLive(p.geeklistid).then(
 		//db.getGeeklistFilters(p.geeklistid).then(
 			function(val){
 				if(val.length > 0){
@@ -70,7 +72,8 @@ app.use(uri + '/data/getGeeklists', function(req, res, next){
 	}
 	
 	
-	db.getGeeklists(false, true).then(
+	//db.getGeeklists(false, true).then(
+	datamgr.getGeeklists(false, true).then(
 			function(val){
 				var u = req._parsedUrl.href + '?';
 				var r = JSON.stringify(val);
@@ -111,14 +114,15 @@ app.use(uri + '/data/getGeeklist', function(req, res, next){
 		
 		if(filterJSON != ''){
 			console.log("Fetch method: Search engine");
-			console.log(filterJSON);
+			//console.log(filterJSON);
 			//console.log(sortby);
 			//console.log(sortby_asc);
 				
 			//TODO: You need to use try/catch here..
 			var filters = JSON.parse(p.filters);
 			
-			db.srchBoardgames(p.geeklistId, filters, sortby, sortby_asc, skip, limit).then(
+			//db.srchBoardgames(p.geeklistId, filters, sortby, sortby_asc, skip, limit).then(
+			datamgr.srchBoardgames(p.geeklistId, filters, sortby, sortby_asc, skip, limit).then(
 				function(reply){
 					//console.log(reply);
 					//XXX: Decide whether functions are returning JSON before this step or not..
@@ -142,7 +146,8 @@ app.use(uri + '/data/getGeeklist', function(req, res, next){
 		}else{
 			console.log('Fetch method: Database');
 			
-			db.getGeeklist(p.geeklistId, skip, limit, sortby, sortby_asc).then(
+			//db.getGeeklist(p.geeklistId, skip, limit, sortby, sortby_asc).then(
+			datamgr.getGeeklist(p.geeklistId, skip, limit, sortby, sortby_asc).then(
 				function(reply){
 					//XXX: Add logging
 					var u = req._parsedUrl.href;

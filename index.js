@@ -4,8 +4,10 @@ moment = require('moment');
 fs = require('fs');
 
 c = JSON.parse(fs.readFileSync('localconfig.json', 'utf8'));
-db = require('./db-couch');
+//db = require('./db-couch');
 bgg = require('./bgg.js');
+
+datamgr = require('./datamgr.js');
 
 var currentDate = moment().format(c.format.date)
 var currentTime = moment().format(c.format.dateandtime)
@@ -22,6 +24,19 @@ function FilterValue(analysisDate, geeklistId){
 	this.boardgamecategory = []; 
 	this.boardgamemechanic = [];
 	this.boardgamepublisher = [];
+}
+
+function BoardgameStat(boardgameid, geeklistid, analysisdate, postdate, editdate){
+	this.objectid = boardgameid;
+	this.geeklistid = geeklistid;
+	this.analysisDate = analysisdate;
+	this.crets = moment().format(c.format.dateandtime);
+	this.cnt = 0;
+	this.thumbs = 0;
+	this.type = "boardgamestat";
+	this.hist = {}; //Histogram based on position
+	this.postdate = moment(postdate).format(c.format.dateandtime);
+	this.editdate = moment(editdate).format(c.format.dateandtime);
 }
 
 function GeeklistStat(geeklistid, statDate){
@@ -95,19 +110,6 @@ function getGeeklistStat(geeklistId, currentDate){
 	}
 
 	return i
-}
-
-function BoardgameStat(boardgameid, geeklistid, analysisdate, postdate, editdate){
-	this.objectid = boardgameid;
-	this.geeklistid = geeklistid;
-	this.analysisDate = analysisdate;
-	this.crets = moment().format(c.format.dateandtime);
-	this.cnt = 0;
-	this.thumbs = 0;
-	this.type = "boardgamestat";
-	this.hist = {}; //Histogram based on position
-	this.postdate = moment(postdate).format(c.format.dateandtime);
-	this.editdate = moment(editdate).format(c.format.dateandtime);
 }
 
 //XXX: Rewrite, should contain rootGeeklist, parentGeeklist, currentGeeklist, visitedGeeklists, boardgameStats, geeklistStats.
@@ -240,6 +242,7 @@ function getGeeklistData(geeklistid, subgeeklistid, visitedGeeklists, boardgameS
 	return p.promise	
 }
 
+/*
 function getBoardgameData(boardgameIds){
 	var boardgames = [];
 	var p = [];
@@ -251,12 +254,10 @@ function getBoardgameData(boardgameIds){
 	boardgameIds.forEach(function(boardgameId){	
 		p.push(db.getBoardgame(boardgameId).then(
 			function(bg){
-				/*
-				TODO:
-				if(!bg.isComplete()){
-					bggList.push(bg.objectid);
-				}
-				*/
+				//TODO:
+				//if(!bg.isComplete()){
+				//	bggList.push(bg.objectid);
+				//}
 				
 				boardgames.push(bg);
 				return true
@@ -277,7 +278,7 @@ function getBoardgameData(boardgameIds){
 				idList.push(bggList[i]);
 					
 				if(idList.length === 100 || (bggList.length-1) === i){
-					var idBatch = Math.floor(idList.length / 100);
+					var idBatch = Math.floor(i / 100);
 					console.log("Looking up boardgames " + (idBatch + 1) + " - " + ((idBatch + 1)*100));
 						
 					p.push(bgg.getBoardgame(idList.join(",")));
@@ -308,11 +309,78 @@ function getBoardgameData(boardgameIds){
 		}
 	)
 }
+*/
+
+function generateFilterValues(){
+	var p = [];
+	var filterValues = [];
+	
+	for(var i = 0; i < geeklists.length; i++){
+		var p1;
+		var geeklistid = geeklists[i].objectid;	
+		console.log("Generating geeklist filtervalues for " + geeklistid);
+
+		//Creating filter values	
+		var filterValue = new FilterValue(currentDate, geeklistid);
+		filterValues.push(filterValue);
+		
+		//p1 = db.getGeeklistFiltersComponents(geeklistid).then(
+		p1 = datamgr.getGeeklistFiltersComponents(geeklistid).then(
+			function(comp){
+				for(var j=0; j < comp.length; j++){
+					var f = comp[j].key[1];
+					var v = comp[j].key[2];
+					
+						
+					filterValue[f].push(v);
+				}
+				
+				return datamgr.getGeeklistFiltersMinMax(geeklistid) 	
+				//return db.getGeeklistFiltersMinMax(geeklistid) 	
+			}
+		).then(
+			function(minmax){
+				for(var j=0; j < minmax.length; j++){
+					var f = minmax[j].key[1];
+					
+					filterValue[f].min = minmax[j].value.min;
+					filterValue[f].max = minmax[j].value.max;
+				}
+				return filterValue
+			}
+		).then(
+			function(fv){
+				console.log("deleting fv");
+				console.log(fv);
+				return datamgr.deleteFilterRanges(fv.objectid, fv.analysisDate).then(function(){return fv})
+				//return db.deleteFilterRanges(fv.objectid, fv.analysisDate).then(function(){return fv})
+			}
+		).then(
+			function(fv){
+				console.log("saving fv");
+				console.log(fv);
+				//BUG: Why no UUIDS? Document update conflict when fetching! 
+				return datamgr.saveFilterRanges([fv]).then(function(){return true})
+				//return db.saveFilterRanges([fv]).then(function(){return true})
+			}
+		).catch(
+			function(err){
+				console.log("Failed to save filter");
+				console.log(err);
+			}
+		);
+
+		p.push(p1);
+	}
+
+	return p
+}
 
 /*
  * Run main algorithm
  */
-db.getGeeklists(true, false).then(
+datamgr.getGeeklists(true, false).then(
+//db.getGeeklists(true, false).then(
 	function(loadedGeeklists){
 		var p = [];
 		geeklists = loadedGeeklists;
@@ -340,9 +408,11 @@ db.getGeeklists(true, false).then(
 			
 			console.log("Saving boardgamestats");
 			pBgStats.push(
-				db.deleteBoardgameStats(geeklistId, analysisDate).then(
+				//db.deleteBoardgameStats(geeklistId, analysisDate).then(
+				datamgr.deleteBoardgameStats(geeklistId, analysisDate).then(
 					function(){
-						return db.saveBoardgameStats(r.value.bgStats);
+						//return db.saveBoardgameStats(r.value.bgStats);
+						return datamgr.saveBoardgameStats(r.value.bgStats);
 					}
 				).fail(
 					function(err){
@@ -355,9 +425,11 @@ db.getGeeklists(true, false).then(
 			//TODO: Implement median calculation for geeklists
 			console.log("Saving geekliststats");
 			pGlStats.push(
-				db.deleteGeeklistStats(geeklistId, analysisDate).then(
+				//db.deleteGeeklistStats(geeklistId, analysisDate).then(
+				datamgr.deleteGeeklistStats(geeklistId, analysisDate).then(
 					function(){
-						return db.saveGeeklistStats(r.value.glStats);
+						//return db.saveGeeklistStats(r.value.glStats);
+						return datamgr.saveGeeklistStats(r.value.glStats);
 					}
 				).fail(
 					function(err){
@@ -391,19 +463,18 @@ db.getGeeklists(true, false).then(
 	function(bgStats){
 		console.log("Loading boardgame data");
 		
-		return getBoardgameData(bgStats.map(
-				function(e){return e.objectid}
-			).reduce(
-				function(prev, curr){
-					if(prev.indexOf(curr) === -1){
-						return prev.concat(curr)
-					}else{
-						return prev
-					}
-				},
-				[]
-			)
-		).then(
+		var boardgameIdList = bgStats.map(function(e){return e.objectid}).reduce(
+			function(prev, curr){
+				if(prev.indexOf(curr) === -1){
+					return prev.concat(curr)
+				}else{
+					return prev
+				}
+			},
+			[]
+		);
+			
+		return datamgr.getBoardgameData(boardgameIdList).then(
 			function(boardgames){
 				//Populate the latest geeklist stat for each boardgame
 			
@@ -444,16 +515,19 @@ db.getGeeklists(true, false).then(
 	function(boardgames){
 		console.log("Saving all boardgames to DB.");
 			
-		return db.saveBoardgames(boardgames).then(
+		//return db.saveBoardgames(boardgames).then(
+		return datamgr.saveBoardgames(boardgames).then(
 				function(){
 					console.log("Running update function in CouchDB for stats");
-					return db.updateBoardgameStats([boardgames[0].geeklists[0].latest]);
+					//return db.updateBoardgameStats([boardgames[0].geeklists[0].latest]);
+					return datamgr.updateBoardgameStats([boardgames[0].geeklists[0].latest]);
 				}
 			).then(
 				function(){
 					console.log("Updating search engine");
 					
-					return db.updateSearch(boardgames)
+					//return db.updateSearch(boardgames)
+					return datamgr.updateSearch(boardgames)
 				}
 			).catch(
 				function(err){
@@ -464,87 +538,12 @@ db.getGeeklists(true, false).then(
 	}
 ).then(
 	function(v) { 
-		return db.finalizeDb()
+		//return db.finalizeDb()
+		return datamgr.finalizeDb()
 	}
 ).then(
-	//function(boardgames){
 	function(){
-		var p = [];
-		var filterValues = [];
-		
-		for(var i = 0; i < geeklists.length; i++){
-			var p1;
-			var geeklistid = geeklists[i].objectid;	
-			console.log("Generating geeklist filtervalues for " + geeklistid);
-
-			//Creating filter values	
-			var filterValue = new FilterValue(currentDate, geeklistid);
-			filterValues.push(filterValue);
-			
-			p1 = db.getGeeklistFiltersComponents(geeklistid).then(
-				function(comp){
-					for(var j=0; j < comp.length; j++){
-						var f = comp[j].key[1];
-						var v = comp[j].key[2];
-						
-						filterValue[f].push(v);
-					}
-					
-					return db.getGeeklistFiltersMinMax(geeklistid) 	
-				}
-			).then(
-				function(minmax){
-					for(var j=0; j < minmax.length; j++){
-						var f = minmax[j].key[1];
-						
-						filterValue[f].min = minmax[j].value.min;
-						filterValue[f].max = minmax[j].value.max;
-					}
-					return filterValue
-				}
-			).then(
-				function(fv){
-					console.log("deleting fv");
-					return db.deleteFilterRanges(fv.objectid, fv.analysisDate).then(function(){return fv})
-				}
-			).then(
-				function(fv){
-					console.log("saving fv");
-					//BUG: Why no UUIDS? Document update conflict when fetching! 
-					return db.saveFilterRanges([fv]).then(function(){return true})
-				}
-			).catch(
-				function(err){
-					console.log("Failed to save filter");
-					console.log(err);
-				}
-			);
-
-			p.push(p1);
-		}
-		/*
-		geeklists.forEach(function(geeklist){
-			//console.log(geeklistid);	
-			p.push(db.deleteFilterRanges(geeklist.objectid, currentDate).then(
-				function() {
-					var fv = filterValues.filter(function(e){return e.objectid === geeklist.objectid});
-					
-					return db.saveFilterRanges([fv[0]]).then(
-						function() { 
-							//TODO: Could return anything.
-							//return boardgames
-							return true
-						},
-						function(err){
-							console.log("Failed to save filter");
-							console.log(err);
-						}
-					)
-				}
-			));
-		});
-		*/
-		return q.allSettled(p).then(
+		return q.allSettled(generateFilterValues()).then(
 			function(){ 
 				console.log("Done saving filtervalues");	
 				return true 
@@ -553,7 +552,8 @@ db.getGeeklists(true, false).then(
 	}
 ).then(
 	function(v) { 
-		return db.finalizeDb()
+		return datamgr.finalizeDb()
+		//return db.finalizeDb()
 	}
 ).then(
 	function(v){
