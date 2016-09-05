@@ -31,6 +31,39 @@ var mc = new Memcached(memcached_uri, {'maxKeySize': 200});
 app.use(compression());
 app.use(bodyParser.urlencoded({extended: true}));
 
+app.use(uri + '/data/getGeeklistDetails', function(req, res, next){
+	/*
+	var p = qs.parse(req._parsedUrl.query);
+	
+	if(c.devmode){	
+		res.setHeader("Access-Control-Allow-Origin", "*");
+	}
+	
+	if(p.geeklistid != undefined){
+		datamgr.getGeeklistDetails(p.geeklistid).then(
+			function(val){
+				if(val.length > 0){
+					var r = JSON.stringify(val[0].doc);
+				
+					cacheResponse(req._parsedUrl.href, r);
+					
+					res.end(r);
+				}else{
+					res.end("{}");
+				}
+			}
+		).catch(function(e){
+			console.log("Error!");
+			console.log(e);		
+			res.end("{\"msgtype\": \"error\", \"msg\": \"Something horrible happened.\"}");
+		});
+	}else{
+		res.end("{\"msgtype\": \"error\", \"msg\": \"No filters found!\"}");
+	}
+	*/
+	res.end("Chill! Implementing!");
+});
+
 app.use(uri + '/data/getGeeklistFilters', function(req, res, next){
 	var p = qs.parse(req._parsedUrl.query);
 	

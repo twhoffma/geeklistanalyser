@@ -1,4 +1,5 @@
 qrequest = require('./qrequest.js')
+logger = require('./logger.js')
 
 c = JSON.parse(fs.readFileSync('localconfig.json', 'utf8'));
 
@@ -43,12 +44,12 @@ function updateSearch(docs){
 				}
 			});
 			
-			console.log("[SearchEngine] Created: " + cntCreated + ", Updated: " + cntUpdated);
+			logger.info("[SearchEngine] Created: " + cntCreated + ", Updated: " + cntUpdated);
 			
 			return v
 		},
 		function(e){
-			console.log(e);
+			logger.error(e);
 			throw e
 		}
 	)

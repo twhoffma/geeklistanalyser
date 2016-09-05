@@ -1,5 +1,5 @@
 {
-	"devmode": true,
+	"devmode": false,
 	"format":
 		{
 			"date": "YYYY-MM-DD",

@@ -251,17 +251,26 @@ function generateFilterValues(geeklist){
 	var geeklistid = geeklist.objectid;
 	var filterValue = new FilterValue(currentDate, geeklistid);
 	
-	logger.info("Generating geeklist filtervalues for " + geeklistid);
+	//logger.info("Generating geeklist filtervalues for " + geeklistid);
 	return datamgr.getGeeklistFiltersComponents(geeklistid).then(
 		function(comp){
+			var keys = [];
 			for(var j=0; j < comp.length; j++){
 				var f = comp[j].key[1];
 				var v = comp[j].key[2];
 				
 					
 				filterValue[f].push(v);
+				if(keys.indexOf(f) === -1){
+					keys.push(f);
+				}
 			}
 			
+			//Sorting
+			keys.forEach(function(k){
+				filterValue[k].sort(function(a, b){if(a.name.toUpperCase() < b.name.toUpperCase()){return -1}else{return 1}});
+				});
+				
 			return datamgr.getGeeklistFiltersMinMax(geeklistid) 	
 		}
 	).then(
@@ -277,12 +286,12 @@ function generateFilterValues(geeklist){
 		}
 	).then(
 		function(fv){
-			logger.info("Deleting old filter values..");
+			//logger.info("Deleting old filter values..");
 			return datamgr.deleteFilterRanges(fv.objectid, fv.analysisDate).then(function(){return fv})
 		}
 	).then(
 		function(fv){
-			logger.info("Saving new filter values");
+			//logger.info("Saving new filter values");
 			return datamgr.saveFilterRanges([fv]).then(function(){return true})
 		}
 	).catch(
@@ -441,24 +450,27 @@ datamgr.getGeeklists(true, false).then(
 		logger.info("Saving all boardgames to DB.");
 			
 		return datamgr.saveBoardgames(boardgames).then(
+			/*
 				function(){
 					logger.info("Running update function in CouchDB for stats");
 					return datamgr.updateBoardgameStats([boardgames[0].geeklists[0].latest]);
 				}
 			).then(
+			*/
 				function(){
 					logger.info("Updating search engine");
 					return datamgr.updateSearch(boardgames);
 				}
 			).catch(
 				function(err){
-					logger.error("Failed to have some boardgames");
+					logger.error("Failed in saving db/search engine step.");
 					logger.error(err);
 				}
 			)
 	}
 ).then(
 	function(){
+		logger.info("Generating static filter values.");
 		return q.allSettled(geeklists.map(generateFilterValues)).then(
 			function(){ 
 				logger.info("Done saving filtervalues");	
