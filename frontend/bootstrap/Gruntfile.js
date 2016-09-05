@@ -66,6 +66,7 @@ module.exports = function(grunt) {
 							'node_modules/jquery-ui/ui/keycode.js',
 							'node_modules/jquery-ui/ui/widgets/mouse.js',
 							'node_modules/jquery-ui/ui/widgets/slider.js',
+							'node_modules/jquery-ui-touch-punch/jquery.ui.touch-punch.min.js',
 							'./js/data.js',
 							'./js/ui.js',
 							'./js/ui.slider.js',
