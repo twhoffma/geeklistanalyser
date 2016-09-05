@@ -58,6 +58,7 @@
 			});
 				
 			$('.dropdown-menu').on("click", ".geeklist-menu-item", function(){
+				$('#geeklistname').text($(this).text());
 				loadGeeklist(this.dataset.geeklistid, false);
 			});
 			

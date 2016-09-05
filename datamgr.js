@@ -2,6 +2,9 @@ db = require('./db-couch.js');
 srch = require('./srch-elastic.js');
 bgg = require('./bgg.js');
 
+var winston = require('winston');
+
+
 function finalizeDb(){
 	return db.finalizeDb
 }
