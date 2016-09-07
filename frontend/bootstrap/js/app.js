@@ -164,9 +164,17 @@
 				}
 				
 				ui.setHistory(selectedGeeklist, 0, 0, filter, sorting);
-				ui.displaySpinner(true);
+				//ui.displaySpinner(true);
+				ui.setLoadButtonState("loading");
 				data.getGeeklist(selectedGeeklist, 0, filter, sorting).then(function(r){
 					ui.renderGeeklist(r, '', selectedGeeklist, true);
+					
+					if(r.length < 100){
+						ui.setLoadButtonState("finished");
+					}else{
+						ui.setLoadButtonState();
+					}
+					
 				});
 				
 				/*

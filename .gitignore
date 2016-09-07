@@ -36,3 +36,4 @@ public
 *.stdout
 *.out
 *.dump
+local.config

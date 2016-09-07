@@ -33,12 +33,52 @@ function init_ui(){
 	};
 	
 	function displaySpinner(visible){
+		/*
 		if(visible === true){
 			$("#games").append("<tr id=\"spinner\"><td colspan=\"9\"><img src=\"img/spiffygif_30x30.gif\"</td></tr>");
 		}else{
 			$("#games").children('#spinner').remove();
 		}
+		*/
 		
+	}
+	
+	function setLoadButtonState(state){
+		var e = document.getElementById("loadmore");
+		var c;
+		var i;
+		var m;
+		
+		console.log("Setting button state");	
+		switch (state){
+			case "error":
+				c = "btn-danger";
+				m = "Error!";
+				i = "fa-exclamation-triangle";
+				e.disabled = false;
+				break;
+			case "loading":
+				c = "btn-warning";
+				m = "Loading..";
+				i = "fa-refresh iconspin";
+				e.disabled = false;
+				break;
+			case "finished":
+				c = "btn-success";
+				m = "All done!";
+				i = "fa-check-square-o";
+				e.disabled = true;
+				break;
+			default :
+				c = "btn-primary";	
+				m = "Load more";
+				i = "fa-caret-down";
+				e.disabled = false;
+		}
+			
+		e.className = "btn " + c;
+		e.innerHTML = '<i class="fa ' + i + '" aria-hidden="true"></i> '+m;
+		console.log('<i class="fa ' + i + '" aria-hidden="true"></i> '+m);
 	}
 		
 	function getSliderValue(id){
@@ -70,6 +110,7 @@ function init_ui(){
 	}
 	
 	fn = {
+		'setLoadButtonState': setLoadButtonState,
 		'setHistory': function setHistory(geeklistid, limit, skip, filter, sorting){
 			var qs = "?id=" + geeklistid;
 			
@@ -337,7 +378,7 @@ function init_ui(){
 				list.append(l);
 			}
 		},
-			
+		/*		
 		'setLoadButtonState': function setLoadButtonState(enabled){
 			if(enabled === true){
 				$("#loadmore").html("Load more");
@@ -347,6 +388,7 @@ function init_ui(){
 				$("#loadmore").prop('disabled', true);
 			}
 		},
+		*/
 
 		'isDefaultFilters': function isDefaultFilters(){
 			var isDefaultValues = true;
