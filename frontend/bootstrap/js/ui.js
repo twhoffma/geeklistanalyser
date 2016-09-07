@@ -49,7 +49,6 @@ function init_ui(){
 		var i;
 		var m;
 		
-		console.log("Setting button state");	
 		switch (state){
 			case "error":
 				c = "btn-danger";
@@ -78,12 +77,20 @@ function init_ui(){
 			
 		e.className = "btn " + c;
 		e.innerHTML = '<i class="fa ' + i + '" aria-hidden="true"></i> '+m;
-		console.log('<i class="fa ' + i + '" aria-hidden="true"></i> '+m);
 	}
 		
 	function getSliderValue(id){
 		var filter = [];
 		
+		var s = document.getElementById(id);
+		var v = s.noUiSlider.get();	
+
+			
+		filter.push({'name': id + 'min', 'value': parseInt(v[0])});
+		filter.push({'name': id + 'max', 'value': parseInt(v[1])});
+
+		/*
+		TODO: Implement min/max check
 		//var s = $('input#' + id).slider();
 		var s = $('#' + id);
 		var val = s.slider("values");
@@ -92,12 +99,6 @@ function init_ui(){
 		var max = s.slider( "option", "max" );
 		//var max = s.slider('getAttribute', 'max');
 		
-		/*	
-		console.log(id);	
-		console.log(val);
-		console.log(min);	
-		console.log(max);	
-		*/
 		
 		if(val[0] > min){
 			filter.push({'name': id + 'min', 'value': val[0]});
@@ -106,6 +107,7 @@ function init_ui(){
 		if(val[1] < max){
 			filter.push({'name': id + 'max', 'value': val[1]});
 		}
+		*/
 		return filter;
 	}
 	
@@ -208,16 +210,22 @@ function init_ui(){
 							el.selectpicker('refresh');
 						}
 					}else if(e.type === 'slider'){
-						/*
-						el.slider({
-							min: v.min, 
-							max: v.max, 
-							value: [v.min, v.max], 
-							tooltip: 'always', 
-							tooltip_split: true,
-							scale: 'logarithmic'
+						var s = document.getElementById(e.name);
+						if(s.noUiSlider){
+							s.noUiSlider.destroy();
+						}
+						noUiSlider.create(s, {range: v, start: [v.min, v.max], step: 1});
+						
+						s.noUiSlider.on('change', function(){
+							var v = s.noUiSlider.get();
+							$(s).parent().children("input.min").val(v[0]);
+							$(s).parent().children("input.max").val(v[1]);
 						});
-						*/
+
+						$(s).parent().children("input").on('change', function(e){
+							s.noUiSlider.set([$(s).parent().children("input.min").val(),$(s).parent().children("input.max").val()]);
+						});
+						/*
     					el.slider({
       	  	  	  	  	  range: true,
       	  	  	  	  	  min: v.min,
@@ -229,11 +237,9 @@ function init_ui(){
         					//console.log(ui.values[ 0 ] + " - " + ui.values[ 1 ]);
       	  	  	  	  	  }
     					});
-
 						el.parent().children("input.min").val(v.min);
 						el.parent().children("input.max").val(v.max);
-						
-						//setSliderValue(r[e.name]);
+						*/
 					}
 				}else{
 				}
@@ -247,20 +253,32 @@ function init_ui(){
 				if(filter[e.name] !== undefined){
 					el = $('#'+e.name);
 
-					console.log(e.name + " " + e.type);
+					//console.log(e.name + " " + e.type);
 					if(e.type === 'selectpicker'){
 						el.selectpicker('val', parseInt(filter[e.name]));
 					}else if(e.type === 'dropdown'){
 						el.val(filter[e.name]);
 					}else if(e.type === 'sliderValue'){
-						//var min = parseInt(filter[e.name + 'min'] || s.slider('getAttribute', 'min'));
-						//var max = parseInt(filter[e.name + 'max'] || s.slider('getAttribute', 'max'));
+						var s = document.getElementById(e.related);
+						
+						if(filter[e.related + 'min']){
+							s.noUiSlider.set([parseInt(filter[e.related + 'min']), null]);
+						}
+						
+						if(filter[e.related + 'max']){
+							s.noUiSlider.set([null, parseInt(filter[e.related + 'max'])]);
+						}
+						
+						//s.noUiSlider.set([min, max]);
+						
+						/*
 						var s = $('#' + e.related);
 						var min = parseInt(filter[e.related + 'min'] || s.slider('option', 'min'));
 						var max = parseInt(filter[e.related + 'max'] || s.slider('option', 'max'));
 						console.log("set filter: " + min + " - " + max);
 						var v = [min, max];
 						s.slider('values', v);
+						*/
 					}
 				} 
     		});

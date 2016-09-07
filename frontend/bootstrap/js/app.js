@@ -35,13 +35,15 @@
 				
 				loadGeeklist(h.id, false);
 			}	
-				
+			
+			/*	
   			$("body").on("change", ".min,.max", function(e){
 				var min = $(this).parent().children(".min").val();
 				var max = $(this).parent().children(".max").val();
 				console.log("Manual input changed: " + min + " - " + max);
 				$(this).parent().children(".filterslider").slider("values", [min, max]);
 			});
+			*/
 
 			/*
 			enableMenuButtons(false);
@@ -91,38 +93,6 @@
 				ui.resetFilters();
 			});
 
-			$('#optionTabs a').click(function (e) {
-  				//e.preventDefault();
-  				$(this).tab('show');
-				console.log("changed tab");
-			})
-			/*	
-			$('.selects').on("click", function(e){
-				e.stopPropagation();
-			});
-			*/
-			
-			/*
-			$('button#sort,button#filter').on("click", function(){
-				loadGeeklist(selectedGeeklist, 10, 0);
-			});
-
-			$('#sortingModal').on('change', 'input,select', function(e){
-				$('.glyphicon-sort-by-attributes').css('color', isDefaultSorting() ? 'black' : 'red');
-				console.log("sorting change triggered!");
-			});
-			
-			$('#filteringModal').on('change', 'input,select', function(e){
-				$('.glyphicon-filter').css('color', isDefaultFilters() ? 'black' : 'red');
-				console.log("filtering change triggered!");
-			});
-
-
-			['#boardgamepublisher', '#boardgamedesigner'].forEach(function(e){
-				$(e).selectpicker();
-			});
-			*/
-			
 			function loadGeeklist(geeklistId, isUser){
 				//var sorting;
 				//var filter;

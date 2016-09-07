@@ -26,6 +26,7 @@ module.exports = function(grunt) {
 							'node_modules/bootstrap-slider/dist/css/*',
 							'node_modules/bootstrap-multiselect/dist/css/bootstrap-multiselect.css',
 							'node_modules/bootstrap-select/dist/css/bootstrap-select.min.css',
+							'node_modules/nouislider/distribute/nouislider.min.css',
 						], 
 						dest: '/var/www/hoffy.no/geeklistmonitor/css/', 
 						filter: 'isFile'
@@ -67,6 +68,7 @@ module.exports = function(grunt) {
 							'node_modules/jquery-ui/ui/widgets/mouse.js',
 							'node_modules/jquery-ui/ui/widgets/slider.js',
 							'node_modules/jquery-ui-touch-punch/jquery.ui.touch-punch.min.js',
+							'node_modules/nouislider/distribute/nouislider.min.js',
 							'./js/data.js',
 							'./js/ui.js',
 							'./js/ui.slider.js',
