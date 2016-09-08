@@ -8,7 +8,7 @@
     <title>Geeklist Analyzer</title>
 
     <!-- Bootstrap -->
-   <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">	
+    <!-- <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">	-->
     <link href="css/frontend.css" rel="stylesheet">
     <link href="css/nouislider.min.css" rel="stylesheet">
 	<link href="css/bootstrap.min.css" rel="stylesheet">
@@ -30,12 +30,12 @@
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <!--<script src="js/bootstrap.min.js"></script>-->
 	<script src="js/jquery.js"></script>
-	<script src="js/widget.js"></script>
-	<script src="js/mouse.js"></script>
-	<script src="js/keycode.js"></script>
-	<script src="js/slider.js"></script>
+	<!-- <script src="js/widget.js"></script>-->
+	<!-- <script src="js/mouse.js"></script>-->
+	<!-- <script src="js/keycode.js"></script> -->
+	<!--<script src="js/slider.js"></script>-->
 	<script src="js/nouislider.min.js"></script>
-	<script src="js/jquery.ui.touch-punch.min.js"></script>
+	<!-- <script src="js/jquery.ui.touch-punch.min.js"></script>-->
 	<!-- <script src="js/jquery-1-7.js"></script>-->
 	<!-- <script src="js/jquery-ui-custom.js"></script>-->
 	<script src="js/bootstrap.js"></script>
@@ -65,22 +65,12 @@
     		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
      			<ul class="nav navbar-nav">
         			<li class="dropdown" id="geeklists">
-          				<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="glyphicon glyphicon-list">Geeklists</span><span class="caret"></span></a>
-          				<ul class="dropdown-menu" role="menu">
-          				</ul>
+          				<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-list" aria-hidden="true"></i>Geeklists</a>
+          				<ul class="dropdown-menu" role="menu"></ul>
         			</li>
-					<li>
-						<h4 id="listname"></h4>
-					<li>
       			</ul>
       			<ul class="nav navbar-nav navbar-right">
-					<button type="button" class="btn btn-link btn-large" data-toggle="modal" data-target="#modSortingAndFilters" id="menuBtnSort" alt="Options"><i class="fa fa-cogs" aria-hidden="true"></i>Options</button>
-					<!--
-					<button type="button" class="btn btn-link btn-sm" data-toggle="modal" data-target="#sortingModal" id="menuBtnSort"><span class="glyphicon glyphicon-sort-by-attributes"></span>Sorting</button>
-					<button type="button" class="btn btn-link btn-sm" data-toggle="modal" data-target="#filteringModal" id="menuBtnFilter"><span class="glyphicon glyphicon-filter"></span>Filters</button>
-					<button type="button" class="btn btn-link btn-sm" data-toggle="modal" data-target="#infoModal" id="menuBtnInfo"><span class="glyphicon glyphicon-info-sign"></span>Info</button>
-					<button type="button" class="btn btn-link btn-sm"><span class="glyphicon glyphicon-stats"></span>Graphs</button>
-					-->
+						<button type="button" class="btn" data-toggle="modal" data-target="#modSortingAndFilters" id="menuBtnSort" alt="Options"><i class="fa fa-cogs" aria-hidden="true"></i>Options</button>
       			</ul>
     		</div><!-- /.navbar-collapse -->
   		</div><!-- /.container-fluid -->
@@ -173,27 +163,24 @@
 									</div>
 									<div class="form-group">
 										<label for="playingtime">Playing Time</label>
-										<!-- <input id="playingtime" class="rangeslider" data-slider-id='playingtime' type="text" data-slider-min="0" data-slider-max="0" data-slider-step="10" data-slider-value="[0,0]"/>-->
 										<div id="playingtime" class="filterslider" style="margin-bottom:1em;width:90%;"></div>
-										<input class="min"></input>
-										<input class="max"></input>
+										
+										<input class="min" for="number" step="1"></input>
+										<input class="max" for="number" step="1"></input>
 									</div>
 									<div class="form-group">
 										<label for="numplayers">Number of players</label>
-										<!--<input id="numplayers" data-slider-id='numplayer' type="text" data-slider-min="0" data-slider-max="0" data-slider-step="1" data-slider-value="[0,0]"/>-->
 										<div id="numplayers" class="filterslider" style="margin-bottom:1em;width:90%;"></div>
-										<input class="min"></input>
-										<input class="max"></input>
+										
+										<input class="min" for="number" step="1"></input>
+										<input class="max" for="number" step="1"></input>
 									</div>
 									<div class="form-group">
 										<label for="yearpublished">Year Published</label>
-										<!-- <input id="minyearpublished-manual" type="number" step="1" />  -->
-										<!--<input id="yearpublished" data-slider-id='yearpublished' type="text" data-slider-min="0" data-slider-max="0" data-slider-step="1" data-slider-value="[0,0]"/> -->
 										<div id="yearpublished" class="filterslider" style="margin-bottom:1em;width:90%;"></div>
 
-										<input class="min"></input>
-										<input class="max"></input>
-										<!-- <input id="maxyearpublished-manual" type="number" step="1" />  -->
+										<input class="min" for="number" step="1"></input>
+										<input class="max" for="number" step="1"></input>
 									</div>
 								</form>
 							</div>

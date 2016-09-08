@@ -151,7 +151,7 @@ function srchBoardgames(geeklistid, filters, sortby, sortby_asc, skip, lim){
 	}else if(sortby === "thumbs"){
 		s = {"geeklists.latest.thumbs": {"order": orderby, "nested_path": "geeklists.latest", "nested_filter": {"term": {"geeklists.latest.geeklistid": geeklistid}}}}
 	}else if(sortby === "cnt"){
-		s = {"geeklists.latest.crets": {"order": orderby, "nested_path": "geeklists.latest", "nested_filter": {"term": {"geeklists.lastest.geeklistid": geeklistid}}}}	
+		s = {"geeklists.latest.cnt": {"order": orderby, "nested_path": "geeklists.latest", "nested_filter": {"term": {"geeklists.latest.geeklistid": geeklistid}}}}	
 	}else{
 		s = {"geeklists.crets": {"order": orderby, "nested_path": "geeklists", "nested_filter": {"term": {"geeklists.objectid": geeklistid}}}}	
 	}

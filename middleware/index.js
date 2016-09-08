@@ -6,6 +6,7 @@ var qs = require('qs')
 //var db = require('../db-couch')
 var datamgr = require('../datamgr.js')
 var Memcached = require('memcached')
+var Q = require('q');
 
 var fs = require('fs');
 c = JSON.parse(fs.readFileSync('localconfig.json', 'utf8'));
@@ -23,6 +24,10 @@ process.argv.forEach(function(val, index, array){
 	}
 });
 
+function createError(e){
+	return {"error": e}
+}
+
 /* Middleware */
 var app = connect();
 
@@ -32,36 +37,21 @@ app.use(compression());
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.use(uri + '/data/getGeeklistDetails', function(req, res, next){
-	/*
 	var p = qs.parse(req._parsedUrl.query);
 	
-	if(c.devmode){	
-		res.setHeader("Access-Control-Allow-Origin", "*");
-	}
-	
-	if(p.geeklistid != undefined){
-		datamgr.getGeeklistDetails(p.geeklistid).then(
-			function(val){
-				if(val.length > 0){
-					var r = JSON.stringify(val[0].doc);
-				
-					cacheResponse(req._parsedUrl.href, r);
-					
-					res.end(r);
-				}else{
-					res.end("{}");
-				}
-			}
-		).catch(function(e){
-			console.log("Error!");
-			console.log(e);		
-			res.end("{\"msgtype\": \"error\", \"msg\": \"Something horrible happened.\"}");
-		});
-	}else{
-		res.end("{\"msgtype\": \"error\", \"msg\": \"No filters found!\"}");
-	}
-	*/
-	res.end("Chill! Implementing!");
+	datamgr.getGeeklists(false, true, p["geeklistid"]).then(
+		function(r){
+			res.end(JSON.stringify(r));
+			
+			return true
+		},
+		function(e){
+			res.end(JSON.stringify(createError(e)));
+			throw e
+		}
+	).catch(function(e){
+		res.end(JSON.stringify(createError(e)));
+	});
 });
 
 app.use(uri + '/data/getGeeklistFilters', function(req, res, next){
@@ -142,33 +132,30 @@ app.use(uri + '/data/getGeeklist', function(req, res, next){
 		
 		//TODO: Add cleaning of data before moving on.
 		
-		console.log("Sort options:" + sortby + " " + (sortby_asc ? "ASC" : "DESC"));
+		logger.info("Sort options:" + sortby + " " + (sortby_asc ? "ASC" : "DESC"));
 		
 		if(filterJSON != ''){
-			console.log("Fetch method: Search engine");
-			//console.log(filterJSON);
-			//console.log(sortby);
-			//console.log(sortby_asc);
-				
-			//TODO: You need to use try/catch here..
-			var filters = JSON.parse(p.filters);
+			logger.info("Fetch method: Search engine");
 			
-			//db.srchBoardgames(p.geeklistId, filters, sortby, sortby_asc, skip, limit).then(
-			datamgr.srchBoardgames(p.geeklistId, filters, sortby, sortby_asc, skip, limit).then(
-				function(reply){
-					//console.log(reply);
-					//XXX: Decide whether functions are returning JSON before this step or not..
-					
-					var docs = JSON.parse(reply).hits.hits.map(function(o){
-						return o._source
-					});
-
-					var r = JSON.stringify(docs);
+			validateFilters(p.filters).then(function(validFilters){	
+				return datamgr.srchBoardgames(p.geeklistId, validFilters, sortby, sortby_asc, skip, limit).then(
+					function(reply){
+						//console.log(reply);
+						//XXX: Decide whether functions are returning JSON before this step or not..
 						
-					cacheResponse(req._parsedUrl.href, r);
-					res.end(r);
-				}
-			).catch(
+						var docs = JSON.parse(reply).hits.hits.map(function(o){
+							return o._source
+						});
+
+						var r = JSON.stringify(docs);
+						
+						cacheResponse(req._parsedUrl.href, r);
+						res.end(r);
+						
+						return Q(true)
+					}
+				)
+			}).catch(
 				function(res){
 					console.log("srch fail: " + res);
 					console.log(res);
@@ -208,10 +195,29 @@ app.use(uri + '/data/getGeeklist', function(req, res, next){
 	}
 });
 
+function validateFilters(jsonString){
+	return Q.fcall(function(){
+		return JSON.parse(jsonString)
+	}).then(
+		function(o){
+			var f = {};
+			Object.keys(o).forEach(function(k){
+				f[k] = parseInt(o[k]);
+			});
+			return f
+		},
+		function(e){
+			return Q.reject(e)
+		}
+	).catch(function(e){
+		return Q.reject(e)
+	});
+}
+
 function cacheResponse(cachekey, val){
 	mc.set(cachekey, val, 120, function (err) { 
 		if(err){
-			console.log("Memcache storing of " + cachekey + " failed:" + err);
+			logger.error("Memcache storing of " + cachekey + " failed:" + err);
 		}
 	});
 }

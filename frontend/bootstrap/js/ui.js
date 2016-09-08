@@ -211,35 +211,24 @@ function init_ui(){
 						}
 					}else if(e.type === 'slider'){
 						var s = document.getElementById(e.name);
+						
 						if(s.noUiSlider){
 							s.noUiSlider.destroy();
 						}
+						
 						noUiSlider.create(s, {range: v, start: [v.min, v.max], step: 1});
 						
-						s.noUiSlider.on('change', function(){
+						s.noUiSlider.on('set', function(){
 							var v = s.noUiSlider.get();
-							$(s).parent().children("input.min").val(v[0]);
-							$(s).parent().children("input.max").val(v[1]);
+							$(s).parent().children("input.min").val(parseInt(v[0]));
+							$(s).parent().children("input.max").val(parseInt(v[1]));
 						});
 
 						$(s).parent().children("input").on('change', function(e){
-							s.noUiSlider.set([$(s).parent().children("input.min").val(),$(s).parent().children("input.max").val()]);
+							var min = parseInt($(s).parent().children("input.min").val());
+							var max = parseInt($(s).parent().children("input.max").val());
+							s.noUiSlider.set([min,max]);
 						});
-						/*
-    					el.slider({
-      	  	  	  	  	  range: true,
-      	  	  	  	  	  min: v.min,
-      	  	  	  	  	  max: v.max,
-      	  	  	  	  	  values: [v.min, v.max],
-      	  	  	  	  	  change: function( event, ui ) {
-							$(this).parent().children("input.min").val(ui.values[0]);
-							$(this).parent().children("input.max").val(ui.values[1]);
-        					//console.log(ui.values[ 0 ] + " - " + ui.values[ 1 ]);
-      	  	  	  	  	  }
-    					});
-						el.parent().children("input.min").val(v.min);
-						el.parent().children("input.max").val(v.max);
-						*/
 					}
 				}else{
 				}
@@ -253,7 +242,6 @@ function init_ui(){
 				if(filter[e.name] !== undefined){
 					el = $('#'+e.name);
 
-					//console.log(e.name + " " + e.type);
 					if(e.type === 'selectpicker'){
 						el.selectpicker('val', parseInt(filter[e.name]));
 					}else if(e.type === 'dropdown'){
@@ -268,17 +256,6 @@ function init_ui(){
 						if(filter[e.related + 'max']){
 							s.noUiSlider.set([null, parseInt(filter[e.related + 'max'])]);
 						}
-						
-						//s.noUiSlider.set([min, max]);
-						
-						/*
-						var s = $('#' + e.related);
-						var min = parseInt(filter[e.related + 'min'] || s.slider('option', 'min'));
-						var max = parseInt(filter[e.related + 'max'] || s.slider('option', 'max'));
-						console.log("set filter: " + min + " - " + max);
-						var v = [min, max];
-						s.slider('values', v);
-						*/
 					}
 				} 
     		});
@@ -333,6 +310,9 @@ function init_ui(){
 		},
 		
 		'displaySpinner': displaySpinner,
+		'renderGeeklistDetails': function(r){
+			$('#geeklistname').text(r[0].name);
+		},
 		'renderGeeklist': function renderGeeklist(r, sortby, geeklistid, clear){
 			var prevSortTerm = "";
 			var currentTerm = "";
@@ -342,14 +322,6 @@ function init_ui(){
 			if(clear){
 				list.children().remove();
 			}
-			
-			displaySpinner(false);	
-			
-			/*	
-			if(r.length === 0){
-				setLoadButtonState(false);
-			}
-			*/
 			
 			sortby = sortby || '';
 				

@@ -22,15 +22,21 @@ function saveBoardgames(boardgames){
 
 
 /* --- Geeklist --- */
-function getGeeklists(updateable, visible){
+function getGeeklists(isUpdateable, isVisible, geeklistId){
 	var url = db.getViewURL('geeklists', 'geeklists') + '?include_docs=true'
 	
+	//Can't seem to make this work even if it is according to spec.
+	/*	
+	if(geeklistId){
+		url += '&startkey_docid=' + geeklistId + '&endkey_docid=' + geeklistId
+	}
+	*/
 	return db.getDocs(url).then(
 		function(rows){
 			var geeklists = [];
 			
 			rows.forEach(function(row, i){
-				if((row.doc.update === true && updateable === true) || (row.doc.visible === true && visible === true)){
+				if((!geeklistId || parseInt(row.id) === parseInt(geeklistId)) && (!isUpdateable || row.doc.update === true) && (!isVisible || row.doc.visible === true)){
 					geeklists.push(row.doc);
 				}
 			});
