@@ -202,7 +202,11 @@ function validateFilters(jsonString){
 		function(o){
 			var f = {};
 			Object.keys(o).forEach(function(k){
-				f[k] = parseInt(o[k]);
+				if(k === 'releasetype' || k === 'sortby'){
+					f[k] = o[k];
+				}else{
+					f[k] = parseInt(o[k]);
+				}
 			});
 			return f
 		},

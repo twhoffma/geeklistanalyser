@@ -5,7 +5,11 @@ request = require('request');
 q = require('q');
 logger = require('./logger.js');
 
+fs = require('fs');
+c = JSON.parse(fs.readFileSync('localconfig.json', 'utf8'));
+
 var maxRequests = 5;
+var maxRequestsPerSec = 1;
 var maxNumBackoffs = 5;
 var numRequests = 0;
 var reqQueue = [];
@@ -15,7 +19,7 @@ function backoff(method, url, data, headers, use_fallback, fallback_iter, useQue
 	var delay = (1 + Math.random())*Math.exp(fallback_iter+1);
 	
 	if(fallback_iter <= maxNumBackoffs){
-		logger.info(delay + "s backoff added."); //[" + url + "]");
+		logger.debug(delay + "s backoff added."); //[" + url + "]");
 		
 		setTimeout(function(){
 			qrequest(method, url, data, headers, true, fallback_iter+1, useQueue, isQueued, lastResult).then(
@@ -41,7 +45,7 @@ function nextRequest(){
 	if(reqQueue.length > 0){
 		qr = reqQueue.shift();
 		
-		logger.info("[UQ] " + reqQueue.length + " left in queue. "); //[" + url + "]");	
+		logger.debug("[UQ] " + reqQueue.length + " left in queue. "); //[" + url + "]");	
 		
 		qrequest("GET", qr.url, null, null, true, 0, useQueue, true).then(
 			function(v){
@@ -81,7 +85,8 @@ function qrequest(method, url, data, headers, use_fallback, fallback_iter, useQu
 					if(reqQueue.length > 0){
 						qr = reqQueue.shift();
 						
-						logger.info("[UQ] " + reqQueue.length + " left in queue."); //[" + url + "]");	
+						logger.debug("[UQ] " + reqQueue.length + " left in queue."); //[" + url + "]");	
+						
 						//We fake one iteration to prevent this from being added recursively..
 						qrequest("GET", qr.url, null, null, true, 0, useQueue, true).then(
 							function(v){
@@ -114,7 +119,7 @@ function qrequest(method, url, data, headers, use_fallback, fallback_iter, useQu
 					p.resolve(response.body);
 				}else if(!error && response.statusCode == 202){
 					//The request was accepted. This implies server rendering. Try back-off.
-					logger.info("202. Backing off #" + fallback_iter + "/" + maxNumBackoffs); // +  " [" + url + "]");
+					logger.debug("202. Backing off #" + fallback_iter + "/" + maxNumBackoffs); // +  " [" + url + "]");
 					
 					if(lastResult === 503){
 						fallback_iter = 1;
@@ -134,7 +139,7 @@ function qrequest(method, url, data, headers, use_fallback, fallback_iter, useQu
 					*/
 					
 					if(use_fallback && ((error && error.code == 'ECONNRESET') || response.statusCode == 503)){
-						logger.warn("503/Hangup: Backing off #" + fallback_iter + "/" + maxNumBackoffs); //+ " [" + url + "]");
+						logger.debug("503/Hangup: Backing off #" + fallback_iter + "/" + maxNumBackoffs); //+ " [" + url + "]");
 						
 						backoff(method, url, data, headers, true, fallback_iter, useQueue, isQueued, 503).then(
 							function(v){p.resolve(v);},
@@ -152,7 +157,7 @@ function qrequest(method, url, data, headers, use_fallback, fallback_iter, useQu
 			//.finally will take the new item and execute.
 		}else{
 			reqQueue.push({"url": url, "deferred": p});
-			logger.info("[Q] " + reqQueue.length + " left in queue. "); // [" + url + "]");	
+			logger.debug("[Q] " + reqQueue.length + " left in queue. "); // [" + url + "]");	
 		}
 	}else if(method === "PUT" || method === "POST"){
 		var r = {
@@ -171,19 +176,24 @@ function qrequest(method, url, data, headers, use_fallback, fallback_iter, useQu
 		request(
 			r,
 			function(error, response, body) {
-				var sc = response.statusCode;
-				
-				if((sc == 201 && method === "PUT") || (sc >= 200 && sc < 300 && method === "POST")){		
-					p.resolve(body);
+				if(!error){
+					var sc = response.statusCode;
 					
-				}else{
-					logger.error(method.toUpperCase() + " error: " + response.statusCode);
-					logger.error(method.toUpperCase() + " error: " + body);
-					logger.error(method.toUpperCase() + " url: " + url);
+					if((sc == 201 && method === "PUT") || (sc >= 200 && sc < 300 && method === "POST")){		
+						p.resolve(body);
 						
-					//console.log("Failed data: " + data);
-					
-					p.reject(body);
+					}else{
+						logger.error(method.toUpperCase() + " error: " + response.statusCode);
+						logger.error(method.toUpperCase() + " error: " + body);
+						logger.error(method.toUpperCase() + " url: " + url);
+							
+						//console.log("Failed data: " + data);
+						
+						p.reject(body);
+					}
+				}else{
+					logger.error(error);
+					p.reject(error);
 				}
 			}
 		)
