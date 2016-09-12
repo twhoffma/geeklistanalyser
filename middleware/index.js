@@ -133,7 +133,8 @@ app.use(uri + '/data/getGeeklist', function(req, res, next){
 		//TODO: Add cleaning of data before moving on.
 		
 		logger.info("Sort options:" + sortby + " " + (sortby_asc ? "ASC" : "DESC"));
-		
+		console.log(filterJSON);
+			
 		if(filterJSON != ''){
 			logger.info("Fetch method: Search engine");
 			
@@ -198,22 +199,39 @@ app.use(uri + '/data/getGeeklist', function(req, res, next){
 function validateFilters(jsonString){
 	return Q.fcall(function(){
 		return JSON.parse(jsonString)
+	/*
 	}).then(
 		function(o){
 			var f = {};
 			Object.keys(o).forEach(function(k){
-				if(k === 'releasetype' || k === 'sortby'){
-					f[k] = o[k];
-				}else{
-					f[k] = parseInt(o[k]);
-				}
+				Q.fcall((function(k, v){
+					if(k === 'playingtime' || k === 'numplayers' || k === 'yearpublished'){
+						console.log(k);
+						console.log(v);
+						return {'param': k, 'value': o[k]}
+					}else if(k === 'releasetype' || k === 'sortby'){
+						return {'param': k, 'value': o[k]}
+					}else{
+						return {'param': k, 'value': parseInt(o[k])}
+					}
+
+					return {'param': k, 'value': parseInt(o[k])}
+				})(k, o[k])).then(
+					function(v){
+						f[v.param] = v.val;
+						return true	
+					},
+					function(e){
+						console.log(e);
+					}
+				);
 			});
 			return f
 		},
 		function(e){
 			return Q.reject(e)
-		}
-	).catch(function(e){
+	*/
+	}).catch(function(e){
 		return Q.reject(e)
 	});
 }
