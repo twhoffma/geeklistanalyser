@@ -234,6 +234,14 @@ function getGeeklistData(geeklistid, subgeeklistid, visitedGeeklists, boardgameS
 					p.reject(err);
 				}
 			);
+			/*
+			.catch(
+				function(e){
+					logger.error(e);
+					return 
+				}
+			);
+			*/
 		}
 	).catch(
 		function(err){
