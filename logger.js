@@ -11,16 +11,16 @@ c = JSON.parse(fs.readFileSync('localconfig.json', 'utf8'));
 var winston = require('winston');
 var logger = new (winston.Logger)({
   levels: {
-    trace: 0,
-    input: 1,
-    verbose: 2,
-    prompt: 3,
-    debug: 4,
-    info: 5,
-    data: 6,
-    help: 7,
-    warn: 8,
-    error: 9
+    trace: 9,
+    input: 8,
+    verbose: 7,
+    prompt: 6,
+    debug: 5,
+    info: 4,
+    data: 3,
+    help: 2,
+    warn: 1,
+    error: 0
   },
   colors: {
     trace: 'magenta',
