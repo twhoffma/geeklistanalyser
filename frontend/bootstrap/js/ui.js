@@ -229,6 +229,8 @@ function init_ui(){
 							var max = parseInt($(s).parent().children("input.max").val());
 							s.noUiSlider.set([min,max]);
 						});
+						
+						s.noUiSlider.set();
 					}
 				}else{
 				}
@@ -237,6 +239,10 @@ function init_ui(){
 			
 		'setFilters': function setFilters(filter){
 			var el;
+
+			if(filter === undefined){
+				return
+			}
 			
 			filternames.forEach(function(e){
 				if(filter[e.name] !== undefined){

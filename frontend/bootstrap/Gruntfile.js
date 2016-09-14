@@ -24,13 +24,14 @@ module.exports = function(grunt) {
 						src: [
 							'node_modules/bootstrap/dist/css/*',
 							'node_modules/bootstrap-slider/dist/css/*',
-							'node_modules/bootstrap-multiselect/dist/css/bootstrap-multiselect.css',
+							//'node_modules/bootstrap-multiselect/dist/css/bootstrap-multiselect.css',
 							'node_modules/bootstrap-select/dist/css/bootstrap-select.min.css',
 							'node_modules/nouislider/distribute/nouislider.min.css',
 						], 
 						dest: '/var/www/hoffy.no/geeklistmonitor/css/', 
 						filter: 'isFile'
 					},
+					/*
       	  	  		{
 						expand: true,
 						flatten: true, 
@@ -42,6 +43,7 @@ module.exports = function(grunt) {
 						dest: '/var/www/hoffy.no/geeklistmonitor/css/jquery-ui/', 
 						filter: 'isFile'
 					},
+					*/
       	  	  		{
 						expand: true,
 						flatten: true, 
@@ -58,16 +60,18 @@ module.exports = function(grunt) {
        			  			'node_modules/bootstrap/dist/js/bootstrap.js',
 							'node_modules/jquery/dist/jquery.js',
 							'node_modules/jquery/dist/core.js',
-							'node_modules/bootstrap-slider/dist/bootstrap-slider.min.js',
-							'node_modules/bootstrap-multiselect/dist/js/bootstrap-multiselect.js',
+							//'node_modules/bootstrap-slider/dist/bootstrap-slider.min.js',
+							//'node_modules/bootstrap-multiselect/dist/js/bootstrap-multiselect.js',
 							'node_modules/bootstrap-select/dist/js/bootstrap-select.min.js',
 							'node_modules/html5-history-api/history.min.js',
 							//'node_modules/jquery-ui/ui/core.js',
+							/*
 							'node_modules/jquery-ui/ui/widget.js',
 							'node_modules/jquery-ui/ui/keycode.js',
 							'node_modules/jquery-ui/ui/widgets/mouse.js',
 							'node_modules/jquery-ui/ui/widgets/slider.js',
 							'node_modules/jquery-ui-touch-punch/jquery.ui.touch-punch.min.js',
+							*/
 							'node_modules/nouislider/distribute/nouislider.min.js',
 							'./js/data.js',
 							'./js/ui.js',
@@ -94,11 +98,13 @@ module.exports = function(grunt) {
       		},
 			'default':	{
         		src: [
-        		  	'./bower_components/jquery/dist/jquery.js',
-       			  	'./bower_components/bootstrap/dist/js/bootstrap.js'
+					'node_modules/jquery/dist/jquery.js',
+       			  	'node_modules/bootstrap/dist/js/bootstrap.js',
         		],
         		dest: '/var/www/hoffy.no/geeklistmonitor/js/frontend.js'
-      			},
+      			}
+			/*
+			,
 			'jquery-ui-custom':	{
 				src: [
 					'./node_modules/jquery-ui/ui/jquery-1.7.js',
@@ -110,6 +116,7 @@ module.exports = function(grunt) {
 				],
 				dest: '/var/www/hoffy.no/geeklistmonitor/js/jquery-ui-custom.js'
 			}
+			*/
 		},
         cssmin: {
 			target: {

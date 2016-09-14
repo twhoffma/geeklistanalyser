@@ -8,6 +8,7 @@
     "bootstrap-multiselect": "^0.9.13",
     "bootstrap-select": "^1.10.0",
     "bootstrap-slider": "^5.3.6",
+    "d3": "^4.2.3",
     "grunt": "^0.4.5",
     "html5-history-api": "^4.2.7",
     "jquery": "^3.1.0",
