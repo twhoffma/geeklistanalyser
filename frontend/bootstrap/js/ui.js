@@ -7,9 +7,9 @@ function init_ui(){
 		{'name': 'boardgamecategory',  'type': 'selectpicker'},
 		{'name': 'boardgamepublisher',  'type': 'selectpicker'},
 		{'name': 'releasetype', 'type': 'dropdown'},
-		{'name': 'playingtime', 'type': 'slider'},
-		{'name': 'numplayers', 'type': 'slider'},
-		{'name': 'yearpublished', 'type': 'slider'},
+		{'name': 'playingtime', 'type': 'slider', 'method': 'range'},
+		{'name': 'numplayers', 'type': 'slider', 'method': 'range'},
+		{'name': 'yearpublished', 'type': 'slider', 'method': 'pips'},
 		{'name': 'playingtimemin', 'type': 'sliderValue', 'related': 'playingtime'},
 		{'name': 'playingtimemax', 'type': 'sliderValue', 'related': 'playingtime'},
 		{'name': 'numplayersmin', 'type': 'sliderValue', 'related': 'numplayers'},
@@ -216,7 +216,14 @@ function init_ui(){
 							s.noUiSlider.destroy();
 						}
 						
-						noUiSlider.create(s, {range: v, start: [v.min, v.max], step: 1});
+						if(e.method === 'range'){
+							noUiSlider.create(s, {range: v, start: [v.min, v.max], step: 1});
+						}else if(e.method === 'pips'){
+							//TODO: Make it snap to only given values. Need to generate {min: , max:, '10%':, ...}
+							var v = v.map(function(e){return parseInt(e)});
+							console.log(v);
+							noUiSlider.create(s, {range: {min: parseInt(v[0]), max:parseInt(v[v.length-1])}, snap: true, pips: {mode: 'values', values: v, density: 0, stepped: true}, start: [v[0], v[v.length - 1]]});
+						}
 						
 						s.noUiSlider.on('set', function(){
 							var v = s.noUiSlider.get();

@@ -25,7 +25,8 @@ function FilterValue(analysisDate, geeklistId){
 	this.objectid = geeklistId;
 	this.playingtime = {'min': Infinity, 'max': -Infinity}
 	this.numplayers = {'min': Infinity, 'max': -Infinity}
-	this.yearpublished = {'min': Infinity, 'max': -Infinity}
+	//this.yearpublished = {'min': Infinity, 'max': -Infinity}
+	this.yearpublished = [];
 	this.boardgamedesigner = []; 
 	this.boardgameartist = [];
 	this.boardgamecategory = []; 
@@ -42,6 +43,7 @@ function BoardgameStat(boardgameid, geeklistid, analysisdate, postdate, editdate
 	this.thumbs = 0;
 	this.type = "boardgamestat";
 	this.hist = {}; //Histogram based on position
+	this.obs = [];
 	this.postdate = moment(postdate).format(c.format.dateandtime);
 	this.editdate = moment(editdate).format(c.format.dateandtime);
 }
@@ -116,7 +118,7 @@ function getGeeklistStat(geeklistId, currentDate){
 }
 
 //XXX: Rewrite, should contain rootGeeklist, parentGeeklist, currentGeeklist, visitedGeeklists, boardgameStats, geeklistStats.
-function getGeeklistData(geeklistid, subgeeklistid, visitedGeeklists, boardgameStats, geeklistStats, excluded){
+function getGeeklistData(geeklistid, subgeeklistid, visitedGeeklists, boardgameStats, geeklistStats, excluded, saveObs){
 	var p = q.defer();
 	var promises = [];
 	
@@ -128,6 +130,7 @@ function getGeeklistData(geeklistid, subgeeklistid, visitedGeeklists, boardgameS
 	
 	var geeklistStat;
 	excluded = excluded || [];
+	saveObs = saveObs || false;
 		
 	//XXX: Find out why this is just not passed as a single object to be updated 
 	if(geeklistStatList.length === 0){
@@ -153,6 +156,7 @@ function getGeeklistData(geeklistid, subgeeklistid, visitedGeeklists, boardgameS
 			$('item').each(function(index, element){
 				if($(this).attr('objecttype') == 'thing'){
 					if($(this).attr('subtype') == 'boardgame'){
+						var id = $(this).attr('id');
 						var bgId = $(this).attr('objectid');
 						var thumbs = parseInt($(this).attr('thumbs'));
 						var postdate = Date.parse($(this).attr('postdate'));
@@ -188,6 +192,7 @@ function getGeeklistData(geeklistid, subgeeklistid, visitedGeeklists, boardgameS
 						//Here we tally all stats.
 						bgStat.cnt++;
 						bgStat.thumbs += thumbs;
+						bgStat.obs.push({'geeklist': subgeeklistid, 'id': id});
 
 						geeklistStat.numBoardgames++;
 					}
@@ -276,8 +281,17 @@ function generateFilterValues(geeklist){
 			
 			//Sorting
 			keys.forEach(function(k){
-				filterValue[k].sort(function(a, b){if(a.name.toUpperCase() < b.name.toUpperCase()){return -1}else{return 1}});
-				});
+				
+				if(filterValue[k].length > 0 && typeof filterValue[k][0] === "object"){
+					filterValue[k].sort(function(a, b){
+							if(a.name.toUpperCase() < b.name.toUpperCase()){
+								return -1
+							}else{
+								return 1
+							}
+						});
+				}
+			});
 				
 			return datamgr.getGeeklistFiltersMinMax(geeklistid) 	
 		}
@@ -330,7 +344,7 @@ datamgr.getGeeklists(true, false).then(
 		loadedGeeklists.forEach(function(geeklist, i){
 			if(!args['lists'] || args['lists'].indexOf(parseInt('' + geeklist.objectid)) > -1){
 				geeklists.push(geeklist);
-				p.push(getGeeklistData(geeklist.objectid, geeklist.objectid, [], [], [], geeklist.excluded));
+				p.push(getGeeklistData(geeklist.objectid, geeklist.objectid, [], [], [], geeklist.excluded, geeklist.saveObservations));
 			}
 		});
 		console.log("Num lists: " + p.length)	
