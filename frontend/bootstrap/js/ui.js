@@ -221,7 +221,6 @@ function init_ui(){
 						}else if(e.method === 'pips'){
 							//TODO: Make it snap to only given values. Need to generate {min: , max:, '10%':, ...}
 							var v = v.map(function(e){return parseInt(e)});
-							console.log(v);
 							noUiSlider.create(s, {range: {min: parseInt(v[0]), max:parseInt(v[v.length-1])}, snap: true, pips: {mode: 'values', values: v, density: 0, stepped: true}, start: [v[0], v[v.length - 1]]});
 						}
 						
@@ -364,8 +363,15 @@ function init_ui(){
 				}
 				
 				prevSortTerm = currentTerm;
-				
-				var l = "<tr class=\"gameline\"><td><a href=\"http://www.boardgamegeek.com/boardgame/" + r[i].objectid + "\" target=\"_blank\">" + n + "</a></td>";
+				var obs = "";
+
+				if(boardgamestat.obs && boardgamestat.obs.length <= 10){
+					boardgamestat.obs.forEach(function(o, i){
+						obs += '<a href="https://www.boardgamegeek.com/geeklist/item/' + o.id + '" target="_blank">[' + (i+1) + ']</a>';
+					});
+				}
+					
+				var l = "<tr class=\"gameline\"><td><a href=\"http://www.boardgamegeek.com/boardgame/" + r[i].objectid + "\" target=\"_blank\">" + n + "</a>" + obs + "</td>";
 				l += "<td class=\"hidden-xs\">" + r[i].yearpublished  + "</td>";
 				l += "<td class=\"hidden-xs\">" + r[i].minplayers  + "</td>";
 				l += "<td class=\"hidden-xs\">" + r[i].maxplayers  + "</td>";
