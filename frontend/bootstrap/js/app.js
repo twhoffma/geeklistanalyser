@@ -94,15 +94,16 @@
 				}
 
 				
-				if(clearOptions){
-					sorting = ui.sortingDefault;
-					filter = {};	
-				}
 
 				p.then(function(){
-					sorting = ui.getSorting();
-					filter = ui.getFilters();
-
+					if(clearOptions){
+						sorting = ui.sortingDefault;
+						filter = {};	
+					}else{
+						sorting = ui.getSorting();
+						filter = ui.getFilters();
+					}
+					
 					ui.setHistory(selectedGeeklist, 0, 0, filter, sorting);
 					
 					//Load geeklist contents

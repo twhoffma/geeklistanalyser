@@ -205,7 +205,7 @@ function getGeeklistData(geeklistid, subgeeklistid, visitedGeeklists, boardgameS
 						//Prevent infinite loops by checking where we've been
 						//if(gl.length === 0 && !isExcluded){
 						if(!isVisited && !isExcluded){
-							logger.info('Loading sublist: ' + glId);
+							logger.debug('Loading sublist: ' + glId);
 							visitedGeeklists.push({objectid: glId});
 							
 							//TODO: Is not capturing return values ok? Is it proper form?	
@@ -359,7 +359,7 @@ datamgr.getGeeklists(true, false).then(
 		
 		
 		logger.info("Saving stats");
-		results.forEach(function(r){
+		results.filter(function(v){return v.value}).forEach(function(r){
 			//glStats[0] is the main list
 			var geeklistId = r.value.glStats[0].objectid;
 			var analysisDate = r.value.glStats[0].statDate;

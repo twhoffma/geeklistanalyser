@@ -8,12 +8,13 @@ logger = require('./logger.js');
 fs = require('fs');
 c = JSON.parse(fs.readFileSync('localconfig.json', 'utf8'));
 
-var maxRequests = 5;
+var maxRequests = 1;
 var maxRequestsPerSec = 1;
 var maxNumBackoffs = 5;
 var numRequests = 0;
 var reqQueue = [];
 
+/*
 function backoff(method, url, data, headers, use_fallback, fallback_iter, useQueue, isQueued, lastResult){
 	var p = q.defer();
 	var delay = (1 + Math.random())*Math.exp(fallback_iter+1);
@@ -61,10 +62,11 @@ function nextRequest(){
 		);
 	}
 }
+*/
 
 function qrequest(method, url, data, headers, use_fallback, fallback_iter, useQueue, isQueued, lastResult){
-	var p = q.defer();
-	
+	var p;
+			
 	use_fallback = use_fallback || false;
 	fallback_iter = fallback_iter || 0;
 	method = method.toUpperCase();
@@ -73,156 +75,238 @@ function qrequest(method, url, data, headers, use_fallback, fallback_iter, useQu
 	lastResult = lastResult || 0;
 	
 	if(method === "GET"){
-		//Queue
-		if(!isQueued && useQueue){
-			p.promise.finally(
-				function(){
-					numRequests--;
-					//nextRequest();
-					
-					
-					var qr;
-					if(reqQueue.length > 0){
-						qr = reqQueue.shift();
-						
-						logger.debug("[UQ] " + reqQueue.length + " left in queue."); //[" + url + "]");	
-						
-						//We fake one iteration to prevent this from being added recursively..
-						qrequest("GET", qr.url, null, null, true, 0, useQueue, true).then(
-							function(v){
-								qr.deferred.resolve(v);
-							},
-							function(e){
-								qr.deferred.reject(e);
-							}
-						).catch(
-							function(e){
-								qr.deferred.reject(e);
-							}
-						);
-					}
-					
-				}
-			);
-		}
-		
-		//TODO: make num requests domain dependent.
-		//If num running requests is less than max
-		if(numRequests < maxRequests || !useQueue || fallback_iter > 0){
+		if(numRequests < maxRequests || !useQueue){
 			if(fallback_iter === 0 && useQueue){
 				numRequests++;
 			}
-			
-			//Run request
-			request(url, function(error, response, body){
-				if(!error && response.statusCode == 200){
-					p.resolve(response.body);
-				}else if(!error && response.statusCode == 202){
-					//The request was accepted. This implies server rendering. Try back-off.
-					logger.debug("202. Backing off #" + fallback_iter + "/" + maxNumBackoffs); // +  " [" + url + "]");
-					
-					if(lastResult === 503){
-						fallback_iter = 1;
-					}
-					
-					//XXX: If this is the result after a 503, it inherits the retry number instead of resetting.
-					backoff(method, url, data, headers, true, fallback_iter, useQueue, isQueued, 202).then(
-						function(v){p.resolve(v);},
-						function(e){p.reject(e);}
-					);
-				}else{
-					/*
-					console.log(error);
-					if(!error){
-						console.log(response.statusCode);	
-					}
-					*/
-					
-					if(use_fallback && ((error && error.code == 'ECONNRESET') || response.statusCode == 503)){
-						logger.debug("503/Hangup: Backing off #" + fallback_iter + "/" + maxNumBackoffs); //+ " [" + url + "]");
-						
-						backoff(method, url, data, headers, true, fallback_iter, useQueue, isQueued, 503).then(
-							function(v){p.resolve(v);},
-							function(e){p.reject(e);}
-						);
-					}else{
-						logger.error("failed url: " + url);
-						logger.error(error);
-						logger.error("Fallback iteration: #" + fallback_iter);
-						logger.error("Fallback active: " + use_fallback);
-						p.reject(error);	
-					}
-				}
-			});
-			//.finally will take the new item and execute.
+			console.log("Running " + url);	
+			p = runRequest(reqGet, 0, url);
 		}else{
-			reqQueue.push({"url": url, "deferred": p});
-			logger.debug("[Q] " + reqQueue.length + " left in queue. "); // [" + url + "]");	
-		}
-	}else if(method === "PUT" || method === "POST"){
-		var r = {
-				method: method,
-				uri: url
-		};
-		
-		if(data !== undefined && data !== null){
-				r['body'] = data;
-		}
+			var d = q.defer();
 			
-		if(headers !== undefined & headers !== null){
-			r['headers'] = headers;
+			reqQueue.push({"url": url, "deferred": d});
+			logger.debug("[Q] " + reqQueue.length + " left in queue. "); // [" + url + "]");	
+			
+			console.log("Queued " + url);	
+			p = d.promise;
 		}
-		
-		request(
-			r,
-			function(error, response, body) {
-				if(!error){
-					var sc = response.statusCode;
-					
-					if((sc == 201 && method === "PUT") || (sc >= 200 && sc < 300 && method === "POST")){		
-						p.resolve(body);
-						
-					}else{
-						logger.error(method.toUpperCase() + " error: " + response.statusCode);
-						logger.error(method.toUpperCase() + " error: " + body);
-						logger.error(method.toUpperCase() + " url: " + url);
-							
-						//console.log("Failed data: " + data);
-						
-						p.reject(body);
-					}
-				}else{
-					logger.error(error);
-					p.reject(error);
-				}
-			}
-		)
+	}else if(method === "POST"){
+		p = reqPost(url, data, headers)
+	}else if(method === "PUT"){
+		p = reqPut(url, data)
 	}else if(method.toUpperCase() === "DELETE"){
-		request(
-			{
-				method: "DELETE",
-				uri: url,
-				body: data
-			},
-			function(error, response, body) {
-				if(response.statusCode == 200){
-					p.resolve(true);
-				}else{
-					logger.error("DELETE error: " + response.statusCode);
-					logger.error("DELETE error: " + body);
-					logger.error(method.toUpperCase() + " url: " + url);
-						
-					//console.log("Failed data: " + data);
-					
-					p.reject("ERROR");
-				}
-			}
-		)
+		p = reqDelete(url, data)
 	}else{
 		p.reject("Unknown http verb");
 	}
 	
-	return p.promise
+	if(useQueue){	
+		//TODO: make num requests domain dependent.
+		return q(p).finally(function(){
+			runNextRequest();
+		}).catch(function(e){
+			console.log(e);
+		});
+	}else{
+		return p
+	}
+}
+
+/*
+function request(tries) {
+	if (tries > MAX_TRIES)
+		reject;
+	return doRequest().then(function(v){resolve(v)}, return request(tries + 1));
+}
+*/
+function runNextRequest(){
+	var qr;
+	
+	numRequests--;
+	
+	if(reqQueue.length > 0){
+		qr = reqQueue.shift();
+				
+		logger.debug("[UQ] " + reqQueue.length + " left in queue.");	
+		
+		runRequest(reqGet, 0, qr.url).then(
+			function(v){
+				console.log("Resolved " + qr.url);	
+				qr.resolve(v);	
+			},
+			function(e){
+				console.log(e);
+				qr.reject(e);
+			}
+		).finally(function(){
+			runNextRequest();
+		});
+	}else{
+		console.log("Nothing to do!");
+	}
+}
+
+function runRequest(fn, tries, url, data, header){
+	return new q.Promise(function(resolve, reject){
+		var delay = 0;
+		if(tries > maxNumBackoffs){
+			reject("Max number of backoffs reached!");
+		}
+		
+		if(tries > 0){
+			delay = (1 + Math.random())*Math.exp(tries+1);
+			logger.warn("Delay added: " + delay);
+		}
+		
+		q.delay(1000 * delay).then(function(){
+			return fn(url, data, header)
+		}).then(
+			function(v){
+				console.log("runRequest done " + url);
+				resolve(v);
+			},
+			function(e){
+				if(e == 202 || e == 502){
+					console.log(e);
+					return runRequest(fn, tries+1, url, data, header)
+				}else{
+					reject(e);
+				}		
+			}
+		).then(
+			function(v){
+				resolve(v);
+			},
+			function(e){
+				reject(e);
+			}
+		);
+	})
+}
+
+function reqGet(url){
+	return new q.Promise(function(resolve, reject){
+		request(url, function(error, response, body){
+			if(!error && response.statusCode == 200){
+				resolve(response.body);
+			}else if(!error && response.statusCode == 202){
+				//The request was accepted. This implies server rendering. Try back-off.
+				reject(202);
+			}else{
+				if((error && error.code == 'ECONNRESET') || response.statusCode == 503){
+					reject(503);
+				}else{
+					reject(error);
+				}
+			}
+		});
+	})
+}
+
+function reqDelete(url, data){
+	return new q.Promise(function(resolve, reject){
+			request(
+				{
+					method: "DELETE",
+					uri: url,
+					body: data
+				},
+				function(error, response, body) {
+					if(response.statusCode == 200){
+						resolve("OK");
+					}else{
+						logger.error("DELETE error: " + response.statusCode);
+						logger.error("DELETE error: " + body);
+						logger.error(method.toUpperCase() + " url: " + url);
+							
+						reject("ERROR");
+					}
+				}
+			);
+		}
+	)
+}
+
+function reqPut(url, data, headers){
+	var r = {
+			method: 'PUT',
+			uri: url
+	};
+	
+	if(data !== undefined && data !== null){
+			r['body'] = data;
+	}
+		
+	if(headers !== undefined & headers !== null){
+		r['headers'] = headers;
+	}
+	
+	return new q.Promise(function(resolve, reject){
+			request(
+				r,
+				function(error, response, body) {
+					if(!error){
+						var sc = response.statusCode;
+						
+						if(sc == 201){		
+							resolve(body);	
+						}else{
+							logger.error(method.toUpperCase() + " error: " + response.statusCode);
+							logger.error(method.toUpperCase() + " error: " + body);
+							logger.error(method.toUpperCase() + " url: " + url);
+								
+							
+							reject(body);
+						}
+					}else{
+						logger.error(error);
+						reject(error);
+					}
+				}
+			)
+		}
+	)
+}
+
+function reqPost(url, data, headers){
+	var r = {
+			method: 'POST',
+			uri: url
+	};
+	
+	if(data !== undefined && data !== null){
+			r['body'] = data;
+	}
+		
+	if(headers !== undefined & headers !== null){
+		r['headers'] = headers;
+	}
+	
+	return new q.Promise(function(resolve, reject){
+			request(
+				r,
+				function(error, response, body) {
+					if(!error){
+						var sc = response.statusCode;
+						
+						if(sc >= 200 && sc < 300){		
+							resolve(body);	
+						}else{
+							logger.error(method.toUpperCase() + " error: " + response.statusCode);
+							logger.error(method.toUpperCase() + " error: " + body);
+							logger.error(method.toUpperCase() + " url: " + url);
+								
+							
+							reject(body);
+						}
+					}else{
+						logger.error(error);
+						reject(error);
+					}
+				}
+			)
+		}
+	)
 }
 
 module.exports.qrequest = qrequest
