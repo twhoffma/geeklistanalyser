@@ -31,6 +31,8 @@ function init_ui(){
 		'sortby': 'crets',
 		'ascending': 0
 	};
+
+	var currentFilterDefaults = {};
 	
 	function displaySpinner(visible){
 		/*
@@ -80,15 +82,17 @@ function init_ui(){
 	}
 		
 	function getSliderValue(id){
-		var filter = [];
+		//var filter = [];
 		
 		var s = document.getElementById(id);
 		var v = s.noUiSlider.get();	
 
 			
-		filter.push({'name': id + 'min', 'value': parseInt(v[0])});
-		filter.push({'name': id + 'max', 'value': parseInt(v[1])});
-
+		//filter.push({'name': id + 'min', 'value': parseInt(v[0])});
+		//filter.push({'name': id + 'max', 'value': parseInt(v[1])});
+		
+		//filter.push({'name': id, 'min': parseInt(v[0]), 'max': parseInt(v[1])});
+		
 		/*
 		TODO: Implement min/max check
 		//var s = $('input#' + id).slider();
@@ -108,7 +112,8 @@ function init_ui(){
 			filter.push({'name': id + 'max', 'value': val[1]});
 		}
 		*/
-		return filter;
+		//return filter;
+		return {'name': id, 'min': parseInt(v[0]), 'max': parseInt(v[1])}
 	}
 	
 	fn = {
@@ -193,6 +198,8 @@ function init_ui(){
 		
 		'populateFilters': function populateFilters(r){
 			filternames.forEach(function(e){
+				var defaults;
+				
 				if(r[e.name] !== undefined){
 					var v = r[e.name];	
 					var el = $('#' + e.name);
@@ -218,12 +225,18 @@ function init_ui(){
 						
 						if(e.method === 'range'){
 							noUiSlider.create(s, {range: v, start: [v.min, v.max], step: 1});
+								
+							defaults = {'min': v.min, 'max': v.max};
 						}else if(e.method === 'pips'){
 							//TODO: Make it snap to only given values. Need to generate {min: , max:, '10%':, ...}
 							var v = v.map(function(e){return parseInt(e)});
 							noUiSlider.create(s, {range: {min: parseInt(v[0]), max:parseInt(v[v.length-1])}, snap: true, pips: {mode: 'values', values: v, density: 0, stepped: true}, start: [v[0], v[v.length - 1]]});
+							
+							defaults = {'min': Math.min.apply(null, v), 'max': Math.max.apply(null, v)};
 						}
 						
+						currentFilterDefaults[e.name] = defaults;
+						 
 						s.noUiSlider.on('set', function(){
 							var v = s.noUiSlider.get();
 							$(s).parent().children("input.min").val(parseInt(v[0]));
@@ -301,12 +314,26 @@ function init_ui(){
 					}
 				}else if(e.type === 'slider'){
 					var v = getSliderValue(e.name);
+					
+					if(v['min'] > currentFilterDefaults[e.name]['min']){
+						console.log(e.name + " " + v['min'] + " is greather than " + currentFilterDefaults[e.name]['min']);
+						
+						filter[e.name + 'min'] = v['min'];
+					}
+					
+					if(v['max'] < currentFilterDefaults[e.name]['max']){
+						console.log(e.name + " " + v['max'] + " is lower than " + currentFilterDefaults[e.name]['max']);
+						filter[e.name + 'max'] = v['max'];
+					}
+					/*
 					v.forEach(function(f){
+
+						console.log(f.name);
 						filter[f.name] = f.value;
-					});
+					});	
+					*/
 				}
     		});
-			
 			return filter
 		},
 		
@@ -367,7 +394,7 @@ function init_ui(){
 
 				if(boardgamestat.obs && boardgamestat.obs.length <= 10){
 					boardgamestat.obs.forEach(function(o, i){
-						obs += '<a href="https://www.boardgamegeek.com/geeklist/item/' + o.id + '" target="_blank">[' + (i+1) + ']</a>';
+						obs += '<a href="https://www.boardgamegeek.com/geeklist/item/' + o.id + '" target="_blank" class="btn btn-default btn-xs btn-circle">' + (i+1) + '</a>';
 					});
 				}
 					

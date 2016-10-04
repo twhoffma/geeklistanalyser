@@ -117,6 +117,48 @@ function getGeeklistStat(geeklistId, currentDate){
 	return i
 }
 
+function updateBoardgameStat(xmlObj, boardgameStats, rootGeeklistId, geeklistId){
+	var bgStat;
+	var itemId = xmlObj.attr('id');
+	var bgId = xmlObj.attr('objectid');
+	var thumbs = parseInt(xmlObj.attr('thumbs'));
+	var postdate = Date.parse(xmlObj.attr('postdate'));
+	var editdate = Date.parse(xmlObj.attr('editdate'));
+	
+	/*	
+	var bgStats = boardgameStats.filter(function(e){
+		return e.objectid == bgId && e.geeklistid == rootGeeklistId
+	});
+	*/
+	
+	var bgStats = boardgameStats.filter((e) => (e.objectid == bgId && e.geeklistid == rootGeeklistId));
+
+	if(bgStats.length === 0){
+		bgStat = new BoardgameStat(bgId, rootGeeklistId, currentDate, postdate, editdate);
+		boardgameStats.push(bgStat);
+	}else{
+		bgStat = bgStats[0];
+		
+		//The first post defines creation time.
+		if(Date.parse(bgStat.postdate) > postdate){
+			bgStat.postdate = moment(postdate).format(c.format.dateandtime);
+		}
+		
+		//The latest editdate is the one that is used.
+		if(Date.parse(bgStat.editdate) < editdate){
+			bgStat.editdate = moment(editdate).format(c.format.dateandtime);
+		} 
+	}
+	
+	//TODO:
+	//var bgStat = getBoardgameStat(bgId, geeklistid, currentDate, postdate, editdate);
+		
+	//Here we tally all stats.
+	bgStat.cnt++;
+	bgStat.thumbs += thumbs;
+	bgStat.obs.push({'geeklist': geeklistId, 'id': itemId});
+}
+
 //XXX: Rewrite, should contain rootGeeklist, parentGeeklist, currentGeeklist, visitedGeeklists, boardgameStats, geeklistStats.
 function getGeeklistData(geeklistid, subgeeklistid, visitedGeeklists, boardgameStats, geeklistStats, excluded, saveObs){
 	var p = q.defer();
@@ -156,6 +198,9 @@ function getGeeklistData(geeklistid, subgeeklistid, visitedGeeklists, boardgameS
 			$('item').each(function(index, element){
 				if($(this).attr('objecttype') == 'thing'){
 					if($(this).attr('subtype') == 'boardgame'){
+						updateBoardgameStat($(this), boardgameStats, geeklistid, subgeeklistid)
+						
+						/*
 						var id = $(this).attr('id');
 						var bgId = $(this).attr('objectid');
 						var thumbs = parseInt($(this).attr('thumbs'));
@@ -193,26 +238,30 @@ function getGeeklistData(geeklistid, subgeeklistid, visitedGeeklists, boardgameS
 						bgStat.cnt++;
 						bgStat.thumbs += thumbs;
 						bgStat.obs.push({'geeklist': subgeeklistid, 'id': id});
-
+						*/
+						
 						geeklistStat.numBoardgames++;
 					}
 				}else if($(this).attr('objecttype') == 'geeklist'){
 						var glId = $(this).attr('objectid');
-						//var gl = visitedGeeklists.filter(function(e){return e.objectid == glId});
 						var isVisited = (visitedGeeklists.filter(function(e){return e.objectid == glId}).length > 0);
 						var isExcluded = (excluded.filter(function(e){return e === parseInt(glId)}).length > 0);
 							
 						//Prevent infinite loops by checking where we've been
-						//if(gl.length === 0 && !isExcluded){
 						if(!isVisited && !isExcluded){
 							logger.debug('Loading sublist: ' + glId);
 							visitedGeeklists.push({objectid: glId});
 							
 							//TODO: Is not capturing return values ok? Is it proper form?	
-							promises.push(getGeeklistData(geeklistid, glId, visitedGeeklists, boardgameStats, geeklistStats, excluded).fail(
+							promises.push(getGeeklistData(geeklistid, glId, visitedGeeklists, boardgameStats, geeklistStats, excluded).then(
+								function(v){
+									("Promise resolved: " + glId);
+								},
 								function(err){ 
 									logger.error("Error loading sublist:");
 									logger.error(err);
+
+									throw err
 								}
 							));
 						}else if(isExcluded){
@@ -225,12 +274,13 @@ function getGeeklistData(geeklistid, subgeeklistid, visitedGeeklists, boardgameS
 			
 			q.allSettled(promises).then(
 				function(){
+					//console.log("All subpromises of " + subgeeklistid + " resolved." + promises.length + " in total.");
 					//Should be
 					//p.resolve(boardgameQueue);
 					if(geeklistid === subgeeklistid){
 						//TODO: Do top-level calculations such as average and median list length.
 					}
-					
+						
 					p.resolve({bgStats: boardgameStats, glStats: geeklistStats});
 					//p.resolve({bgStats: getBoardgameStats(), glStats: getGeeklistStats()});
 				},
@@ -238,15 +288,12 @@ function getGeeklistData(geeklistid, subgeeklistid, visitedGeeklists, boardgameS
 					logger.error(err);
 					p.reject(err);
 				}
-			);
-			/*
-			.catch(
+			).catch(
 				function(e){
 					logger.error(e);
 					return 
 				}
 			);
-			*/
 		}
 	).catch(
 		function(err){

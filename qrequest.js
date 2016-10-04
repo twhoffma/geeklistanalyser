@@ -79,15 +79,15 @@ function qrequest(method, url, data, headers, use_fallback, fallback_iter, useQu
 			if(fallback_iter === 0 && useQueue){
 				numRequests++;
 			}
-			console.log("Running " + url);	
+			
 			p = runRequest(reqGet, 0, url);
 		}else{
 			var d = q.defer();
 			
 			reqQueue.push({"url": url, "deferred": d});
-			logger.debug("[Q] " + reqQueue.length + " left in queue. "); // [" + url + "]");	
+			logger.debug("++ " + reqQueue.length + " left in queue. "); // [" + url + "]");	
+			logger.debug("Queued " + url);	
 			
-			console.log("Queued " + url);	
 			p = d.promise;
 		}
 	}else if(method === "POST"){
@@ -126,24 +126,27 @@ function runNextRequest(){
 	
 	if(reqQueue.length > 0){
 		qr = reqQueue.shift();
-				
-		logger.debug("[UQ] " + reqQueue.length + " left in queue.");	
+		logger.debug("-- " + reqQueue.length + " left in queue.");	
 		
+		//return runRequest(reqGet, 0, qr.url).then(
 		runRequest(reqGet, 0, qr.url).then(
 			function(v){
-				console.log("Resolved " + qr.url);	
-				qr.resolve(v);	
+				qr.deferred.resolve(v);	
 			},
 			function(e){
-				console.log(e);
-				qr.reject(e);
+				qr.deferred.reject(e);
 			}
 		).finally(function(){
 			runNextRequest();
 		});
-	}else{
-		console.log("Nothing to do!");
 	}
+}
+
+function queueRequest(fn, url){
+	return new q.Promise(function(resolve, reject){
+		reqQueue.push({"url": url, "deferred": d});
+		logger.debug(reqQueue.length + " left in queue. "); 
+	})
 }
 
 function runRequest(fn, tries, url, data, header){
@@ -162,12 +165,10 @@ function runRequest(fn, tries, url, data, header){
 			return fn(url, data, header)
 		}).then(
 			function(v){
-				console.log("runRequest done " + url);
 				resolve(v);
 			},
 			function(e){
 				if(e == 202 || e == 502){
-					console.log(e);
 					return runRequest(fn, tries+1, url, data, header)
 				}else{
 					reject(e);
