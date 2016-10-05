@@ -10,7 +10,7 @@ c = JSON.parse(fs.readFileSync('localconfig.json', 'utf8'));
 
 var maxRequests = 1;
 var maxRequestsPerSec = 1;
-var maxNumBackoffs = 5;
+var maxNumBackoffs = 1;
 var numRequests = 0;
 var reqQueue = [];
 
@@ -102,10 +102,14 @@ function qrequest(method, url, data, headers, use_fallback, fallback_iter, useQu
 	
 	if(useQueue){	
 		//TODO: make num requests domain dependent.
-		return q(p).finally(function(){
+		return p.finally(function(){
+			//console.log("Went into finally..." + url);
 			runNextRequest();
 		}).catch(function(e){
-			console.log(e);
+			//console.log("Went into catch..." + url);
+			//console.log(e);
+			
+			throw e
 		});
 	}else{
 		return p
@@ -154,34 +158,42 @@ function runRequest(fn, tries, url, data, header){
 		var delay = 0;
 		if(tries > maxNumBackoffs){
 			reject("Max number of backoffs reached!");
-		}
-		
-		if(tries > 0){
-			delay = (1 + Math.random())*Math.exp(tries+1);
-			logger.warn("Delay added: " + delay);
-		}
-		
-		q.delay(1000 * delay).then(function(){
-			return fn(url, data, header)
-		}).then(
-			function(v){
-				resolve(v);
-			},
-			function(e){
-				if(e == 202 || e == 502){
-					return runRequest(fn, tries+1, url, data, header)
+		}else{
+			if(tries > 0){
+				delay = (1 + Math.random())*Math.exp(tries+1);
+				logger.warn("Delay added: " + delay);
+			}
+			
+			q.delay(1000 * delay).then(function(){
+				return fn(url, data, header)
+				/*
+				if(url.indexOf('193588') !== -1){
+					console.log("faking reject");
+					return q.reject(502)
 				}else{
+					return fn(url, data, header)
+				}
+				*/
+			}).then(
+				function(v){
+					resolve(v);
+				},
+				function(e){
+					if(e == 202 || e == 502){
+						return runRequest(fn, tries+1, url, data, header)
+					}else{
+						reject(e);
+					}		
+				}
+			).then(
+				function(v){
+					resolve(v);
+				},
+				function(e){
 					reject(e);
-				}		
-			}
-		).then(
-			function(v){
-				resolve(v);
-			},
-			function(e){
-				reject(e);
-			}
-		);
+				}
+			);
+		}
 	})
 }
 

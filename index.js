@@ -32,6 +32,7 @@ function FilterValue(analysisDate, geeklistId){
 	this.boardgamecategory = []; 
 	this.boardgamemechanic = [];
 	this.boardgamepublisher = [];
+	this.boardgamefamily = [];
 }
 
 function BoardgameStat(boardgameid, geeklistid, analysisdate, postdate, editdate){
@@ -274,7 +275,7 @@ function getGeeklistData(geeklistid, subgeeklistid, visitedGeeklists, boardgameS
 			
 			q.allSettled(promises).then(
 				function(){
-					//console.log("All subpromises of " + subgeeklistid + " resolved." + promises.length + " in total.");
+					logger.debug("All subpromises of " + subgeeklistid + " resolved." + promises.length + " in total.");
 					//Should be
 					//p.resolve(boardgameQueue);
 					if(geeklistid === subgeeklistid){
@@ -285,13 +286,9 @@ function getGeeklistData(geeklistid, subgeeklistid, visitedGeeklists, boardgameS
 					//p.resolve({bgStats: getBoardgameStats(), glStats: getGeeklistStats()});
 				},
 				function(err){
+					//logger.error("Here it comes 2");
 					logger.error(err);
 					p.reject(err);
-				}
-			).catch(
-				function(e){
-					logger.error(e);
-					return 
 				}
 			);
 		}
@@ -299,6 +296,7 @@ function getGeeklistData(geeklistid, subgeeklistid, visitedGeeklists, boardgameS
 		function(err){
 			logger.error(err);
 			
+			p.reject(err);	
 			throw err
 		}
 	);
@@ -406,6 +404,7 @@ datamgr.getGeeklists(true, false).then(
 		
 		
 		logger.info("Saving stats");
+		//We have to filter out which results have values,as rejections have 'error' instead.
 		results.filter(function(v){return v.value}).forEach(function(r){
 			//glStats[0] is the main list
 			var geeklistId = r.value.glStats[0].objectid;
@@ -477,6 +476,7 @@ datamgr.getGeeklists(true, false).then(
 			[]
 		);
 			
+		//TODO: Aggregate some info on how many new, updated, etc.. Segmented on geeklist.
 		return datamgr.getBoardgameData(boardgameIdList).then(
 			function(boardgames){
 				//Populate the latest geeklist stat for each boardgame

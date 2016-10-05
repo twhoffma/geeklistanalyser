@@ -229,8 +229,41 @@ function init_ui(){
 							defaults = {'min': v.min, 'max': v.max};
 						}else if(e.method === 'pips'){
 							//TODO: Make it snap to only given values. Need to generate {min: , max:, '10%':, ...}
-							var v = v.map(function(e){return parseInt(e)});
-							noUiSlider.create(s, {range: {min: parseInt(v[0]), max:parseInt(v[v.length-1])}, snap: true, pips: {mode: 'values', values: v, density: 0, stepped: true}, start: [v[0], v[v.length - 1]]});
+							var v = v.map(function(e){return parseInt(e)}).sort();
+							
+							var rng = {};
+							var key = '';
+							for(var i = 0; i < v.length; i++){
+								
+								if(i === 0){
+									rng['min'] = v[i];
+								}else if(i === (v.length -1)){
+									rng['max'] = v[i];
+								}else{
+									rng[Math.round((i+1)/v.length*100) +'%'] = v[i];
+								}
+							}
+
+							console.log(rng);
+							
+							noUiSlider.create(s, {
+								start: [rng['min'], rng['max']],
+								range: rng,
+								snap: true,
+								pips: {
+									mode: 'steps',
+									filter: function(v){
+										if(v == rng['min'] || v == rng['max'] || v == 0){ //|| v === listyear){
+											return 1
+										}else{
+											return 0
+										}
+									}
+								}//,
+								//connect: true
+							});
+							
+							//noUiSlider.create(s, {range: rng, snap: true, pips: {mode: 'values', values: v, density: 0, stepped: true}, start: [v[0], v[v.length - 1]]});
 							
 							defaults = {'min': Math.min.apply(null, v), 'max': Math.max.apply(null, v)};
 						}
@@ -239,17 +272,21 @@ function init_ui(){
 						 
 						s.noUiSlider.on('set', function(){
 							var v = s.noUiSlider.get();
-							$(s).parent().children("input.min").val(parseInt(v[0]));
-							$(s).parent().children("input.max").val(parseInt(v[1]));
+							$(s).parent().find("input.min").val(parseInt(v[0]));
+							$(s).parent().find("input.max").val(parseInt(v[1]));
+							//$(s).parent().children("input.min").val(parseInt(v[0]));
+							//$(s).parent().children("input.max").val(parseInt(v[1]));
 						});
 
-						$(s).parent().children("input").on('change', function(e){
-							var min = parseInt($(s).parent().children("input.min").val());
-							var max = parseInt($(s).parent().children("input.max").val());
+						$(s).parent().find("input").on('change', function(e){
+							var min = parseInt($(s).parent().find("input.min").val());
+							var max = parseInt($(s).parent().find("input.max").val());
 							s.noUiSlider.set([min,max]);
 						});
 						
+						
 						s.noUiSlider.set();
+						//s.noUiSlider.set([defaults.min, defaults.max]);
 					}
 				}else{
 				}

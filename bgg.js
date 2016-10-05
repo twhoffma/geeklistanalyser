@@ -27,6 +27,7 @@ function Boardgame(boardgameId){
 	this.boardgamemechanic = [];	
 	this.boardgamedesigner = [];	
 	this.boardgameartist = [];
+	this.boardgamefamily = [];
 	this.boardgamepublisher = [];
 	this.boardgameintegration = [];
 	this.boardgameimplementation = [];
@@ -81,6 +82,12 @@ function getBoardgame(boardgameId){
 					bg.boardgamedesigner.push({objectid: id, name: val});
 				});
 		
+				$('boardgamefamily', $(this)).each(function(index, elem){
+					var id = $(this).attr('objectid');
+					var val = $(this).text();
+					bg.boardgamefamily.push({objectid: id, name: val});
+				});
+				
 				$('boardgameartist', $(this)).each(function(index, elem){
 					var id = $(this).attr('objectid');
 					var val = $(this).text();
