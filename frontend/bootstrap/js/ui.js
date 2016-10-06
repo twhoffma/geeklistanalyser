@@ -6,6 +6,7 @@ function init_ui(){
 		{'name': 'boardgamemechanic',  'type': 'selectpicker'},
 		{'name': 'boardgamecategory',  'type': 'selectpicker'},
 		{'name': 'boardgamepublisher',  'type': 'selectpicker'},
+		{'name': 'boardgamefamily',  'type': 'selectpicker'},
 		{'name': 'releasetype', 'type': 'dropdown'},
 		{'name': 'playingtime', 'type': 'slider', 'method': 'range'},
 		{'name': 'numplayers', 'type': 'slider', 'method': 'range'},
@@ -24,7 +25,8 @@ function init_ui(){
 		'boardgamemechanic', 
 		'boardgamecategory', 
 		'releasetype', 
-		'boardgamepublisher'
+		'boardgamepublisher',
+		'boardgamefamily'
 	];
 
 	var sortingDefault = {
@@ -233,13 +235,12 @@ function init_ui(){
 							
 							var rng = {};
 							var key = '';
+							console.log(v);
+							rng['min'] = Math.min.apply(null, v);
+							rng['max'] = Math.max.apply(null, v);
+							
 							for(var i = 0; i < v.length; i++){
-								
-								if(i === 0){
-									rng['min'] = v[i];
-								}else if(i === (v.length -1)){
-									rng['max'] = v[i];
-								}else{
+								if(v[i] > rng['min'] && v[i] < rng['max']){ 
 									rng[Math.round((i+1)/v.length*100) +'%'] = v[i];
 								}
 							}
@@ -249,7 +250,8 @@ function init_ui(){
 							noUiSlider.create(s, {
 								start: [rng['min'], rng['max']],
 								range: rng,
-								snap: true,
+								snap: true//,
+								/*
 								pips: {
 									mode: 'steps',
 									filter: function(v){
@@ -259,7 +261,9 @@ function init_ui(){
 											return 0
 										}
 									}
-								}//,
+								}
+								*/
+								//,
 								//connect: true
 							});
 							

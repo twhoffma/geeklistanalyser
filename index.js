@@ -19,6 +19,132 @@ var boardgameStats = [];
 var geeklistStats = [];
 var geeklists = [];
 
+/*MAIN*/
+//Read args
+for(i = 2; i < process.argv.length; i++){
+	var arg = process.argv[i].split("=");
+	
+	if(arg.length > 1){
+		args[arg[0].toLowerCase()] = arg[1].toLowerCase().split(",").map(parseInt);
+	}else{
+		arg[arg[0].toLowerCase()] = true;
+	}
+}
+
+//Process geeklists
+datamgr.getGeeklists(true, false).then(
+	function(loadedGeeklists){
+		var p = [];
+			
+		loadedGeeklists.forEach(function(geeklist, i){
+			
+			//Only run lists that are provided at the commandline, or all with update === true if none is given.
+			if(!args['lists'] || args['lists'].indexOf(parseInt('' + geeklist.objectid)) > -1){
+				geeklists.push(geeklist);
+				
+				p.push(getGeeklistData(geeklist.objectid, geeklist.objectid, [], [], [], geeklist.excluded, geeklist.saveObservations));
+			}
+		});
+			
+		return q.allSettled(p)
+	}
+).then(
+	function(results){
+		return saveStats(results.filter((v) => v.value).map((v) => v.value))
+	},
+	function(err){
+		logger.error("Error occurred:");
+		logger.error(err);
+		throw err
+	}
+).then(
+	function(bgStats){
+		logger.info("Loading boardgame data");
+		
+		var boardgameIdList = bgStats.map(function(e){return e.objectid}).reduce(
+			function(prev, curr){
+				if(prev.indexOf(curr) === -1){
+					return prev.concat(curr)
+				}else{
+					return prev
+				}
+			},
+			[]
+		);
+		
+		return loadBoardgames(boardgameIdList, bgStats)	
+	}
+).then(
+	function(boardgames){
+		logger.info("Saving all boardgames to DB.");
+			
+		return datamgr.saveBoardgames(boardgames).then(
+			function(){
+				return boardgames
+			}
+		)
+		/*
+		return datamgr.saveBoardgames(boardgames).then(
+			//	function(){
+			//		logger.info("Running update function in CouchDB for stats");
+			//		return datamgr.updateBoardgameStats([boardgames[0].geeklists[0].latest]);
+			//	}
+			//).then(
+				function(){
+					logger.info("Updating search engine");
+					return datamgr.updateSearch(boardgames);
+				}
+			).catch(
+				function(err){
+					logger.error("Failed in saving db/search engine step.");
+					logger.error(err);
+				}
+			)
+		*/
+	}
+).then(
+	function(boardgames){
+		logger.info("Updating search engine");
+		
+		return datamgr.updateSearch(boardgames).catch(
+			function(err){
+				logger.error("Failed in saving db/search engine step.");
+				logger.error(err);
+				
+				throw err
+			}
+		)
+	}
+).then(
+	function(){
+		logger.info("Generating static filter values.");
+		return q.allSettled(geeklists.map(generateFilterValues)).then(
+			function(){ 
+				logger.info("Done saving filtervalues");	
+				return true 
+			}
+		)
+	}
+).then(
+	function(v) { 
+		return datamgr.finalizeDb()
+	}
+).then(
+	function(v){
+		var startTime = moment(currentTime, c.format.dateandtime);
+		var now = moment();
+		
+		var timeTaken = moment(moment.duration(now.diff(startTime))).format("hh:mm:ss");
+		logger.info("All done in " + timeTaken);
+		return true
+	}
+).catch(
+	function(e){
+		logger.error(e);
+	}
+);
+/* END OF MAIN */
+
 function FilterValue(analysisDate, geeklistId){
 	this.type = 'filtervalue';
 	this.analysisDate = analysisDate;
@@ -62,6 +188,103 @@ function GeeklistStat(geeklistid, statDate){
 	this.maxListLength = 0;
 	this.minListLength = 0;
 };
+
+function loadBoardgames(boardgameIdList, bgStats){
+	//TODO: Aggregate some info on how many new, updated, etc.. Segmented on geeklist.
+	return datamgr.getBoardgameData(boardgameIdList).then(
+		function(boardgames){
+			//Populate the latest geeklist stat for each boardgame
+		
+			logger.info("Adding most recent stats to boardgame data");
+				
+			boardgames.forEach(function(boardgame){
+				bgStats.filter(function(e){return e.objectid === boardgame.objectid}).forEach(function(bgStat){
+					var geeklist = boardgame.geeklists.filter(function(e){return e.objectid === bgStat.geeklistid});
+						
+					if(geeklist.length === 0){
+						geeklist = {'objectid': bgStat.geeklistid, 'crets': moment(bgStat.postdate).format(c.format.dateandtime), 'latest': bgStat};
+						boardgame['geeklists'].push(geeklist);
+					}else{
+						//There is only one latest per geeklist per boardgame
+						geeklist[0].latest = bgStat;
+					}
+				});
+			});
+
+			return boardgames
+		},
+		function(err){
+			logger.error("Couldn't find boardgame in db or bgg..");
+			logger.error(err);
+
+			throw err
+		}
+	).catch(
+		function(err){
+			logger.error("Caught error bg lookup..");
+			logger.error(err);
+			
+			throw err
+		}
+	)
+}
+
+function saveStats(stats){
+	var p = [];
+	var bgStats = [];
+	var n = 0;
+	
+	logger.info("Saving stats");
+	stats.forEach(function(r){
+		var geeklistId = r.glStats[0].objectid;
+		var analysisDate = r.glStats[0].statDate;
+		
+		bgStats = bgStats.concat(r.bgStats);
+		
+		p.push(
+			datamgr.deleteBoardgameStats(geeklistId, analysisDate).then(
+				function(){
+					return datamgr.saveBoardgameStats(r.bgStats);
+				}
+			).fail(
+				function(err){
+					logger.error("Error saving boardgame stats: " + err);
+					throw err
+				}
+			)
+		);
+		
+		//TODO: Implement median calculation for geeklists
+		p.push(
+			datamgr.deleteGeeklistStats(geeklistId, analysisDate).then(
+				function(){
+					logger.debug("Saving glStat for " + geeklistId);
+					return datamgr.saveGeeklistStats(r.glStats);
+				}
+			).fail(
+				function(err){
+					logger.error("Error saving geeklist stats: " + err);
+					
+					throw err
+				}
+			)
+		);
+	});
+	
+	return q.all(p).then(
+		function(){
+			console.log("Done saving stats");
+			return bgStats
+		}
+	).catch(
+		function(err){
+			console.log("Error in stats saving");
+			console.log(err);
+
+			throw err
+		}
+	);
+}
 
 function getBoardgameStats(geeklistId){
 	return boardgameStats.filter(function(e){
@@ -316,9 +539,9 @@ function generateFilterValues(geeklist){
 			for(var j=0; j < comp.length; j++){
 				var f = comp[j].key[1];
 				var v = comp[j].key[2];
-				
-					
+
 				filterValue[f].push(v);
+				
 				if(keys.indexOf(f) === -1){
 					keys.push(f);
 				}
@@ -328,6 +551,7 @@ function generateFilterValues(geeklist){
 			keys.forEach(function(k){
 				
 				if(filterValue[k].length > 0 && typeof filterValue[k][0] === "object"){
+					//console.log(filterValue[k]);
 					filterValue[k].sort(function(a, b){
 							if(a.name.toUpperCase() < b.name.toUpperCase()){
 								return -1
@@ -370,198 +594,3 @@ function generateFilterValues(geeklist){
 }
 
 
-//Read args
-for(i = 2; i < process.argv.length; i++){
-	var arg = process.argv[i].split("=");
-	
-	if(arg.length > 1){
-		args[arg[0].toLowerCase()] = arg[1].toLowerCase().split(",").map(parseInt);
-	}else{
-		arg[arg[0].toLowerCase()] = true;
-	}
-}
-
-//Process geeklists
-datamgr.getGeeklists(true, false).then(
-	function(loadedGeeklists){
-		var p = [];
-		
-		loadedGeeklists.forEach(function(geeklist, i){
-			if(!args['lists'] || args['lists'].indexOf(parseInt('' + geeklist.objectid)) > -1){
-				geeklists.push(geeklist);
-				p.push(getGeeklistData(geeklist.objectid, geeklist.objectid, [], [], [], geeklist.excluded, geeklist.saveObservations));
-			}
-		});
-		console.log("Num lists: " + p.length)	
-		
-		return q.allSettled(p)
-	}
-).then(
-	function(results){
-		var pBgStats = [];
-		var pGlStats = [];
-		var bgStats = [];
-		
-		
-		logger.info("Saving stats");
-		//We have to filter out which results have values,as rejections have 'error' instead.
-		results.filter(function(v){return v.value}).forEach(function(r){
-			//glStats[0] is the main list
-			var geeklistId = r.value.glStats[0].objectid;
-			var analysisDate = r.value.glStats[0].statDate;
-			
-			bgStats = bgStats.concat(r.value.bgStats);
-			
-			pBgStats.push(
-				datamgr.deleteBoardgameStats(geeklistId, analysisDate).then(
-					function(){
-						return datamgr.saveBoardgameStats(r.value.bgStats);
-					}
-				).fail(
-					function(err){
-						logger.error("Error saving boardgame stats: " + err);
-						throw err
-					}
-				)
-			);
-			
-			//TODO: Implement median calculation for geeklists
-			pGlStats.push(
-				datamgr.deleteGeeklistStats(geeklistId, analysisDate).then(
-					function(){
-						return datamgr.saveGeeklistStats(r.value.glStats);
-					}
-				).fail(
-					function(err){
-						logger.error("Error saving geeklist stats: " + err);
-						
-						throw err
-					}
-				)
-			);
-
-		
-		});
-		
-		return q.all(pBgStats.concat(pGlStats)).then(
-			function(){
-				console.log("Done saving stats");
-				return bgStats
-			}).catch(
-				function(err){
-					console.log("Error in stats saving");
-					console.log(err);
-	
-					throw err
-				}
-			)
-	},
-	function(err){
-		logger.error("Error occurred:");
-		logger.error(err);
-		throw err
-	}
-).then(
-	function(bgStats){
-		logger.info("Loading boardgame data");
-		
-		var boardgameIdList = bgStats.map(function(e){return e.objectid}).reduce(
-			function(prev, curr){
-				if(prev.indexOf(curr) === -1){
-					return prev.concat(curr)
-				}else{
-					return prev
-				}
-			},
-			[]
-		);
-			
-		//TODO: Aggregate some info on how many new, updated, etc.. Segmented on geeklist.
-		return datamgr.getBoardgameData(boardgameIdList).then(
-			function(boardgames){
-				//Populate the latest geeklist stat for each boardgame
-			
-				logger.info("Adding most recent stats to boardgame data");
-					
-				boardgames.forEach(function(boardgame){
-					bgStats.filter(function(e){return e.objectid === boardgame.objectid}).forEach(function(bgStat){
-						var geeklist = boardgame.geeklists.filter(function(e){return e.objectid === bgStat.geeklistid});
-							
-						if(geeklist.length === 0){
-							geeklist = {'objectid': bgStat.geeklistid, 'crets': moment(bgStat.postdate).format(c.format.dateandtime), 'latest': bgStat};
-							boardgame['geeklists'].push(geeklist);
-						}else{
-							//There is only one latest per geeklist per boardgame
-							geeklist[0].latest = bgStat;
-						}
-					});
-				});
-
-				return boardgames
-			},
-			function(err){
-				logger.error("Couldn't find boardgame in db or bgg..");
-				logger.error(err);
-
-				throw err
-			}
-		).catch(
-			function(err){
-				logger.error("Caught error bg lookup..");
-				logger.error(err);
-				
-				throw err
-			}
-		)
-	}
-).then(
-	function(boardgames){
-		logger.info("Saving all boardgames to DB.");
-			
-		return datamgr.saveBoardgames(boardgames).then(
-			/*
-				function(){
-					logger.info("Running update function in CouchDB for stats");
-					return datamgr.updateBoardgameStats([boardgames[0].geeklists[0].latest]);
-				}
-			).then(
-			*/
-				function(){
-					logger.info("Updating search engine");
-					return datamgr.updateSearch(boardgames);
-				}
-			).catch(
-				function(err){
-					logger.error("Failed in saving db/search engine step.");
-					logger.error(err);
-				}
-			)
-	}
-).then(
-	function(){
-		logger.info("Generating static filter values.");
-		return q.allSettled(geeklists.map(generateFilterValues)).then(
-			function(){ 
-				logger.info("Done saving filtervalues");	
-				return true 
-			}
-		)
-	}
-).then(
-	function(v) { 
-		return datamgr.finalizeDb()
-	}
-).then(
-	function(v){
-		var startTime = moment(currentTime, c.format.dateandtime);
-		var now = moment();
-		
-		var timeTaken = moment(moment.duration(now.diff(startTime))).format("hh:mm:ss");
-		logger.info("All done in " + timeTaken);
-		return true
-	}
-).catch(
-	function(e){
-		logger.error(e);
-	}
-);

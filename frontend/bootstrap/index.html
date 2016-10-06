@@ -28,18 +28,9 @@
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>-->
     <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <!--<script src="js/bootstrap.min.js"></script>-->
 	<script src="js/jquery.js"></script>
-	<!-- <script src="js/widget.js"></script>-->
-	<!-- <script src="js/mouse.js"></script>-->
-	<!-- <script src="js/keycode.js"></script> -->
-	<!--<script src="js/slider.js"></script>-->
 	<script src="js/nouislider.min.js"></script>
-	<!-- <script src="js/jquery.ui.touch-punch.min.js"></script>-->
-	<!-- <script src="js/jquery-1-7.js"></script>-->
-	<!-- <script src="js/jquery-ui-custom.js"></script>-->
 	<script src="js/bootstrap.js"></script>
-	<!-- <script src="js/bootstrap-slider.min.js"></script>-->
 	<script src="js/bootstrap-select.min.js"></script>
 	<script src="js/history.min.js"></script>
 	<script src="js/ui.js"></script>
@@ -131,6 +122,17 @@
 								-->
 								<form>
 									<div class="form-group">
+											<label for="releasetype">
+											<select id="releasetype" class="form-control">
+												<option value="">All</option>
+												<option value="boardgame">Boardgames</option>
+												<option value="expansion">Expansions</option>
+												<option value="collection">Collections</option>
+												<option value="reimplementation">Reimplementations</option>
+												<option value="integration">Integrates with..</option>
+											</select>
+									</div>
+									<div class="form-group">
 										<label for="boardgamedesigner">Designer</label>
 										<select id="boardgamedesigner" class="form-control" data-live-search="true"></select>
 									</div>
@@ -151,15 +153,8 @@
 										<select id="boardgamecategory" class="form-control" data-live-search="true"></select>
 									</div>
 									<div class="form-group">
-											<label for="releasetype">
-											<select id="releasetype" class="form-control">
-												<option value="">All</option>
-												<option value="boardgame">Boardgames</option>
-												<option value="expansion">Expansions</option>
-												<option value="collection">Collections</option>
-												<option value="reimplementation">Reimplementations</option>
-												<option value="integration">Integrates with..</option>
-											</select>
+										<label for="boardgamefamily">Family</label>
+										<select id="boardgamefamily" class="form-control" data-live-search="true"></select>
 									</div>
 									<div class="form-group">
 										<label for="playingtime">Playing Time</label>
