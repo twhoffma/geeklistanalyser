@@ -21,10 +21,10 @@
             "properties": {
               "name": {
                 "type": "string",
-				"index": "not_analyzed"
+		"index": "not_analyzed"
               },
               "objectid": {
-                "type": "string"
+                "type": "long"
               }
             }
           },
@@ -34,7 +34,7 @@
             "properties": {
               "name": {
                 "type": "string",
-				"index": "not_analyzed"
+		"index": "not_analyzed"
               },
               "objectid": {
                 "type": "string"
@@ -47,7 +47,7 @@
             "properties": {
               "name": {
                 "type": "string",
-				"index": "not_analyzed"
+		"index": "not_analyzed"
               },
               "objectid": {
                 "type": "long"

@@ -489,7 +489,7 @@ function getGeeklistData(geeklistid, subgeeklistid, visitedGeeklists, boardgameS
 								}
 							));
 						}else if(isExcluded){
-							logger.info(glId + " is excluded");	
+							logger.debug(glId + " is excluded");	
 						}
 						
 						geeklistStat.numLists++;

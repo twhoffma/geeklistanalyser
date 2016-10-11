@@ -198,6 +198,7 @@ app.use(uri + '/data/getGeeklist', function(req, res, next){
 
 function validateFilters(jsonString){
 	return Q.fcall(function(){
+		console.log(jsonString);
 		return JSON.parse(jsonString)
 	/*
 	}).then(

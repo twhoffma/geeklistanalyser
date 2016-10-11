@@ -10,7 +10,7 @@ c = JSON.parse(fs.readFileSync('localconfig.json', 'utf8'));
 
 var maxRequests = 1;
 var maxRequestsPerSec = 1;
-var maxNumBackoffs = 1;
+var maxNumBackoffs = 5;
 var numRequests = 0;
 var reqQueue = [];
 
@@ -161,7 +161,7 @@ function runRequest(fn, tries, url, data, header){
 		}else{
 			if(tries > 0){
 				delay = (1 + Math.random())*Math.exp(tries+1);
-				logger.warn("Delay added: " + delay);
+				logger.debug("Delay added: " + delay);
 			}
 			
 			q.delay(1000 * delay).then(function(){
@@ -179,7 +179,7 @@ function runRequest(fn, tries, url, data, header){
 					resolve(v);
 				},
 				function(e){
-					if(e == 202 || e == 502){
+					if(e == 202 || e == 503){
 						return runRequest(fn, tries+1, url, data, header)
 					}else{
 						reject(e);
@@ -206,7 +206,7 @@ function reqGet(url){
 				//The request was accepted. This implies server rendering. Try back-off.
 				reject(202);
 			}else{
-				if((error && error.code == 'ECONNRESET') || response.statusCode == 503){
+				if((error && error.code == 'ECONNRESET') || (response.statusCode && response.statusCode == 503)){
 					reject(503);
 				}else{
 					reject(error);
@@ -282,8 +282,9 @@ function reqPut(url, data, headers){
 }
 
 function reqPost(url, data, headers){
+	var method = 'POST';
 	var r = {
-			method: 'POST',
+			method: method,
 			uri: url
 	};
 	

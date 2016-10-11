@@ -74,7 +74,7 @@ function srchBoardgames(geeklistid, filters, sortby, sortby_asc, skip, lim){
 	
 	q['query']['bool']['must'].push(filterGeeklistId(geeklistid));	
 	
-	['boardgamedesigner', 'boardgameartist', 'boardgamemechanic', 'boardgamecategory', 'boardgamepublisher'].forEach(function(e){	
+	['boardgamedesigner', 'boardgameartist', 'boardgamemechanic', 'boardgamecategory', 'boardgamepublisher', 'boardgamefamily'].forEach(function(e){	
 		if(filters[e] != undefined){ 
 			q['query']['bool']['must'].push(filterManyToMany(e, filters[e]));
 		}
@@ -128,7 +128,7 @@ function srchBoardgames(geeklistid, filters, sortby, sortby_asc, skip, lim){
 	}
 		
 	//Year published
-	if(filters["yearpublishedmin"] != undefined || filters["yearpublishedmin"] != undefined){
+	if(filters["yearpublishedmin"] != undefined || filters["yearpublishedmax"] != undefined){
 		q['query']['bool']['must'].push(filterRange("yearpublished", filters["yearpublishedmin"] || -Infinity, filters["yearpublishedmax"] || Infinity));
 	}
 	
