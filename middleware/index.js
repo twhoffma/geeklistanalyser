@@ -9,7 +9,7 @@ var Memcached = require('memcached')
 var Q = require('q');
 
 var fs = require('fs');
-c = JSON.parse(fs.readFileSync('localconfig.json', 'utf8'));
+var c = JSON.parse(fs.readFileSync('localconfig.json', 'utf8'));
 
 /* Config */
 var uri = c.devmode ? c.middleware.dev_baseuri : c.middleware.baseuri;

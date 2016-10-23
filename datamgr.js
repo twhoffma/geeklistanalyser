@@ -1,9 +1,8 @@
-db = require('./db-couch.js');
-srch = require('./srch-elastic.js');
-bgg = require('./bgg.js');
-
+var db = require('./db-couch.js');
+var srch = require('./srch-elastic.js');
+var bgg = require('./bgg.js');
 var winston = require('winston');
-
+var q = require('q');
 
 function finalizeDb(){
 	return db.finalizeDb
@@ -23,7 +22,8 @@ function saveBoardgames(boardgames){
 
 /* --- Geeklist --- */
 function getGeeklists(isUpdateable, isVisible, geeklistId){
-	var url = db.getViewURL('geeklists', 'geeklists') + '?include_docs=true'
+	var d;
+	var geeklists;
 	
 	//Can't seem to make this work even if it is according to spec.
 	/*	
@@ -31,6 +31,8 @@ function getGeeklists(isUpdateable, isVisible, geeklistId){
 		url += '&startkey_docid=' + geeklistId + '&endkey_docid=' + geeklistId
 	}
 	*/
+	/*
+	var url = db.getViewURL('geeklists', 'geeklists') + '?include_docs=true'
 	return db.getDocs(url).then(
 		function(rows){
 			var geeklists = [];
@@ -48,6 +50,32 @@ function getGeeklists(isUpdateable, isVisible, geeklistId){
 			console.log(err);
 		}
 	)
+	*/
+	
+	geeklists = [];
+	d  = q.defer();
+	fs.readFile('data/geeklists.json', "utf-8", function (error, text) {
+	    if (error) {
+		d.reject(new Error(error));
+	    } else {
+		d.resolve(JSON.parse(text));
+	    }
+	});
+	
+	return d.promise.then(
+		function(lists){
+			lists.forEach(function(list, i){
+				if((!geeklistId || parseInt(list.objectid) === parseInt(geeklistId)) && (!isUpdateable || list.update === true) && (!isVisible || list.visible === true)){
+					geeklists.push(list);
+				}
+			});
+			
+			return geeklists
+		},
+		function(e){
+			throw e	
+		}
+	);
 }
 
 //Gets the content of the geeklist

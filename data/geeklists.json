@@ -8,7 +8,7 @@
     "year": 2006,
     "update": false,
     "objectid": 12926,
-    "visible": false
+    "visible": true
   },
   {
     "_id": "18752",
@@ -19,7 +19,7 @@
     "year": 2007,
     "update": false,
     "objectid": 18752,
-    "visible": false
+    "visible": true
   },
   {
     "_id": "21782",
@@ -30,7 +30,7 @@
     "year": 2000,
     "update": false,
     "objectid": 21782,
-    "visible": false
+    "visible": true
   },
   {
     "_id": "187",
@@ -41,7 +41,7 @@
     "year": 2002,
     "update": false,
     "objectid": 187,
-    "visible": false
+    "visible": true
   },
   {
     "_id": "1689",
@@ -52,7 +52,7 @@
     "year": 2003,
     "update": false,
     "objectid": 1689,
-    "visible": false
+    "visible": true
   },
   {
     "_id": "3867",
@@ -63,7 +63,7 @@
     "year": 2004,
     "update": false,
     "objectid": 3867,
-    "visible": false
+    "visible": true
   },
   {
     "_id": "9465",
@@ -74,7 +74,7 @@
     "year": 2005,
     "update": false,
     "objectid": 9465,
-    "visible": false
+    "visible": true
   },
   {
     "_id": "14995",
@@ -85,7 +85,7 @@
     "year": 2006,
     "update": false,
     "objectid": 14995,
-    "visible": false
+    "visible": true
   },
   {
     "_id": "22498",
@@ -96,7 +96,7 @@
     "year": 2007,
     "update": false,
     "objectid": 22498,
-    "visible": false
+    "visible": true
   },
   {
     "_id": "32448",
@@ -107,7 +107,7 @@
     "year": 2008,
     "update": false,
     "objectid": 32448,
-    "visible": false
+    "visible": true
   },
   {
     "_id": "42635",
@@ -118,7 +118,7 @@
     "year": 2009,
     "update": false,
     "objectid": 42635,
-    "visible": false
+    "visible": true
   },
   {
     "_id": "55855",
@@ -129,7 +129,7 @@
     "year": 2010,
     "update": false,
     "objectid": 55855,
-    "visible": false
+    "visible": true
   },
   {
     "_id": "70021",
@@ -140,7 +140,7 @@
     "year": 2011,
     "update": false,
     "objectid": 70021,
-    "visible": false
+    "visible": true
   },
   {
     "_id": "180262",
@@ -151,7 +151,7 @@
     "year": 2014,
     "update": false,
     "objectid": 180262,
-    "visible": false
+    "visible": true
   },
   {
     "_id": "187433",
@@ -172,7 +172,7 @@
     "name": "Essen 2015 Preview",
     "group": "Essen",
     "year": 2015,
-    "update": true,
+    "update": false,
     "objectid": 174654,
     "visible": true
   },
@@ -183,7 +183,7 @@
     "name": "Essen 2016 collection of lists",
     "group": "Essen",
     "year": 2016,
-    "update": true,
+    "update": false,
     "objectid": 204856,
     "visible": true,
     "excluded": [
@@ -210,7 +210,7 @@
     "name": "Essen SPIEL 2016 no shipping math trade",
     "group": "Essen - Trade Lists",
     "year": 2016,
-    "update": true,
+    "update": false,
     "objectid": 212782,
     "visible": true
   },
@@ -223,7 +223,7 @@
     "year": 2012,
     "update": false,
     "objectid": 142245,
-    "visible": false
+    "visible": true
   },
   {
     "_id": "153611",
@@ -234,7 +234,7 @@
     "year": 2013,
     "update": false,
     "objectid": 153611,
-    "visible": false
+    "visible": true
   },
   {
     "_id": "161427",
@@ -245,7 +245,7 @@
     "year": 2014,
     "update": false,
     "objectid": 161427,
-    "visible": false
+    "visible": true
   },
   {
     "_id": "184821",
@@ -256,7 +256,7 @@
     "year": 2015,
     "update": false,
     "objectid": 184821,
-    "visible": false
+    "visible": true
   },
   {
     "_id": "630",
@@ -267,7 +267,7 @@
     "year": 2002,
     "update": false,
     "objectid": 630,
-    "visible": false
+    "visible": true
   },
   {
     "_id": "546",
@@ -278,7 +278,7 @@
     "year": 2003,
     "update": false,
     "objectid": 546,
-    "visible": false
+    "visible": true
   },
   {
     "_id": "1947",
@@ -289,7 +289,7 @@
     "year": 2004,
     "update": false,
     "objectid": 1947,
-    "visible": false
+    "visible": true
   },
   {
     "_id": "6345",
@@ -300,7 +300,7 @@
     "year": 2005,
     "update": false,
     "objectid": 6345,
-    "visible": false
+    "visible": true
   },
   {
     "_id": "27932",
@@ -311,7 +311,7 @@
     "year": 2008,
     "update": false,
     "objectid": 27932,
-    "visible": false
+    "visible": true
   },
   {
     "_id": "38646",
@@ -322,7 +322,7 @@
     "year": 2009,
     "update": false,
     "objectid": 38646,
-    "visible": false
+    "visible": true
   },
   {
     "_id": "62803",
@@ -333,7 +333,7 @@
     "year": 2011,
     "update": false,
     "objectid": 62803,
-    "visible": false
+    "visible": true
   },
   {
     "_id": "78288",
@@ -344,7 +344,7 @@
     "year": 2012,
     "update": false,
     "objectid": 78288,
-    "visible": false
+    "visible": true
   },
   {
     "_id": "151567",
@@ -355,7 +355,7 @@
     "year": 2013,
     "update": false,
     "objectid": 151567,
-    "visible": false
+    "visible": true
   },
   {
     "_id": "164782",
@@ -366,7 +366,7 @@
     "year": 2014,
     "update": false,
     "objectid": 164782,
-    "visible": false
+    "visible": true
   },
   {
     "_id": "184754",
@@ -377,7 +377,7 @@
     "year": 2015,
     "update": false,
     "objectid": 184754,
-    "visible": false
+    "visible": true
   },
   {
     "_id": "191207",
@@ -388,7 +388,7 @@
     "year": 2015,
     "update": false,
     "objectid": 191207,
-    "visible": false
+    "visible": true
   },
   {
     "_id": "142246",
@@ -399,7 +399,7 @@
     "year": 2012,
     "update": false,
     "objectid": 142246,
-    "visible": false
+    "visible": true
   },
   {
     "_id": "152350",
@@ -410,7 +410,7 @@
     "year": 2013,
     "update": false,
     "objectid": 152350,
-    "visible": false
+    "visible": true
   },
   {
     "_id": "193588",
@@ -419,7 +419,7 @@
     "name": "SPIEL 2016 Preview",
     "group": "Essen",
     "year": 2016,
-    "update": true,
+    "update": false,
     "objectid": 193588,
     "visible": true
   },
@@ -430,7 +430,7 @@
     "name": "The Essen 2016 no-shipping auction list",
     "group": "Essen - Trade Lists",
     "year": 2016,
-    "update": true,
+    "update": false,
     "objectid": 211885,
     "visible": true
   },
@@ -443,7 +443,7 @@
     "year": 2015,
     "update": false,
     "objectid": 190037,
-    "visible": false
+    "visible": true
   },
   {
     "_id": "191095",
@@ -452,7 +452,7 @@
     "name": "XMLAPI Test 2",
     "group": "Test",
     "year": 2015,
-    "update": true,
+    "update": false,
     "objectid": 191095,
     "visible": true
   }

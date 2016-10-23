@@ -58,15 +58,19 @@
 			});
 
 			function loadGeeklist(geeklistId, clearList, clearOptions, clearInfo){
+				if(geeklistId === undefined){
+					return 
+				}
+				
 				var p = new Promise(function(resolve, reject){
 					if(clearInfo){
 						//Load geeklist info
-						data.getGeeklistDetails(selectedGeeklist).then(function(r){
+						data.getGeeklistDetails(geeklistId).then(function(r){
 							return ui.renderGeeklistDetails(r);
 						});
 						
 						//Load static geeklist filters
-						data.getGeeklistFilters(selectedGeeklist).then(function(r){
+						data.getGeeklistFilters(geeklistId).then(function(r){
 							ui.populateFilters(r);
 							ui.setFilters(filter);
 							ui.setSorting(sorting);
@@ -78,11 +82,6 @@
 					}	
 				});
 				
-				if(geeklistId === undefined){
-					return 
-				}
-				
-			
 				if(clearList){
 					console.log("Reset.");	
 					selectedGeeklist = geeklistId;
@@ -92,8 +91,6 @@
 					//Clear list in UI preemptively. Looks better since it doesn't look like it is hanging.
 					ui.clearGeeklist();
 				}
-
-				
 
 				p.then(function(){
 					if(clearOptions){

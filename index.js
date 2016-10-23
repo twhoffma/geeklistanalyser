@@ -1,13 +1,13 @@
-cheerio = require('cheerio');
-q = require('q');
-moment = require('moment');
-fs = require('fs');
+var cheerio = require('cheerio');
+var q = require('q');
+var moment = require('moment');
+var fs = require('fs');
 
-c = JSON.parse(fs.readFileSync('localconfig.json', 'utf8'));
-//db = require('./db-couch');
-bgg = require('./bgg.js');
-datamgr = require('./datamgr.js');
-logger = require('./logger.js');
+var bgg = require('./bgg.js');
+var datamgr = require('./datamgr.js');
+var logger = require('./logger.js');
+
+var c = JSON.parse(fs.readFileSync('localconfig.json', 'utf8'));
 
 process.title = 'glaze';
 
