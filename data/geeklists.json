@@ -455,5 +455,15 @@
     "update": false,
     "objectid": 191095,
     "visible": true
+  },
+  {
+    "_id": "210863",
+    "type": "geeklist",
+    "name": "Nürnberg/New York/Cannes 2017 Preview",
+    "group": "Nürnberg",
+    "year": 2017,
+    "update": true,
+    "objectid": 210863,
+    "visible": true
   }
 ]
