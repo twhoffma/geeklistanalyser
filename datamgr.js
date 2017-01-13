@@ -14,6 +14,10 @@ function getBoardgame(boardgameId){
 	return db.getDoc(boardgameViewURL).fail(function(v){ throw boardgameId})
 }
 
+function getBoardgames(){
+	var boardgameViewURL = db.getViewURL('boardgame', 'boardgame') + '?include_docs=true';
+	return db.getDocs(boardgameViewURL).fail(function(v){ throw boardgameId})
+}
 
 function saveBoardgames(boardgames){
 	return db.saveDocs(boardgames)
@@ -306,6 +310,7 @@ function getBoardgameData(boardgameIds){
 	)
 }
 
+module.exports.getBoardgames = getBoardgames
 module.exports.getBoardgameData = getBoardgameData
 module.exports.saveBoardgames = saveBoardgames
 module.exports.getBoardgame = getBoardgame
