@@ -47,7 +47,7 @@ if(arg && arg['update_search']){
 		}
 	)
 	
-}else{
+}else if(arg && arg['sync_lists']){
 	logger.info("Loading geeklists");
 	
 	//Process geeklists
@@ -162,6 +162,8 @@ if(arg && arg['update_search']){
 			logger.error(e);
 		}
 	);
+}else{
+	logger.error("You need to specify sync_lists or update_search as an argument");
 }
 /* END OF MAIN */
 
