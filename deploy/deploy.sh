@@ -9,10 +9,8 @@ wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add 
 
 echo "deb http://packages.elastic.co/elasticsearch/1.7/debian stable main" | sudo tee -a /etc/apt/sources.list.d/elasticsearch-1.7.list
 
-echo "deb http://packages.elasticsearch.org/logstash/1.5/debian stable main" | sudo tee -a /etc/apt/sources.list
-
 sudo apt-get update
-sudo apt-get install elasticsearch logstash
+sudo apt-get install elasticsearch 
 
 sudo service elasticsearch stop
 
@@ -31,3 +29,17 @@ sudo /bin/systemctl daemon-reload
 #XXX:
 #We have problems running couchdb as a service on Debian 8 since we built it..
 #sudo couchdb -b
+
+#Install certbot
+sudo apt-get install software-properties-common software-properties-common
+sudo apt-get update
+sudo apt-get install certbot
+
+
+sudo certbot certonly --webroot --webroot-path=/var/www/glaze.hoffy.no -d glaze.hoffy.no 
+
+sudo nginx -t
+
+sudo ls -l /etc/letsencrypt/live/glaze.hoffy.no
+
+

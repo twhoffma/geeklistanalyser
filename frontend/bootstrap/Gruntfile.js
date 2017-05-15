@@ -1,86 +1,78 @@
 module.exports = function(grunt) {
-	
+		
 	//Initializing the configuration object
-    grunt.initConfig({
-
-        // Task configuration
+    	grunt.initConfig({
+		dirs: {
+			outdir: '/var/www/glaze.hoffy.no/'
+		},
+	        // Task configuration
 		copy: {
   			main: {
     			files: [
-      	  	  // includes files within path
+      	  	  		// includes files within pat
       	  	  		{
-						expand: true, 
-						src: [
-							'css/*', 
-							'img/*', 
-							'index.html'
-						], 
-						dest: '/var/www/hoffy.no/geeklistmonitor/', 
-						filter: 'isFile'
-					},
+										expand: true, 
+										src: [
+											'css/*', 
+											'img/*', 
+											'index.html'
+										], 
+										dest: '<%= dirs.outdir %>', 
+										filter: 'isFile'
+									},
       	  	  		{
-						expand: true,
-						flatten: true, 
-						src: [
-							'node_modules/bootstrap/dist/css/*',
-							'node_modules/bootstrap-slider/dist/css/*',
-							//'node_modules/bootstrap-multiselect/dist/css/bootstrap-multiselect.css',
-							'node_modules/bootstrap-select/dist/css/bootstrap-select.min.css',
-							'node_modules/nouislider/distribute/nouislider.min.css',
-						], 
-						dest: '/var/www/hoffy.no/geeklistmonitor/css/', 
-						filter: 'isFile'
-					},
-					/*
+										expand: true,
+										flatten: true, 
+										src: [
+											'node_modules/bootstrap/dist/css/*',
+											'node_modules/bootstrap-slider/dist/css/*',
+											//'node_modules/bootstrap-multiselect/dist/css/bootstrap-multiselect.css',
+											'node_modules/bootstrap-select/dist/css/bootstrap-select.min.css',
+											'node_modules/nouislider/distribute/nouislider.min.css',
+										], 
+										dest: '<%= dirs.outdir %>/css/', 
+										filter: 'isFile'
+									},
+									/*
+									{
+										expand: true,
+										flatten: true, 
+										src: [
+											'node_modules/jquery-ui/themes/base/base.css', 
+											'node_modules/jquery-ui/themes/base/core.css', 
+											'node_modules/jquery-ui/themes/base/slider.css' 
+										], 
+										dest: '<%= dirs.outdir %>/css/jquery-ui/', 
+										filter: 'isFile'
+									},
+									*/
       	  	  		{
-						expand: true,
-						flatten: true, 
-						src: [
-							'node_modules/jquery-ui/themes/base/base.css', 
-							'node_modules/jquery-ui/themes/base/core.css', 
-							'node_modules/jquery-ui/themes/base/slider.css' 
-						], 
-						dest: '/var/www/hoffy.no/geeklistmonitor/css/jquery-ui/', 
-						filter: 'isFile'
-					},
-					*/
-      	  	  		{
-						expand: true,
-						flatten: true, 
-						src: [
-							'node_modules/bootstrap/dist/fonts/*', 
-						], 
-						dest: '/var/www/hoffy.no/geeklistmonitor/fonts/', 
-						filter: 'isFile'
-					},
-					{
-						expand: true,
-						flatten: true,
-						src: [
-       			  			'node_modules/bootstrap/dist/js/bootstrap.js',
-							'node_modules/jquery/dist/jquery.js',
-							'node_modules/jquery/dist/core.js',
-							//'node_modules/bootstrap-slider/dist/bootstrap-slider.min.js',
-							//'node_modules/bootstrap-multiselect/dist/js/bootstrap-multiselect.js',
-							'node_modules/bootstrap-select/dist/js/bootstrap-select.min.js',
-							'node_modules/html5-history-api/history.min.js',
-							//'node_modules/jquery-ui/ui/core.js',
-							/*
-							'node_modules/jquery-ui/ui/widget.js',
-							'node_modules/jquery-ui/ui/keycode.js',
-							'node_modules/jquery-ui/ui/widgets/mouse.js',
-							'node_modules/jquery-ui/ui/widgets/slider.js',
-							'node_modules/jquery-ui-touch-punch/jquery.ui.touch-punch.min.js',
-							*/
-							'node_modules/nouislider/distribute/nouislider.min.js',
-							'./js/data.js',
-							'./js/ui.js',
-							'./js/ui.slider.js',
-							'./js/app.js',
-						],
-						dest: '/var/www/hoffy.no/geeklistmonitor/js/',
-						filter: 'isFile'
-					}
+										expand: true,
+										flatten: true, 
+										src: [
+											'node_modules/bootstrap/dist/fonts/*', 
+										], 
+										dest: '<%= dirs.outdir %>/fonts/', 
+										filter: 'isFile'
+									},
+									{
+										expand: true,
+										flatten: true,
+										src: [
+															'node_modules/bootstrap/dist/js/bootstrap.js',
+															'node_modules/jquery/dist/jquery.js',
+															'node_modules/jquery/dist/core.js',
+															'node_modules/bootstrap-select/dist/js/bootstrap-select.min.js',
+															'node_modules/html5-history-api/history.min.js',
+															'node_modules/nouislider/distribute/nouislider.min.js',
+															'./js/data.js',
+															'./js/ui.js',
+															'./js/ui.slider.js',
+															'./js/app.js',
+										],
+										dest: '<%= dirs.outdir %>/js/',
+										filter: 'isFile'
+									}
       	  	  		// includes files within path and its sub-directories
       	  	  		//{expand: true, src: ['path/**'], dest: 'dest/'},
 
@@ -89,36 +81,23 @@ module.exports = function(grunt) {
 
       	  	  		// flattens results to a single level
       	  	  		//{expand: true, flatten: true, src: ['path/**'], dest: 'dest/', filter: 'isFile'},
-    			],
+    				],
   	  		},
 		},
-        concat: {
-			options: {
-            	separator: ';',
-      		},
+    concat: {
+			options: 
+			{
+      	separator: ';',
+     	},
 			'default':	{
         		src: [
-					'node_modules/jquery/dist/jquery.js',
-       			  	'node_modules/bootstrap/dist/js/bootstrap.js',
+							'node_modules/jquery/dist/jquery.js',
+       			  'node_modules/bootstrap/dist/js/bootstrap.js',
         		],
-        		dest: '/var/www/hoffy.no/geeklistmonitor/js/frontend.js'
-      			}
-			/*
-			,
-			'jquery-ui-custom':	{
-				src: [
-					'./node_modules/jquery-ui/ui/jquery-1.7.js',
-					'./node_modules/jquery-ui/ui/core.js',
-					'./node_modules/jquery-ui/ui/widget.js',
-					'./node_modules/jquery-ui/ui/keycode.js',
-					'./node_modules/jquery-ui/ui/widgets/mouse.js',
-					'./node_modules/jquery-ui/ui/widgets/slider.js',
-				],
-				dest: '/var/www/hoffy.no/geeklistmonitor/js/jquery-ui-custom.js'
-			}
-			*/
+        		dest: '<%= dirs.outdir %>/js/frontend.js'
+      }
 		},
-        cssmin: {
+    cssmin: {
 			target: {
 				files: [{
 					expand: true,
@@ -152,7 +131,7 @@ module.exports = function(grunt) {
   	//grunt.loadNpmTasks('grunt-contrib-uglify');
   	//grunt.loadNpmTasks('grunt-phpunit');
 	
- 	// Task definition
+ 		// Task definition
   	grunt.registerTask('default', ['copy']);
   	grunt.registerTask('prod', ['concat', 'copy', 'cssmin']);
 };
