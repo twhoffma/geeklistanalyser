@@ -25,13 +25,15 @@ for(i = 2; i < process.argv.length; i++){
 	var arg = process.argv[i].split("=");
 	
 	if(arg.length > 1){
+		//All others are parameters
 		args[arg[0].toLowerCase()] = arg[1].toLowerCase().split(",").map(parseInt);
 	}else{
-		arg[arg[0].toLowerCase()] = true;
+		//First arg is action
+		args[arg[0].toLowerCase()] = true;
 	}
 }
 
-if(arg && arg['update_search']){
+if(args['update_search']){
 	logger.info("Updating search engine");
 	
 	datamgr.getBoardgames().then(
@@ -46,8 +48,31 @@ if(arg && arg['update_search']){
 			throw err
 		}
 	)
+}else if(args['update_static']){
+	logger.info("Updating bordgame static");
 	
-}else if(arg && arg['sync_lists']){
+	new Promise(function(resolve, reject){
+		if(!args['lists']){
+			resolve(datamgr.getBoardgames());
+		}else{
+			resolve(datamgr.getGeeklist(args['lists'], 0, 10000));
+		}
+	}).then(
+		function(boardgames){
+			var ids = boardgames.map(r => r.doc.objectid);
+			logger.info("Found " + ids.length + " boardgames to update.");
+			//1. Forcefully tell datamgr to load boardgame data from BGG
+			//2. Merge boardgame most recent from 
+		}
+	).catch(
+		function(err){
+			logger.error("Failed to update static");
+			logger.error(err);
+
+			throw err
+		}	
+	);
+}else if(args['sync_lists']){
 	logger.info("Loading geeklists");
 	
 	//Process geeklists
@@ -211,6 +236,12 @@ function GeeklistStat(geeklistid, statDate){
 	this.minListLength = 0;
 };
 
+function Geeklist(geeklistid, crets, latest){
+	this.objectid = geeklistid;
+	this.crets = crets;
+	this.latest = latest;
+};
+
 function loadBoardgames(boardgameIdList, bgStats){
 	//TODO: Aggregate some info on how many new, updated, etc.. Segmented on geeklist.
 	return datamgr.getBoardgameData(boardgameIdList).then(
@@ -221,10 +252,20 @@ function loadBoardgames(boardgameIdList, bgStats){
 				
 			boardgames.forEach(function(boardgame){
 				bgStats.filter(function(e){return e.objectid === boardgame.objectid}).forEach(function(bgStat){
+					/*
+					var i = 0;
+					for(i = 0;i < boardgame.geeklists.length;i++){
+						if(boardgame.geeklists[i] === null){
+							boardgame.geeklists.splice(i,1);
+							console.log("zing!");
+						}
+					}
+					*/
 					var geeklist = boardgame.geeklists.filter(function(e){return e.objectid === bgStat.geeklistid});
 						
 					if(geeklist.length === 0){
 						geeklist = {'objectid': bgStat.geeklistid, 'crets': moment(bgStat.postdate).format(c.format.dateandtime), 'latest': bgStat};
+						//geeklist = new Geeklist(bgStat.geeklistid, moment(bgStat.postdate).format(c.format.dateandtime), bgStat);
 						boardgame['geeklists'].push(geeklist);
 					}else{
 						//There is only one latest per geeklist per boardgame
