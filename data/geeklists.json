@@ -501,5 +501,35 @@
     "update": true,
     "objectid": 214607,
     "visible": true
+  },
+  {
+    "_id": "208790",
+    "type": "geeklist",
+    "name": "Origins Game Fair 2016 Preview",
+    "group": "Origins",
+    "year": 2017,
+    "update": false,
+    "objectid": 208790,
+    "visible": true
+  },
+  {
+    "_id": "202466",
+    "type": "geeklist",
+    "name": "Nürnberg/New York/2016 Preview",
+    "group": "Nürnberg",   
+    "year": 2016,
+    "update": false,
+    "objectid": 202466,
+    "visible": true
+  },
+  {
+    "_id": "198728",
+    "type": "geeklist",
+    "name": "Gen Con 2016 Preview",
+    "group": "Gen Con",   
+    "year": 2016,
+    "update": true,
+    "objectid": 198728,
+    "visible": true
   }
 ]

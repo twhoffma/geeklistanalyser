@@ -252,7 +252,7 @@ function loadBoardgames(boardgameIdList, bgStats){
 				
 			boardgames.forEach(function(boardgame){
 				bgStats.filter(function(e){return e.objectid === boardgame.objectid}).forEach(function(bgStat){
-					/*
+					/*	
 					var i = 0;
 					for(i = 0;i < boardgame.geeklists.length;i++){
 						if(boardgame.geeklists[i] === null){
@@ -261,6 +261,7 @@ function loadBoardgames(boardgameIdList, bgStats){
 						}
 					}
 					*/
+					
 					var geeklist = boardgame.geeklists.filter(function(e){return e.objectid === bgStat.geeklistid});
 						
 					if(geeklist.length === 0){
