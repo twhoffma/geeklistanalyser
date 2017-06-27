@@ -531,5 +531,15 @@
     "update": true,
     "objectid": 198728,
     "visible": true
+  },
+  {
+    "_id": "196767",
+    "type": "geeklist",
+    "name": "Gen Con 2017 Preview",
+    "group": "Gen Con",   
+    "year": 2017,
+    "update": true,
+    "objectid": 196767,
+    "visible": true
   }
 ]

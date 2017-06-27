@@ -25,7 +25,7 @@ function saveBoardgames(boardgames){
 
 
 /* --- Geeklist --- */
-function getGeeklists(isUpdateable, isVisible, geeklistId){
+function getGeeklists(isUpdateable, isVisible, geeklistIds){
 	var d;
 	var geeklists;
 	
@@ -69,7 +69,8 @@ function getGeeklists(isUpdateable, isVisible, geeklistId){
 	return d.promise.then(
 		function(lists){
 			lists.forEach(function(list, i){
-				if((!geeklistId || parseInt(list.objectid) === parseInt(geeklistId)) && (!isUpdateable || list.update === true) && (!isVisible || list.visible === true)){
+				//if((!geeklistId || parseInt(list.objectid) === parseInt(geeklistId)) && (!isUpdateable || list.update === true) && (!isVisible || list.visible === true)){
+				if((!geeklistIds || geeklistIds.indexOf(parseInt(list.objectid)) > -1) && (!isUpdateable || list.update === true) && (!isVisible || list.visible === true)){
 					geeklists.push(list);
 				}
 			});

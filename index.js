@@ -76,21 +76,25 @@ if(args['update_search']){
 	logger.info("Loading geeklists");
 	
 	//Process geeklists
-	datamgr.getGeeklists(true, false).then(
+	datamgr.getGeeklists(true, false, args['lists']).then(
 		function(loadedGeeklists){
 			var p = [];
 				
-			loadedGeeklists.forEach(function(geeklist, i){
-				
-				//Only run lists that are provided at the commandline, or all with update === true if none is given.
-				if(!args['lists'] || args['lists'].indexOf(parseInt('' + geeklist.objectid)) > -1){
-					geeklists.push(geeklist);
+			if(loadedGeeklists.length > 0){		
+				loadedGeeklists.forEach(function(geeklist, i){
 					
+					//Only run lists that are provided at the commandline, or all with update === true if none is given.
+					//if(!args['lists'] || args['lists'].indexOf(parseInt('' + geeklist.objectid)) > -1){
+					geeklists.push(geeklist);
+						
 					p.push(getGeeklistData(geeklist.objectid, geeklist.objectid, [], [], [], geeklist.excluded, geeklist.saveObservations));
-				}
-			});
+					//}
+				});
 				
-			return q.allSettled(p)
+				return q.allSettled(p)
+			}else{
+				return Promise.reject("No lists to sync!");
+			}
 		}
 	).then(
 		function(results){
