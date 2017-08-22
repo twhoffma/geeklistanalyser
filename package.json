@@ -20,9 +20,9 @@
     "requests": "0.0.1"
   },
   "dependencies": {
-    "cheerio": "^0.18.0",
     "moment": "^2.9.0",
     "q": "^1.1.2",
+    "request": "^2.81.0",
     "requests": "0.0.1",
     "winston": "^2.2.0"
   }
