@@ -3,11 +3,16 @@ function init_data(){
 		return new Promise(function(resolve, reject){
 			jQuery.ajax({
 				url: url 
-			}).done(function(data){
-				var r = jQuery.parseJSON(data);
+			}).then(
+				function(data){
+					var r = jQuery.parseJSON(data);
 			
-				resolve(r);
-			});
+					resolve(r);
+				},
+				function(jqXHR, textStatus, errorThrown){
+					reject(errorThrown);
+				}
+			);
 		})
 	}
 	

@@ -3,7 +3,8 @@ module.exports = function(grunt) {
 	//Initializing the configuration object
     	grunt.initConfig({
 		dirs: {
-			outdir: '/var/www/glaze.hoffy.no/'
+			//outdir: '/var/www/glaze.hoffy.no/'
+			outdir: '/var/www/glaze.hoffy.no/geeklistmonitor/'
 		},
 	        // Task configuration
 		copy: {

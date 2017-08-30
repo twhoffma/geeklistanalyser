@@ -146,7 +146,16 @@ function init_ui(){
 			}
 			
 		},
-		
+		'setErrorMessage': function setErrorMessage(e){
+			document.getElementById('errormsg').innerHTML = e;
+			$("#errorbox").show();
+		},
+
+		'clearErrorMessage': function clearErrorMessage(){
+			document.getElementById('errormsg').innerHTML = "";
+			$("#errorbox").hide();
+		},
+			
 		'getSorting': function getSorting(){
 			return {
 				'sortby': $("#sortby").val(),

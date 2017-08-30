@@ -9,9 +9,13 @@
 		$(document).ready(function(){
 			ui = init_ui();
 			data = init_data();
-				
+			
+			ui.clearErrorMessage();
+							
 			data.getGeeklists().then(function(r){
 				ui.renderMenuGeeklists(r);
+			}).catch(function(e){
+				ui.setErrorMessage(e);
 			});
 
 			
@@ -80,6 +84,8 @@
 					}else{
 						resolve();
 					}	
+				}).catch(function(e){
+					ui.setErrorMessage(e);
 				});
 				
 				if(clearList){
@@ -116,6 +122,8 @@
 						}
 						
 					});
+				}).catch(function(e){
+					ui.setErrorMessage(e);
 				});
 			}
 		});
