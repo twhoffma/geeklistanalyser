@@ -10,10 +10,7 @@ function finalizeDb(){
 
 /* --- Boardgame -- */
 function getBoardgame(boardgameId){
-	if(boardgameId === 235520){
-		console.log(boardgameViewURL);
-	}
-	
+	var boardgameViewURL = db.getViewURL('boardgame', 'boardgame') + '?include_docs=true&key=\"' + boardgameId + "\"";	
 	return db.getDoc(boardgameViewURL).fail(function(v){ throw boardgameId})
 }
 
