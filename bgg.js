@@ -1,6 +1,8 @@
 cheerio = require('cheerio');
 qrequest = require('./qrequest.js');
 q = require('q');
+parseString = require('xml2js').parseString;
+
 
 var geeklistURL = 'https://www.boardgamegeek.com/xmlapi/geeklist/';
 var boardgameURL = 'https://www.boardgamegeek.com/xmlapi/boardgame/';
@@ -36,9 +38,87 @@ function Boardgame(boardgameId){
 	this.expands = [];
 }
 
-function getGeeklist(geeklistId){
+function getGeeklist(listtype, geeklistId){
 	//Look up a geeklist - use queueing
-	return qrequest.qrequest("GET", geeklistURL + geeklistId, null, null, true, 0, true)
+	if(listtype === "preview"){
+		console.log("requesting a preview");
+		return qrequest.qrequest("GET", `https://api.geekdo.com/api/geekpreviews?nosession=1&previewid=${geeklistId}`, null, null, true, 0, true).then(
+			function(results){
+				let r = JSON.parse(results);
+				let p = [];
+				console.log(`Wow! ${r.config.numpages} pages!`);
+				for(let i = 1; i <=r.config.numpages; i++){
+					p.push(
+						qrequest.qrequest("GET", `https://api.geekdo.com/api/geekpreviewitems?nosession=1&pageid=${i}&previewid=${geeklistId}`, null, null, true, 0, true).then(
+							function(convPreview){
+								return JSON.parse(convPreview).map(
+									x => (
+										{
+											'id': 0, 
+											'objecttype':x.objecttype, 
+											'subtype': 'boardgame', 
+											'objectid': parseInt(x.objectid), 
+											'objectname':x.geekitem.item.primaryname.name, 
+											'username':'',
+											'postdate': new Date(Date.parse(x.date_created)).toISOString(),
+											'editdate': new Date(Date.parse(x.date_updated)).toISOString(),
+											'thumbs': parseInt(x.reactions.thumbs),
+											'imageid': parseInt(x.geekitem.item.imageid)
+										}
+									)
+								)
+							}
+						)
+					);
+				}
+
+				return q.allSettled(p);
+			}).then(
+				function(r){
+					let l = r.map(e => e.value).reduce(
+						function(prev, curr){
+							if(prev.indexOf(curr) === -1){
+								return prev.concat(curr)
+							}else{
+								return prev
+							}
+						},
+						[]
+					);
+					
+					return l	
+				}
+			)
+	}else{
+		return qrequest.qrequest("GET", geeklistURL + geeklistId, null, null, true, 0, true).then(
+			function(results){
+				let n = function(value,name){
+        			if(['objectid','thumbs','id','imageid'].includes(name)){
+                			return parseInt(value)
+        			}else if(['postdate','editdate'].includes(name)){
+                			return new Date(Date.parse(value)).toISOString()
+        			}else{
+                			return value
+        			}
+				}
+				
+				return q(new Promise(function(resolve, reject){
+					parseString(results, {attrValueProcessors: [n]}, 
+						function(err, res){
+							if(err){
+								reject(err);
+							}else{
+								resolve(res);
+							}
+						}
+					)
+				})).then(function(res){
+					let items = res.geeklist.item.map(x => x['$']).filter(x => (x.subtype === 'boardgame' || x.objecttype === 'geeklist'));
+					return items
+				});
+			}
+		);
+	}
 }
 
 function getBoardgame(boardgameId){

@@ -264,9 +264,9 @@ function reqPut(url, data, headers){
 						if(sc == 201){		
 							resolve(body);	
 						}else{
-							logger.error(method.toUpperCase() + " error: " + response.statusCode);
-							logger.error(method.toUpperCase() + " error: " + body);
-							logger.error(method.toUpperCase() + " url: " + url);
+							logger.error(r.method.toUpperCase() + " error: " + response.statusCode);
+							logger.error(r.method.toUpperCase() + " error: " + body);
+							logger.error(r.method.toUpperCase() + " url: " + url);
 								
 							
 							reject(body);

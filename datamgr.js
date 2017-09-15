@@ -10,7 +10,10 @@ function finalizeDb(){
 
 /* --- Boardgame -- */
 function getBoardgame(boardgameId){
-	var boardgameViewURL = db.getViewURL('boardgame', 'boardgame') + '?include_docs=true&key=\"' + boardgameId + "\"";
+	if(boardgameId === 235520){
+		console.log(boardgameViewURL);
+	}
+	
 	return db.getDoc(boardgameViewURL).fail(function(v){ throw boardgameId})
 }
 
@@ -65,11 +68,9 @@ function getGeeklists(isUpdateable, isVisible, geeklistIds){
 		d.resolve(JSON.parse(text));
 	    }
 	});
-	
 	return d.promise.then(
 		function(lists){
 			lists.forEach(function(list, i){
-				//if((!geeklistId || parseInt(list.objectid) === parseInt(geeklistId)) && (!isUpdateable || list.update === true) && (!isVisible || list.visible === true)){
 				if((!geeklistIds || geeklistIds.indexOf(parseInt(list.objectid)) > -1) && (!isUpdateable || list.update === true) && (!isVisible || list.visible === true)){
 					geeklists.push(list);
 				}

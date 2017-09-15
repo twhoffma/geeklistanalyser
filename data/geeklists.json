@@ -551,5 +551,15 @@
     "update": true,
     "objectid": 229021,
     "visible": true
+  },
+  {
+    "_id": "4",
+    "type": "preview",
+    "name": "Essen SPIEL 2017 Convention Preview",
+    "group": "Essen",   
+    "year": 2017,
+    "update": true,
+    "objectid": 4,
+    "visible": true
   }
 ]

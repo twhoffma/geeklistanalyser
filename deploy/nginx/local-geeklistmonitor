@@ -1,0 +1,29 @@
+server {
+    listen 80;
+    #server_name hoffy-local.no;
+    
+    root /var/www/hoffy.no/;
+    error_log /var/log/nginx/hoffy.no-glam-error_log;
+    access_log '/var/log/nginx/hoffy.no-glam-access_log';
+    
+    
+    location /geeklistmonitor/ {
+        try_files $uri $uri/ $uri/index.html;
+    }
+    
+    location /geeklistmonitor/data/ {
+        set            $memcached_key "$uri?$args";
+        memcached_pass 127.0.0.1:11211;
+        error_page     404 502 504 = @fallback;
+    }
+
+    location @fallback {
+        proxy_method GET;
+        proxy_pass http://127.0.0.1:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}

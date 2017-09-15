@@ -87,7 +87,8 @@ if(args['update_search']){
 					//if(!args['lists'] || args['lists'].indexOf(parseInt('' + geeklist.objectid)) > -1){
 					geeklists.push(geeklist);
 						
-					p.push(getGeeklistData(geeklist.objectid, geeklist.objectid, [], [], [], geeklist.excluded, geeklist.saveObservations));
+					//p.push(getGeeklistData(geeklist.objectid, geeklist.objectid, [], [], [], geeklist.excluded, geeklist.saveObservations));
+					p.push(getGeeklistData(geeklist.type, geeklist.objectid, geeklist.objectid, new Set(), [], [], geeklist.excluded, geeklist.saveObservations));
 					//}
 				});
 				
@@ -256,15 +257,6 @@ function loadBoardgames(boardgameIdList, bgStats){
 				
 			boardgames.forEach(function(boardgame){
 				bgStats.filter(function(e){return e.objectid === boardgame.objectid}).forEach(function(bgStat){
-					/*	
-					var i = 0;
-					for(i = 0;i < boardgame.geeklists.length;i++){
-						if(boardgame.geeklists[i] === null){
-							boardgame.geeklists.splice(i,1);
-							console.log("zing!");
-						}
-					}
-					*/
 					
 					var geeklist = boardgame.geeklists.filter(function(e){return e.objectid === bgStat.geeklistid});
 						
@@ -393,6 +385,7 @@ function getBoardgameStat(geeklistId, boardgameId, currentDate, postDate, editDa
 	return i
 }
 
+/*
 function getGeeklistStat(geeklistId, currentDate){
 	var l = geeklistStats.filter(function(e){
 		return e.objectid == geeklistId
@@ -408,20 +401,23 @@ function getGeeklistStat(geeklistId, currentDate){
 
 	return i
 }
+*/
 
-function updateBoardgameStat(xmlObj, boardgameStats, rootGeeklistId, geeklistId){
+function updateBoardgameStat(e, boardgameStats, rootGeeklistId, geeklistId){
 	var bgStat;
+	/*
 	var itemId = xmlObj.attr('id');
 	var bgId = xmlObj.attr('objectid');
 	var thumbs = parseInt(xmlObj.attr('thumbs'));
 	var postdate = Date.parse(xmlObj.attr('postdate'));
 	var editdate = Date.parse(xmlObj.attr('editdate'));
-	
-	/*	
-	var bgStats = boardgameStats.filter(function(e){
-		return e.objectid == bgId && e.geeklistid == rootGeeklistId
-	});
 	*/
+	
+	var itemId = e.id;
+	var bgId = e.objectid;
+	var thumbs = parseInt(e.thumbs);
+	var postdate = Date.parse(e.postdate);
+	var editdate = Date.parse(e.editdate);
 	
 	var bgStats = boardgameStats.filter((e) => (e.objectid == bgId && e.geeklistid == rootGeeklistId));
 
@@ -452,10 +448,21 @@ function updateBoardgameStat(xmlObj, boardgameStats, rootGeeklistId, geeklistId)
 }
 
 //XXX: Rewrite, should contain rootGeeklist, parentGeeklist, currentGeeklist, visitedGeeklists, boardgameStats, geeklistStats.
-function getGeeklistData(geeklistid, subgeeklistid, visitedGeeklists, boardgameStats, geeklistStats, excluded, saveObs){
+function getGeeklistData(listtype, geeklistid, subgeeklistid, visitedGeeklists, boardgameStats, geeklistStats, excluded, saveObs){
 	var p = q.defer();
 	var promises = [];
 	
+	excluded = excluded || [];
+	saveObs = saveObs || false;
+	
+	/*	
+	var geeklistStat = geeklistStats.get(geeklistid);
+		
+	if(geeklistStat === undefined){
+		geeklistStat = new GeeklistStat(geeklistid, currentDate);
+		geeklistStats.set(geeklistid, geeklistStat);
+	}
+	*/
 	
 	//Get the geeklistStats for parent list
 	var geeklistStatList = geeklistStats.filter(function(e){
@@ -474,78 +481,71 @@ function getGeeklistData(geeklistid, subgeeklistid, visitedGeeklists, boardgameS
 		geeklistStat = geeklistStatList[0];
 	}
 	
-	
-	//TODO: GeeklistStat for the parent list (should be root)
-	//geeklistStat = getGeeklistStat(geeklistid, currentDate);
-	
 	//TODO: Most stats are broken.
 	//Populate geeklist stats
 	geeklistStat.depth += 1;
 	
 	//Load the list from BGG
-	bgg.getGeeklist(subgeeklistid).then(
+	bgg.getGeeklist(listtype, subgeeklistid).then(
 		function(res){
+			res.forEach(function(e){
+				if(e.objecttype === 'thing'){
+					if(e.subtype === 'boardgame'){
+						updateBoardgameStat(e, boardgameStats, geeklistid, subgeeklistid)
+						
+						geeklistStat.numBoardgames++;
+					}
+				}else if(e.objecttype === 'geeklist'){
+					let isExcluded = (excluded.indexOf(e.objectid) > -1);
+					
+					if(!visitedGeeklists.has(e.objectid) && !isExcluded){
+						logger.debug('Loading sublist: ' + e.objectid);
+						visitedGeeklists.add(e.objectid);
+							
+						promises.push(
+							getGeeklistData("geeklist", geeklistid, e.objectid, visitedGeeklists, boardgameStats, geeklistStats, excluded).then(
+								function(v){
+									("Promise resolved: " + e.objectid);
+								},
+								function(err){ 
+									logger.error("Error loading sublist:");
+									logger.error(err);
+
+									throw err
+								}
+							)
+						);
+					}else if(isExcluded){
+						logger.debug(glId + " is excluded");	
+					}
+					
+					geeklistStat.numLists++;
+				}
+			});
+			
+			/*
 			var $ = cheerio.load(res);
 			
+				
 			$('item').each(function(index, element){
 				if($(this).attr('objecttype') == 'thing'){
 					if($(this).attr('subtype') == 'boardgame'){
 						updateBoardgameStat($(this), boardgameStats, geeklistid, subgeeklistid)
 						
-						/*
-						var id = $(this).attr('id');
-						var bgId = $(this).attr('objectid');
-						var thumbs = parseInt($(this).attr('thumbs'));
-						var postdate = Date.parse($(this).attr('postdate'));
-						var editdate = Date.parse($(this).attr('editdate'));
-						
-							
-						var bgStats = boardgameStats.filter(function(e){
-							return e.objectid == bgId && e.geeklistid == geeklistid
-						});
-					
-						var bgStat;
-					
-						if(bgStats.length === 0){
-							bgStat = new BoardgameStat(bgId, geeklistid, currentDate, postdate, editdate);
-							boardgameStats.push(bgStat);
-						}else{
-							bgStat = bgStats[0];
-							
-							//The first post defines creation time.
-							if(Date.parse(bgStat.postdate) > postdate){
-								bgStat.postdate = moment(postdate).format(c.format.dateandtime);
-							}
-							
-							//The latest editdate is the one that is used.
-							if(Date.parse(bgStat.editdate) < editdate){
-								bgStat.editdate = moment(editdate).format(c.format.dateandtime);
-							} 
-						}
-						
-						//TODO:
-						//var bgStat = getBoardgameStat(bgId, geeklistid, currentDate, postdate, editdate);
-							
-						//Here we tally all stats.
-						bgStat.cnt++;
-						bgStat.thumbs += thumbs;
-						bgStat.obs.push({'geeklist': subgeeklistid, 'id': id});
-						*/
-						
 						geeklistStat.numBoardgames++;
 					}
 				}else if($(this).attr('objecttype') == 'geeklist'){
-						var glId = $(this).attr('objectid');
-						var isVisited = (visitedGeeklists.filter(function(e){return e.objectid == glId}).length > 0);
-						var isExcluded = (excluded.filter(function(e){return e === parseInt(glId)}).length > 0);
+						var glId = parseInt($(this).attr('objectid'));
+						var isVisited = visitedGeeklists.has(glId);
+						var isExcluded = (excluded.indexOf(glId)>-1);
 							
 						//Prevent infinite loops by checking where we've been
 						if(!isVisited && !isExcluded){
 							logger.debug('Loading sublist: ' + glId);
-							visitedGeeklists.push({objectid: glId});
+							visitedGeeklists.add(glId);
 							
 							//TODO: Is not capturing return values ok? Is it proper form?	
-							promises.push(getGeeklistData(geeklistid, glId, visitedGeeklists, boardgameStats, geeklistStats, excluded).then(
+							promises.push(getGeeklistData("geeklist", geeklistid, glId, visitedGeeklists, boardgameStats, geeklistStats, excluded).then(
 								function(v){
 									("Promise resolved: " + glId);
 								},
@@ -563,7 +563,8 @@ function getGeeklistData(geeklistid, subgeeklistid, visitedGeeklists, boardgameS
 						geeklistStat.numLists++;
 				}
 			});
-			
+			*/
+
 			q.allSettled(promises).then(
 				function(){
 					logger.debug("All subpromises of " + subgeeklistid + " resolved." + promises.length + " in total.");
