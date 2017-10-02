@@ -240,7 +240,7 @@ function init_ui(){
 							defaults = {'min': v.min, 'max': v.max};
 						}else if(e.method === 'pips'){
 							//TODO: Make it snap to only given values. Need to generate {min: , max:, '10%':, ...}
-							var v = v.map(function(e){return parseInt(e)}).sort();
+							var v = v.map(function(e){return parseInt(e)}).sort((a,b) => (a - b));
 							
 							var rng = {};
 							var key = '';
