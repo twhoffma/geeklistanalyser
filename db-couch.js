@@ -117,7 +117,6 @@ function saveDocs(docs){
 	return generateUuids(docs.length).then(
 		function(uuids){
 			var promises = [];
-				
 			docs.forEach(function(doc, i){
 					var docId;
 					
@@ -147,7 +146,6 @@ function saveDocs(docs){
 							}
 						).catch(
 							function(e){
-								//console.log(doc);
 								logger.error("Failed to save doc: " + doc._id);
 								//console.log("Failed to save doc: " + JSON.stringify(doc));
 								

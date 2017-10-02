@@ -3,7 +3,7 @@
   "language": "javascript",
   "views": {
     "boardgame": {
-      "map": "function(doc) {\n  if(doc.type = 'boardgame'){\n  \tif(doc.geeklists.length > 0){\n      \t  emit(doc.objectid, null);\n  \t}\n  }\n}"
+      "map": "function(doc) {\n  if(doc.type === 'boardgame'){\n  \tif(doc.geeklists.length > 0){\n      \t  emit(doc.objectid, null);\n  \t}\n  }\n}"
     }
   }
 }

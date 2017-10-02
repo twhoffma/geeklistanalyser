@@ -46,7 +46,9 @@ function getGeeklist(listtype, geeklistId){
 			function(results){
 				let r = JSON.parse(results);
 				let p = [];
-				console.log(`Wow! ${r.config.numpages} pages!`);
+				
+				//console.log(`Wow! ${r.config.numpages} pages!`);
+
 				for(let i = 1; i <=r.config.numpages; i++){
 					p.push(
 						qrequest.qrequest("GET", `https://api.geekdo.com/api/geekpreviewitems?nosession=1&pageid=${i}&previewid=${geeklistId}`, null, null, true, 0, true).then(
@@ -85,7 +87,7 @@ function getGeeklist(listtype, geeklistId){
 						},
 						[]
 					);
-					
+					//console.log(l)		
 					return l	
 				}
 			)

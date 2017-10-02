@@ -131,6 +131,10 @@ if(args['update_search']){
 				function(){
 					return boardgames
 				}
+			).fail(
+				function(e){
+					console.log(e)
+				}
 			)
 			/*
 			return datamgr.saveBoardgames(boardgames).then(
@@ -214,7 +218,7 @@ function FilterValue(analysisDate, geeklistId){
 }
 
 function BoardgameStat(boardgameid, geeklistid, analysisdate, postdate, editdate){
-	this.objectid = boardgameid;
+	this.objectid = "" + boardgameid;
 	this.geeklistid = geeklistid;
 	this.analysisDate = analysisdate;
 	this.crets = moment().format(c.format.dateandtime);
@@ -247,6 +251,7 @@ function Geeklist(geeklistid, crets, latest){
 	this.latest = latest;
 };
 
+//This loads boardgame static and appends stats. Should be refactored into two..
 function loadBoardgames(boardgameIdList, bgStats){
 	//TODO: Aggregate some info on how many new, updated, etc.. Segmented on geeklist.
 	return datamgr.getBoardgameData(boardgameIdList).then(
@@ -254,7 +259,10 @@ function loadBoardgames(boardgameIdList, bgStats){
 			//Populate the latest geeklist stat for each boardgame
 		
 			logger.info("Adding most recent stats to boardgame data");
-				
+			
+			return addBoardgameStats(boardgames, bgStats)
+
+			/*
 			boardgames.forEach(function(boardgame){
 				bgStats.filter(function(e){return e.objectid === boardgame.objectid}).forEach(function(bgStat){
 					
@@ -272,6 +280,7 @@ function loadBoardgames(boardgameIdList, bgStats){
 			});
 
 			return boardgames
+			*/
 		},
 		function(err){
 			logger.error("Couldn't find boardgame in db or bgg..");
@@ -287,6 +296,44 @@ function loadBoardgames(boardgameIdList, bgStats){
 			throw err
 		}
 	)
+}
+
+//There will be a warning if a boardgame does not have any corresponding stats
+function addBoardgameStats(boardgames, boardgamesStats){
+	return q.Promise(function(resolve, reject){
+		console.log("Appending stats to " + boardgames.length + " boardgames");
+		boardgames.forEach(function(boardgame){
+			let boardgameStats = boardgamesStats.filter(e => (parseInt(e.objectid) === parseInt(boardgame.objectid)));
+			
+			if(boardgameStats.length === 0){
+				logger.warn("No stats found for boardgame object id " + boardgame.objectid);
+			}
+			
+			boardgameStats.forEach(function(s){
+					if(boardgame.geeklists === undefined){
+						boardgame['geeklists'] = [];
+						//console.log(boardgame.objectid + " Zing!");
+					}
+
+					var geeklist = boardgame.geeklists.filter(e =>  (parseInt(e.objectid) === parseInt(s.geeklistid)));
+						
+					if(geeklist.length === 0){
+						geeklist = {
+										'objectid': s.geeklistid, 
+										'crets': moment(s.postdate).format(c.format.dateandtime), 
+										'latest': s
+						};
+						
+						boardgame['geeklists'].push(geeklist);
+					}else{
+						//There is only one latest per geeklist per boardgame
+						geeklist[0].latest = s;
+					}
+				});
+			});
+
+			resolve(boardgames);
+	})
 }
 
 function saveStats(stats){
