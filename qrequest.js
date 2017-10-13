@@ -14,56 +14,6 @@ var maxNumBackoffs = 5;
 var numRequests = 0;
 var reqQueue = [];
 
-/*
-function backoff(method, url, data, headers, use_fallback, fallback_iter, useQueue, isQueued, lastResult){
-	var p = q.defer();
-	var delay = (1 + Math.random())*Math.exp(fallback_iter+1);
-	
-	if(fallback_iter <= maxNumBackoffs){
-		logger.debug(delay + "s backoff added."); //[" + url + "]");
-		
-		setTimeout(function(){
-			qrequest(method, url, data, headers, true, fallback_iter+1, useQueue, isQueued, lastResult).then(
-				function(v){
-					p.resolve(v);
-				},
-				function(e){
-					p.reject(e);
-				}
-			);
-		}, 1000*delay);
-	}else{
-		p.reject("Max number of backoffs reached!");
-		logger.error("Max number of backoffs reached!");
-	}
-	
-	return p.promise 
-}
-
-function nextRequest(){
-	var qr;
-		
-	if(reqQueue.length > 0){
-		qr = reqQueue.shift();
-		
-		logger.debug("[UQ] " + reqQueue.length + " left in queue. "); //[" + url + "]");	
-		
-		qrequest("GET", qr.url, null, null, true, 0, useQueue, true).then(
-			function(v){
-				qr.deferred.resolve(v);
-			},
-			function(e){
-				qr.deferred.reject(e);
-			}
-		).catch(
-			function(e){
-				qr.deferred.reject(e);
-			}
-		);
-	}
-}
-*/
-
 function qrequest(method, url, data, headers, use_fallback, fallback_iter, useQueue, isQueued, lastResult){
 	var p;
 			
@@ -103,11 +53,8 @@ function qrequest(method, url, data, headers, use_fallback, fallback_iter, useQu
 	if(useQueue){	
 		//TODO: make num requests domain dependent.
 		return p.finally(function(){
-			//console.log("Went into finally..." + url);
 			runNextRequest();
 		}).catch(function(e){
-			//console.log("Went into catch..." + url);
-			//console.log(e);
 			
 			throw e
 		});
@@ -116,13 +63,6 @@ function qrequest(method, url, data, headers, use_fallback, fallback_iter, useQu
 	}
 }
 
-/*
-function request(tries) {
-	if (tries > MAX_TRIES)
-		reject;
-	return doRequest().then(function(v){resolve(v)}, return request(tries + 1));
-}
-*/
 function runNextRequest(){
 	var qr;
 	
@@ -166,14 +106,6 @@ function runRequest(fn, tries, url, data, header){
 			
 			q.delay(1000 * delay).then(function(){
 				return fn(url, data, header)
-				/*
-				if(url.indexOf('193588') !== -1){
-					console.log("faking reject");
-					return q.reject(502)
-				}else{
-					return fn(url, data, header)
-				}
-				*/
 			}).then(
 				function(v){
 					resolve(v);
@@ -190,6 +122,7 @@ function runRequest(fn, tries, url, data, header){
 					resolve(v);
 				},
 				function(e){
+					logger.error("runRequest failed");
 					reject(e);
 				}
 			);
@@ -199,7 +132,12 @@ function runRequest(fn, tries, url, data, header){
 
 function reqGet(url){
 	return new q.Promise(function(resolve, reject){
-		request(url, function(error, response, body){
+		request({
+					method: "GET",
+					uri: url
+					//,timeout: 120000
+				}, 
+				function(error, response, body){
 			if(!error && response.statusCode == 200){
 				resolve(response.body);
 			}else if(!error && response.statusCode == 202){
@@ -208,8 +146,13 @@ function reqGet(url){
 			}else{
 				if((error && error.code == 'ECONNRESET') || (response.statusCode && response.statusCode == 503)){
 					reject(503);
+				}else if(error && error.code == 'ETIMEDOUT'){
+					logger.error("Connection time out? " + (err.connect === true));
+					reject(504);
 				}else{
-					reject(error);
+					logger.error("reqGet failed: " + url);
+					logger.error(response.statusCode)
+					reject(error||response.statusCode);
 				}
 			}
 		});
@@ -272,6 +215,7 @@ function reqPut(url, data, headers){
 							reject(body);
 						}
 					}else{
+						logger.error("reqPut failed");
 						logger.error(error);
 						reject(error);
 					}
@@ -314,6 +258,7 @@ function reqPost(url, data, headers){
 							reject(body);
 						}
 					}else{
+						logger.error("reqPost failed");
 						logger.error(error);
 						reject(error);
 					}

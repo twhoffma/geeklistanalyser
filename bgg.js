@@ -92,32 +92,39 @@ function getGeeklist(listtype, geeklistId){
 				}
 			)
 	}else{
+		//New possibility: 
+		//https://boardgamegeek.com/xmlapi2/geeklist/228286?comments=0&page=1&pagesize=1000
+		//First one can read number of items, then spawn enough page requests to load the entire list. Depends on the size of the list.
+		function parseBGGXML(results){
+			let n = function(value,name){
+        		if(['objectid','thumbs','id','imageid'].includes(name)){
+                		return parseInt(value)
+        		}else if(['postdate','editdate'].includes(name)){
+                		return new Date(Date.parse(value)).toISOString()
+        		}else{
+                		return value
+        		}
+			}
+			
+			return q(new Promise(function(resolve, reject){
+				parseString(results, {attrValueProcessors: [n]}, 
+					function(err, res){
+						if(err){
+							reject(err);
+						}else{
+							resolve(res);
+						}
+					}
+				)
+			})).then(function(res){
+				let items = res.geeklist.item.map(x => x['$']).filter(x => (x.subtype === 'boardgame' || x.objecttype === 'geeklist'));
+				return items
+			});
+		}
+		
 		return qrequest.qrequest("GET", geeklistURL + geeklistId, null, null, true, 0, true).then(
 			function(results){
-				let n = function(value,name){
-        			if(['objectid','thumbs','id','imageid'].includes(name)){
-                			return parseInt(value)
-        			}else if(['postdate','editdate'].includes(name)){
-                			return new Date(Date.parse(value)).toISOString()
-        			}else{
-                			return value
-        			}
-				}
-				
-				return q(new Promise(function(resolve, reject){
-					parseString(results, {attrValueProcessors: [n]}, 
-						function(err, res){
-							if(err){
-								reject(err);
-							}else{
-								resolve(res);
-							}
-						}
-					)
-				})).then(function(res){
-					let items = res.geeklist.item.map(x => x['$']).filter(x => (x.subtype === 'boardgame' || x.objecttype === 'geeklist'));
-					return items
-				});
+				return parseBGGXML(results)
 			}
 		);
 	}

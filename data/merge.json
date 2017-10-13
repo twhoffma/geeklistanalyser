@@ -8,11 +8,7 @@
     "year": 2006,
     "update": false,
     "objectid": 12926,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   },
   {
     "_id": "18752",
@@ -23,11 +19,7 @@
     "year": 2007,
     "update": false,
     "objectid": 18752,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   },
   {
     "_id": "21782",
@@ -38,11 +30,7 @@
     "year": 2000,
     "update": false,
     "objectid": 21782,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   },
   {
     "_id": "187",
@@ -53,11 +41,7 @@
     "year": 2002,
     "update": false,
     "objectid": 187,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   },
   {
     "_id": "1689",
@@ -68,11 +52,7 @@
     "year": 2003,
     "update": false,
     "objectid": 1689,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   },
   {
     "_id": "3867",
@@ -83,11 +63,7 @@
     "year": 2004,
     "update": false,
     "objectid": 3867,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   },
   {
     "_id": "9465",
@@ -98,11 +74,7 @@
     "year": 2005,
     "update": false,
     "objectid": 9465,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   },
   {
     "_id": "14995",
@@ -113,11 +85,7 @@
     "year": 2006,
     "update": false,
     "objectid": 14995,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   },
   {
     "_id": "22498",
@@ -128,11 +96,7 @@
     "year": 2007,
     "update": false,
     "objectid": 22498,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   },
   {
     "_id": "32448",
@@ -143,11 +107,7 @@
     "year": 2008,
     "update": false,
     "objectid": 32448,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   },
   {
     "_id": "42635",
@@ -158,11 +118,7 @@
     "year": 2009,
     "update": false,
     "objectid": 42635,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   },
   {
     "_id": "55855",
@@ -173,11 +129,7 @@
     "year": 2010,
     "update": false,
     "objectid": 55855,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   },
   {
     "_id": "70021",
@@ -188,11 +140,7 @@
     "year": 2011,
     "update": false,
     "objectid": 70021,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   },
   {
     "_id": "170756",
@@ -203,11 +151,7 @@
     "year": 2014,
     "update": true,
     "objectid": 170756,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   },
   {
     "_id": "187433",
@@ -219,10 +163,7 @@
     "update": false,
     "objectid": 187433,
     "visible": false,
-    "excluded": [],
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "tradeLists": []
+    "excluded": []
   },
   {
     "_id": "174654",
@@ -233,11 +174,7 @@
     "year": 2015,
     "update": false,
     "objectid": 174654,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   },
   {
     "_id": "204856",
@@ -264,10 +201,7 @@
       209966,
       209967,
       209968
-    ],
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "tradeLists": []
+    ]
   },
   {
     "_id": "212782",
@@ -278,11 +212,7 @@
     "year": 2016,
     "update": false,
     "objectid": 212782,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   },
   {
     "_id": "142245",
@@ -293,11 +223,7 @@
     "year": 2012,
     "update": false,
     "objectid": 142245,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   },
   {
     "_id": "153611",
@@ -308,11 +234,7 @@
     "year": 2013,
     "update": false,
     "objectid": 153611,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   },
   {
     "_id": "161427",
@@ -323,11 +245,7 @@
     "year": 2014,
     "update": false,
     "objectid": 161427,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   },
   {
     "_id": "184821",
@@ -338,11 +256,7 @@
     "year": 2015,
     "update": false,
     "objectid": 184821,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   },
   {
     "_id": "630",
@@ -353,11 +267,7 @@
     "year": 2002,
     "update": false,
     "objectid": 630,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   },
   {
     "_id": "546",
@@ -368,11 +278,7 @@
     "year": 2003,
     "update": false,
     "objectid": 546,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   },
   {
     "_id": "1947",
@@ -383,11 +289,7 @@
     "year": 2004,
     "update": false,
     "objectid": 1947,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   },
   {
     "_id": "6345",
@@ -398,11 +300,7 @@
     "year": 2005,
     "update": false,
     "objectid": 6345,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   },
   {
     "_id": "27932",
@@ -413,11 +311,7 @@
     "year": 2008,
     "update": false,
     "objectid": 27932,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   },
   {
     "_id": "38646",
@@ -428,11 +322,7 @@
     "year": 2009,
     "update": false,
     "objectid": 38646,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   },
   {
     "_id": "62803",
@@ -443,11 +333,7 @@
     "year": 2011,
     "update": false,
     "objectid": 62803,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   },
   {
     "_id": "78288",
@@ -458,11 +344,7 @@
     "year": 2012,
     "update": false,
     "objectid": 78288,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   },
   {
     "_id": "151567",
@@ -473,11 +355,7 @@
     "year": 2013,
     "update": false,
     "objectid": 151567,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   },
   {
     "_id": "164782",
@@ -488,11 +366,7 @@
     "year": 2014,
     "update": false,
     "objectid": 164782,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   },
   {
     "_id": "184754",
@@ -503,11 +377,7 @@
     "year": 2015,
     "update": false,
     "objectid": 184754,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   },
   {
     "_id": "191207",
@@ -518,11 +388,7 @@
     "year": 2015,
     "update": false,
     "objectid": 191207,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   },
   {
     "_id": "142246",
@@ -533,11 +399,7 @@
     "year": 2012,
     "update": false,
     "objectid": 142246,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   },
   {
     "_id": "152350",
@@ -548,11 +410,7 @@
     "year": 2013,
     "update": false,
     "objectid": 152350,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   },
   {
     "_id": "193588",
@@ -563,11 +421,7 @@
     "year": 2016,
     "update": false,
     "objectid": 193588,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   },
   {
     "_id": "211885",
@@ -578,11 +432,7 @@
     "year": 2016,
     "update": false,
     "objectid": 211885,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   },
   {
     "_id": "190037",
@@ -593,11 +443,7 @@
     "year": 2015,
     "update": false,
     "objectid": 190037,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   },
   {
     "_id": "191095",
@@ -608,11 +454,7 @@
     "year": 2015,
     "update": false,
     "objectid": 191095,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   },
   {
     "_id": "210863",
@@ -622,11 +464,7 @@
     "year": 2017,
     "update": false,
     "objectid": 210863,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   },
   {
     "_id": "221946",
@@ -636,11 +474,7 @@
     "year": 2017,
     "update": true,
     "objectid": 221946,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   },
   {
     "_id": "225157",
@@ -656,10 +490,7 @@
       216931,
       225205,
       219857
-    ],
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "tradeLists": []
+    ]
   },
   {
     "_id": "214607",
@@ -669,11 +500,7 @@
     "year": 2017,
     "update": true,
     "objectid": 214607,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   },
   {
     "_id": "208790",
@@ -683,94 +510,56 @@
     "year": 2017,
     "update": false,
     "objectid": 208790,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   },
   {
     "_id": "202466",
     "type": "geeklist",
     "name": "Nürnberg/New York/2016 Preview",
-    "group": "Nürnberg",
+    "group": "Nürnberg",   
     "year": 2016,
     "update": false,
     "objectid": 202466,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   },
   {
     "_id": "198728",
     "type": "geeklist",
     "name": "Gen Con 2016 Preview",
-    "group": "Gen Con",
+    "group": "Gen Con",   
     "year": 2016,
     "update": true,
     "objectid": 198728,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   },
   {
     "_id": "196767",
     "type": "geeklist",
     "name": "Gen Con 2017 Preview",
-    "group": "Gen Con",
+    "group": "Gen Con",   
     "year": 2017,
     "update": true,
     "objectid": 196767,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   },
   {
     "_id": "229021",
     "type": "geeklist",
     "name": "Essen SPIEL 2017 no shipping math trade",
-    "group": "Essen - Trade Lists",
+    "group": "Essen - Trade Lists",   
     "year": 2017,
     "update": true,
     "objectid": 229021,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   },
   {
     "_id": "4",
     "type": "preview",
     "name": "Essen SPIEL 2017 Convention Preview",
-    "group": "Essen",
+    "group": "Essen",   
     "year": 2017,
     "update": true,
     "objectid": 4,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
-  },
-  {
-    "_id": "228286",
-    "type": "geeklist",
-    "name": "The Essen 2017 no-shipping auction list.",
-    "group": "Essen - Trade Lists",
-    "year": 2017,
-    "update": true,
-    "objectid": 228286,
-    "visible": true,
-    "fromDate": "2016-12-31",
-    "toDate": "2017-10-29",
-    "excluded": [],
-    "tradeLists": []
+    "visible": true
   }
 ]

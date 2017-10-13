@@ -11,8 +11,9 @@ var c = JSON.parse(fs.readFileSync('localconfig.json', 'utf8'));
 
 process.title = 'glaze';
 
-var currentDate = moment().format(c.format.date)
-var currentTime = moment().format(c.format.dateandtime)
+var startTime = moment();
+var currentDate = moment().format(c.format.date);
+var currentTime = moment().format(c.format.dateandtime);
 
 var args = {};
 var boardgameStats = [];
@@ -33,10 +34,52 @@ for(i = 2; i < process.argv.length; i++){
 	}
 }
 
-if(args['update_search']){
+//Load geeklists and execute
+datamgr.getGeeklists(true, false, args['lists']).then(
+	function(geeklists){
+		var action = "";
+
+		if(args['update_search']){
+			action = "update_search";
+		}else if(args['generate_filters']){
+			action = "generate_filters";
+		}else if(args['update_static']){
+			action = "update_static";
+		}else if(args['sync_lists']){
+			action = "sync_lists";
+		}
+		
+		logger.debug("Loaded " + geeklists.length + " geeklists");	
+		return runAction(action, geeklists).catch(function(e){
+			logger.error("runAction failed");
+			logger.error(e);
+		})
+	}
+);
+
+function runAction(action, geeklists){
+	switch(action){
+		case 'update_search': 
+			return updateSearch()
+			break;
+		case 'generate_filters':
+			return generateFilters(geeklists)
+			break;
+		case 'update_static':
+			return updateStatic(geeklists)
+			break;
+		case 'sync_lists':
+			return syncLists(geeklists) 
+			break;
+		default:
+			throw "Invalid action. Must be update_search,generate_filters,update_static or sync_lists.";
+	}	
+} 
+
+function updateSearch(){
 	logger.info("Updating search engine");
 	
-	datamgr.getBoardgames().then(
+	return datamgr.getBoardgames().then(
 		function(boardgames){
 			return datamgr.updateSearch(boardgames.map(r => r.doc))
 		}
@@ -48,7 +91,19 @@ if(args['update_search']){
 			throw err
 		}
 	)
-}else if(args['update_static']){
+}
+
+function generateFilters(geeklists){
+	logger.info("Generating static filter values.");
+	return q.allSettled(geeklists.map(generateFilterValues)).then(
+		function(){ 
+			logger.info("Done saving filtervalues");	
+			return true 
+		}
+	)
+}
+
+function updateStatic(geeklists){
 	logger.info("Updating bordgame static");
 	
 	new Promise(function(resolve, reject){
@@ -72,33 +127,32 @@ if(args['update_search']){
 			throw err
 		}	
 	);
-}else if(args['sync_lists']){
+}
+
+function syncLists(loadedGeeklists){
 	logger.info("Loading geeklists");
 	
-	//Process geeklists
-	datamgr.getGeeklists(true, false, args['lists']).then(
-		function(loadedGeeklists){
+	return new Promise(function(resolve, reject){
 			var p = [];
 				
 			if(loadedGeeklists.length > 0){		
 				loadedGeeklists.forEach(function(geeklist, i){
 					
 					//Only run lists that are provided at the commandline, or all with update === true if none is given.
-					//if(!args['lists'] || args['lists'].indexOf(parseInt('' + geeklist.objectid)) > -1){
 					geeklists.push(geeklist);
 						
-					//p.push(getGeeklistData(geeklist.objectid, geeklist.objectid, [], [], [], geeklist.excluded, geeklist.saveObservations));
 					p.push(getGeeklistData(geeklist.type, geeklist.objectid, geeklist.objectid, new Set(), [], [], geeklist.excluded, geeklist.saveObservations));
-					//}
 				});
 				
-				return q.allSettled(p)
+					
+				return resolve(q.allSettled(p))
 			}else{
-				return Promise.reject("No lists to sync!");
+				return reject("No lists to sync!");
 			}
 		}
 	).then(
 		function(results){
+			logger.debug("Saving stats");
 			return saveStats(results.filter((v) => v.value).map((v) => v.value))
 		},
 		function(err){
@@ -170,6 +224,8 @@ if(args['update_search']){
 		}
 	).then(
 		function(){
+			return generateFilters(geeklists)
+			/*
 			logger.info("Generating static filter values.");
 			return q.allSettled(geeklists.map(generateFilterValues)).then(
 				function(){ 
@@ -177,6 +233,7 @@ if(args['update_search']){
 					return true 
 				}
 			)
+			*/
 		}
 	).then(
 		function(v) { 
@@ -187,18 +244,20 @@ if(args['update_search']){
 			var startTime = moment(currentTime, c.format.dateandtime);
 			var now = moment();
 			
-			var timeTaken = moment(moment.duration(now.diff(startTime))).format("hh:mm:ss");
+			
+			var timeTaken = moment.utc(moment.duration(now.diff(startTime)).asMilliseconds()).format("HH:mm:ss");
 			logger.info("All done in " + timeTaken);
 			return true
 		}
 	).catch(
 		function(e){
-			logger.error(e);
+			throw e
+			//logger.error("Failure using sync_lists");
+			//logger.error(e);
 		}
 	);
-}else{
-	logger.error("You need to specify sync_lists or update_search as an argument");
 }
+
 /* END OF MAIN */
 
 function FilterValue(analysisDate, geeklistId){
@@ -563,55 +622,13 @@ function getGeeklistData(listtype, geeklistid, subgeeklistid, visitedGeeklists, 
 							)
 						);
 					}else if(isExcluded){
-						logger.debug(glId + " is excluded");	
+						logger.debug(e.objectid + " is excluded");	
 					}
 					
 					geeklistStat.numLists++;
 				}
 			});
 			
-			/*
-			var $ = cheerio.load(res);
-			
-				
-			$('item').each(function(index, element){
-				if($(this).attr('objecttype') == 'thing'){
-					if($(this).attr('subtype') == 'boardgame'){
-						updateBoardgameStat($(this), boardgameStats, geeklistid, subgeeklistid)
-						
-						geeklistStat.numBoardgames++;
-					}
-				}else if($(this).attr('objecttype') == 'geeklist'){
-						var glId = parseInt($(this).attr('objectid'));
-						var isVisited = visitedGeeklists.has(glId);
-						var isExcluded = (excluded.indexOf(glId)>-1);
-							
-						//Prevent infinite loops by checking where we've been
-						if(!isVisited && !isExcluded){
-							logger.debug('Loading sublist: ' + glId);
-							visitedGeeklists.add(glId);
-							
-							//TODO: Is not capturing return values ok? Is it proper form?	
-							promises.push(getGeeklistData("geeklist", geeklistid, glId, visitedGeeklists, boardgameStats, geeklistStats, excluded).then(
-								function(v){
-									("Promise resolved: " + glId);
-								},
-								function(err){ 
-									logger.error("Error loading sublist:");
-									logger.error(err);
-
-									throw err
-								}
-							));
-						}else if(isExcluded){
-							logger.debug(glId + " is excluded");	
-						}
-						
-						geeklistStat.numLists++;
-				}
-			});
-			*/
-
 			q.allSettled(promises).then(
 				function(){
 					logger.debug("All subpromises of " + subgeeklistid + " resolved." + promises.length + " in total.");
@@ -647,7 +664,6 @@ function getGeeklistData(listtype, geeklistid, subgeeklistid, visitedGeeklists, 
 function generateFilterValues(geeklist){
 	var geeklistid = geeklist.objectid;
 	var filterValue = new FilterValue(currentDate, geeklistid);
-	
 	//logger.info("Generating geeklist filtervalues for " + geeklistid);
 	return datamgr.getGeeklistFiltersComponents(geeklistid).then(
 		function(comp){
