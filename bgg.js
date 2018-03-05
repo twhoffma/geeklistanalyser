@@ -93,7 +93,6 @@ function getGeeklist(listtype, geeklistId){
 			)
 	}else{
 		//New possibility: 
-		//https://boardgamegeek.com/xmlapi2/geeklist/228286?comments=0&page=1&pagesize=1000
 		//First one can read number of items, then spawn enough page requests to load the entire list. Depends on the size of the list.
 		function parseBGGXML(results){
 			let n = function(value,name){
@@ -110,21 +109,72 @@ function getGeeklist(listtype, geeklistId){
 				parseString(results, {attrValueProcessors: [n]}, 
 					function(err, res){
 						if(err){
-							reject(err);
+							return reject(err);
 						}else{
-							resolve(res);
+							return resolve(res);
 						}
 					}
 				)
 			})).then(function(res){
-				let items = res.geeklist.item.map(x => x['$']).filter(x => (x.subtype === 'boardgame' || x.objecttype === 'geeklist'));
-				return items
+				logger.info(res.geeklist.numitems + " items");
+				return res
 			});
 		}
 		
-		return qrequest.qrequest("GET", geeklistURL + geeklistId, null, null, true, 0, true).then(
+		function getBGGItems(res){
+			let items = res.geeklist.item.map(x => x['$']).filter(x => ((x.objecttype === 'thing' && x.subtype === 'boardgame') || x.objecttype === 'geeklist'));
+			
+            return items
+		}
+			
+		//https://boardgamegeek.com/xmlapi2/geeklist/228286?comments=0&page=1&pagesize=1000
+        let url = geeklistURL + geeklistId + `&comments=0&page=1&pagesize=1000`
+		return qrequest.qrequest("GET", url, null, null, true, 0, true).then(
 			function(results){
-				return parseBGGXML(results)
+				var items = [];
+				//XXX: Problem here with returning results ends the chain..
+				return parseBGGXML(results).then(
+					function(res){
+						let pageItems = getBGGItems(res);
+                        let numItems = parseInt(res.geeklist.numitems);
+						let numpages = (parseInt(numItems / 1000) + 1);
+						logger.info("Need to fetch " + numpages + " pages for " + geeklistId);
+						items = items.concat(pageItems);
+						
+						let p = [];
+                        //Start on page two, since we've already fetched the first one..
+						for(let i = 2; i <= numpages; i++){
+                            logger.info(`Queued page request #${i}`);
+                            let url = geeklistURL + geeklistId + `&comments=0&page=${i}&pagesize=1000`;
+							p.push(
+                                qrequest.qrequest("GET", url, null, null, true, 0, true).then(
+                                    r => parseBGGXML(r).then(rr => getBGGItems(rr))
+                                )
+                            );
+						}
+					    
+                        if(p.length > 0){	
+                            return q.allSettled(p).then(
+	    						function(r){
+                         			let l = r.filter(e => (e.state === "fulfilled")).map(e => e.value).reduce(
+                               			function(prev, curr){
+                            			    if(prev.indexOf(curr) === -1){
+                                	    		return prev.concat(curr)
+                            		    	}else{
+                                	    		return prev
+                            		    	}
+                        			    },
+                        			    items
+                    			    );
+
+								    return l
+                			    }
+						    )
+                        }else{
+                            return items
+                        }   
+					}
+				)
 			}
 		);
 	}
