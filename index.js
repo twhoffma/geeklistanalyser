@@ -72,7 +72,7 @@ function runAction(action, geeklists){
 			return syncLists(geeklists) 
 			break;
 		default:
-			throw "Invalid action. Must be update_search,generate_filters,update_static or sync_lists.";
+			return Promise.reject("Invalid action. Must be update_search,generate_filters,update_static or sync_lists.")
 	}	
 } 
 
@@ -116,6 +116,7 @@ function updateStatic(geeklists){
 		function(boardgames){
 			var ids = boardgames.map(r => r.doc.objectid);
 			logger.info("Found " + ids.length + " boardgames to update.");
+			logger.error("Feature not implemented!");
 			//1. Forcefully tell datamgr to load boardgame data from BGG
 			//2. Merge boardgame most recent from 
 		}
