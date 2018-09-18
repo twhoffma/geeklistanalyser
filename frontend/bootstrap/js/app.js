@@ -69,6 +69,7 @@
 				var p = new Promise(function(resolve, reject){
 					if(clearInfo){
 						//Load geeklist info
+						console.log("get some data!");
 						data.getGeeklistDetails(geeklistId).then(function(r){
 							return ui.renderGeeklistDetails(r);
 						});
@@ -79,9 +80,11 @@
 							ui.setFilters(filter);
 							ui.setSorting(sorting);
 							
+							console.log("All loaded");	
 							resolve();
 						});
 					}else{
+						console.log("Doing nothin'");
 						resolve();
 					}	
 				}).catch(function(e){
@@ -106,12 +109,13 @@
 						sorting = ui.getSorting();
 						filter = ui.getFilters();
 					}
-					
+					console.log("Options set");	
 					ui.setHistory(selectedGeeklist, 0, 0, filter, sorting);
 					
 					//Load geeklist contents
 					ui.setLoadButtonState("loading");
-					var numLoaded = $('.gameline').length;
+					//var numLoaded = $('.gameline').length;
+					var numLoaded = $('.bg').length;
 					data.getGeeklist(selectedGeeklist, numLoaded, filter, sorting).then(function(r){
 						ui.renderGeeklist(r, '', selectedGeeklist, clearList);
 						
@@ -122,7 +126,8 @@
 						}
 						
 					});
-				}).catch(function(e){
+				}).catch(function(e){	
+					alert(e);
 					ui.setErrorMessage(e);
 				});
 			}

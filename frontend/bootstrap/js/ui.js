@@ -34,8 +34,72 @@ function init_ui(){
 		'ascending': 0
 	};
 
-	var currentFilterDefaults = {};
+	var currentFilterDefaults = {};	
 	
+	//Handlebars
+	Handlebars.registerPartial('render_attr', Handlebars.templates.bgattr);
+	
+	function toggleDetails(e, op){
+	      var p = $(e.target).parent().parent().parent().parent(); //It's pretty far up there
+	      var c = p.children(".details");
+	      
+	      var o = "" + p.data("tobsies") || "";
+	      var tobsies = o.split(",").filter(x=>x!="").map(x => x.split(":")[1]);
+	      
+	      o = "" + p.data("obsies") || "";
+	      var obsies = o.split(",").filter(x=>x!="").map(x => x.split(":")[1]);
+	      
+	      console.log(obsies); 
+	      o = "" + p.data("probsies") || "";
+	      var probsies = o.split(",").filter(x=>x!="").map(x=>({"previewid": x.split(":")[0], "objectid": x.split(":")[1]}));
+	      
+	      if(obsies.length > 0 || tobsies.length > 0 || probsies.length > 0){
+		if(c.length > 0){
+			$(e.target).removeClass("fa-angle-up").addClass("fa-angle-down");
+		  p.children(".details").remove();
+		}else{
+			$(e.target).removeClass("fa-angle-down").addClass("fa-angle-up");
+		  p.append("<div class=\"block details\"></div>");
+		  var c = p.children(".details")[0];
+		  
+		  c.innerHTML += Handlebars.templates.bgobs({
+					obsies: obsies,
+		      tobsies: tobsies,
+		      probsies: probsies
+				}
+		  );
+		  
+		  
+		}
+	    }else{
+		console.log("No obs!");	
+	    }
+	}
+
+	//Events - these shouldn't be here..
+	$(document).on('click', '.obs-caret', function(e){
+		toggleDetails(e);
+	});
+	    
+	$(document).on('click', '#collapseExpand', function(e){
+		let bi = $('#staticBtnIcon')[0];
+		
+		if(bi.className == "fas fa-compress"){
+			bi.className = "fas fa-expand";
+		
+			$(".details-bg").each(function(i, e){
+				$(e).addClass("collapsedStatic");
+			});
+		}else{
+			bi.className = "fas fa-compress";
+		
+			$(".details-bg").each(function(i, e){
+				$(e).removeClass("collapsedStatic");
+			});
+		}
+		
+	});
+		
 	function displaySpinner(visible){
 		/*
 		if(visible === true){
@@ -254,7 +318,7 @@ function init_ui(){
 								}
 							}
 
-							console.log(rng);
+							//console.log(rng);
 							
 							noUiSlider.create(s, {
 								start: [rng['min'], rng['max']],
@@ -395,7 +459,8 @@ function init_ui(){
 		},
 		
 		'clearGeeklist': function clearGeeklist(){
-			$('#games').children().remove();
+			//$('#games').children().remove();
+			$('#geeklistitems').children().remove();
 		},
 		
 		'displaySpinner': displaySpinner,
@@ -403,11 +468,12 @@ function init_ui(){
 			$('#geeklistname').text(r[0].name);
 		},
 		'renderGeeklist': function renderGeeklist(r, sortby, geeklistid, clear){
-			var prevSortTerm = "";
-			var currentTerm = "";
+			//var prevSortTerm = "";
+			//var currentTerm = "";
 			
-			var list = $('#games');
-
+			//var list = $('#games');
+			var list = $('#geeklistitems');
+			console.log("render stuff!");
 			if(clear){
 				list.children().remove();
 			}
@@ -415,6 +481,18 @@ function init_ui(){
 			sortby = sortby || '';
 				
 			for(i = 0; i < r.length; i++){
+				var bg = r[i];
+				
+				console.log(bg);	
+				bg.geeklists = bg.geeklists.filter(x => x.objectid === parseInt(geeklistid));
+				bg.bgid = bg.objectid;
+				
+				
+				bg.obsies = bg.geeklists[0].latest.obs.map(x => "" + x.geeklist + ":" + x.id).join(",");
+					
+				var l = Handlebars.templates.bg(bg);
+				//console.log(l);
+				/*	
 				var n = r[i].name.filter(function(e){
 								return e.primary === "true";
 							}
@@ -422,7 +500,6 @@ function init_ui(){
 				
 				var geeklist = r[i].geeklists.filter(function(o){return o.objectid == geeklistid})[0];
 				var boardgamestat = geeklist.latest; 
-				
 				
 				//For certain sort terms, print subheaders
 				if(sortby === "name" || sortby === "thumbs" || sortby === "yearpublished"){
@@ -460,6 +537,7 @@ function init_ui(){
 				l += "<td class=\"hidden-s\">" + geeklist.crets  + "</td>";
 				
 				l += "</tr>";
+				*/
 					
 				list.append(l);
 			}
