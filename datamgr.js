@@ -28,7 +28,7 @@ function saveBoardgames(boardgames){
 function getGeeklists(isUpdateable, isVisible, geeklistIds){
 	var d;
 	var geeklists;
-	
+	//console.log(geeklistIds);	
 	//Can't seem to make this work even if it is according to spec.
 	/*	
 	if(geeklistId){
@@ -68,7 +68,9 @@ function getGeeklists(isUpdateable, isVisible, geeklistIds){
 	return d.promise.then(
 		function(lists){
 			lists.forEach(function(list, i){
-				if((!geeklistIds || geeklistIds.indexOf(parseInt(list.objectid)) > -1) && (!isUpdateable || list.update === true) && (!isVisible || list.visible === true)){
+				let inSelection = !geeklistIds || (geeklistIds.filter(x => x === parseInt(list.objectid)).length > 0);
+				if((!geeklistIds || inSelection) && (!isUpdateable || list.update === true) && (!isVisible || list.visible === true)){
+					logger.debug("Found geeklist " + list.objectid + " in database.");
 					geeklists.push(list);
 				}
 			});

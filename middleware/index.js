@@ -39,7 +39,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(uri + '/data/getGeeklistDetails', function(req, res, next){
 	var p = qs.parse(req._parsedUrl.query);
 	
-	datamgr.getGeeklists(false, true, p["geeklistid"]).then(
+	datamgr.getGeeklists(false, true, [parseInt(p["geeklistid"])]).then(
 		function(r){
 			res.end(JSON.stringify(r));
 			

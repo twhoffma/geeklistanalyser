@@ -27,7 +27,12 @@ for(i = 2; i < process.argv.length; i++){
 	
 	if(arg.length > 1){
 		//All others are parameters
-		args[arg[0].toLowerCase()] = arg[1].toLowerCase().split(",").map(parseInt);
+		
+		if(arg[0].toLowerCase() === "lists"){
+			args[arg[0].toLowerCase()] = arg[1].toLowerCase().split(",").map(parseInt);
+		}else{
+			args[arg[0].toLowerCase()] = arg[1].toLowerCase();
+		}
 	}else{
 		//First arg is action
 		args[arg[0].toLowerCase()] = true;

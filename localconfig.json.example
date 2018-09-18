@@ -24,5 +24,9 @@
 			"baseuri": "", 
 			"dev_baseuri": "/geeklistmonitor", 
 			"memcached_uri": "localhost:11211"
-		}
+		},
+	"bgg": 
+		{
+			"xmlapi_geeklist_pagesize": 0
+		}	
 }

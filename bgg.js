@@ -3,6 +3,7 @@ qrequest = require('./qrequest.js');
 q = require('q');
 parseString = require('xml2js').parseString;
 
+var c = JSON.parse(fs.readFileSync('localconfig.json', 'utf8'));
 
 var geeklistURL = 'https://www.boardgamegeek.com/xmlapi/geeklist/';
 var boardgameURL = 'https://www.boardgamegeek.com/xmlapi/boardgame/';
@@ -122,13 +123,19 @@ function getGeeklist(listtype, geeklistId){
 		}
 		
 		function getBGGItems(res){
-			let items = res.geeklist.item.map(x => x['$']).filter(x => ((x.objecttype === 'thing' && x.subtype === 'boardgame') || x.objecttype === 'geeklist'));
+			let items = res.geeklist.item.map(x => x['$']);
 			
-            return items
+            		return items
 		}
-			
+
 		//https://boardgamegeek.com/xmlapi2/geeklist/228286?comments=0&page=1&pagesize=1000
-        let url = geeklistURL + geeklistId + `&comments=0&page=1&pagesize=1000`
+		let pagesize = c.bgg.xmlapi_geeklist_pagesize;
+		let url = geeklistURL + geeklistId + `&comments=0&page=1`
+			
+		if(pagesize > 0){
+			url = url + `&pagesize=${pagesize}`
+		}
+		
 		return qrequest.qrequest("GET", url, null, null, true, 0, true).then(
 			function(results){
 				var items = [];
@@ -136,43 +143,59 @@ function getGeeklist(listtype, geeklistId){
 				return parseBGGXML(results).then(
 					function(res){
 						let pageItems = getBGGItems(res);
-                        let numItems = parseInt(res.geeklist.numitems);
-						let numpages = (parseInt(numItems / 1000) + 1);
+						let totPageItems = pageItems.length;
+						
+						const filterBgGl = (x => x.filter(x => ((x.objecttype === 'thing' && x.subtype === 'boardgame') || x.objecttype === 'geeklist')));
+	
+						//Filter out geeklists and boardgames	
+						//pageItems = pageItems.filter(x => ((x.objecttype === 'thing' && x.subtype === 'boardgame') || x.objecttype === 'geeklist'));
+						pageItems = filterBgGl(pageItems);
+                        			let numItems = parseInt(res.geeklist.numitems);
+						
+						let numpages = (pagesize === 0 ? 1 : (parseInt(numItems / pagesize) + 1));
 						logger.info("Need to fetch " + numpages + " pages for " + geeklistId);
 						items = items.concat(pageItems);
 						
+						if(numpages > 1 && numItems === totPageItems){
+							logger.info("Got all items in first query - pagesize ignored by server!");
+							numpages = 1;
+						}else{
+							logger.info("Got " + pageItems.length + " out of " + numItems + "on first fetch");
+						}
+						
 						let p = [];
-                        //Start on page two, since we've already fetched the first one..
+                        			//Start on page two, since we've already fetched the first one..
 						for(let i = 2; i <= numpages; i++){
-                            logger.info(`Queued page request #${i}`);
-                            let url = geeklistURL + geeklistId + `&comments=0&page=${i}&pagesize=1000`;
+			                           	logger.info(`Queued page request #${i}`);
+                        				let url = geeklistURL + geeklistId + `&comments=0&page=${i}&pagesize=${pagesize}`;
+
 							p.push(
-                                qrequest.qrequest("GET", url, null, null, true, 0, true).then(
-                                    r => parseBGGXML(r).then(rr => getBGGItems(rr))
-                                )
-                            );
+                                				qrequest.qrequest("GET", url, null, null, true, 0, true).then(
+				                                    r => parseBGGXML(r).then(rr => filterBgGl(getBGGItems(rr)))
+                                				)
+                            				);
 						}
 					    
-                        if(p.length > 0){	
-                            return q.allSettled(p).then(
-	    						function(r){
-                         			let l = r.filter(e => (e.state === "fulfilled")).map(e => e.value).reduce(
-                               			function(prev, curr){
-                            			    if(prev.indexOf(curr) === -1){
-                                	    		return prev.concat(curr)
-                            		    	}else{
-                                	    		return prev
-                            		    	}
-                        			    },
-                        			    items
-                    			    );
+			                        if(p.length > 0){	
+                        				return q.allSettled(p).then(
+	    							function(r){
+                         						let l = r.filter(e => (e.state === "fulfilled")).map(e => e.value).reduce(
+				                               			function(prev, curr){
+                            							    	if(prev.indexOf(curr) === -1){
+				                                	    			return prev.concat(curr)
+                            								}else{
+					                                	    		return prev
+                            							    	}
+				                        			},
+                        							items
+                    			    				);
 
-								    return l
-                			    }
-						    )
-                        }else{
-                            return items
-                        }   
+								    	return l
+                			    			}
+						    	)
+                        			}else{
+			                            	return items
+                        			}   
 					}
 				)
 			}
