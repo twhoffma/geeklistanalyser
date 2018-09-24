@@ -105,7 +105,7 @@ templates['bg'] = template({"1":function(container,depth0,helpers,partials,data,
     + ((stack1 = container.invokePartial(partials.render_attr,depth0,{"name":"render_attr","hash":{"icon":"fas fa-print","attrnm":"boardgamepublisher","attrs":(depth0 != null ? depth0.boardgamepublisher : depth0)},"data":data,"indent":"      ","helpers":helpers,"partials":partials,"decorators":container.decorators})) != null ? stack1 : "")
     + ((stack1 = container.invokePartial(partials.render_attr,depth0,{"name":"render_attr","hash":{"icon":"fas fa-tag","attrnm":"boardgamecategory","attrs":(depth0 != null ? depth0.boardgamecategory : depth0)},"data":data,"indent":"      ","helpers":helpers,"partials":partials,"decorators":container.decorators})) != null ? stack1 : "")
     + ((stack1 = container.invokePartial(partials.render_attr,depth0,{"name":"render_attr","hash":{"icon":"fas fa-user-friends","attrnm":"boardgamefamily","attrs":(depth0 != null ? depth0.boardgamefamily : depth0)},"data":data,"indent":"      ","helpers":helpers,"partials":partials,"decorators":container.decorators})) != null ? stack1 : "")
-    + "    </div>\r\n    <div class=\"block\">\r\n      <ul class=\"toggleDetails\">\r\n        <li><i class=\"fa fa-angle-down obs-caret\"></i></li>\r\n      </ul>\r\n    </div>\r\n  </li> \r\n";
+    + "    </div>\r\n    <div class=\"block\">\r\n      <ul class=\"toggleDetails\">\r\n        <li><i class=\"fa fa-angle-down obs-caret fa-2x\"></i></li>\r\n      </ul>\r\n    </div>\r\n  </li> \r\n";
 },"usePartial":true,"useData":true,"useDepths":true});
 templates['bgobs'] = template({"1":function(container,depth0,helpers,partials,data) {
     var stack1;
