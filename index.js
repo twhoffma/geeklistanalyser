@@ -282,13 +282,15 @@ function FilterValue(analysisDate, geeklistId){
 	this.boardgamefamily = [];
 }
 
-function BoardgameStat(boardgameid, geeklistid, analysisdate, postdate, editdate){
+function BoardgameStat(boardgameid, geeklistid, analysisdate, postdate, editdate, listtype){
 	this.objectid = "" + boardgameid;
 	this.geeklistid = geeklistid;
+	this.listtype = listtype;
 	this.analysisDate = analysisdate;
 	this.crets = moment().format(c.format.dateandtime);
 	this.cnt = 0;
 	this.thumbs = 0;
+	this.wants = 0;
 	this.type = "boardgamestat";
 	this.hist = {}; //Histogram based on position
 	this.obs = [];
@@ -471,14 +473,14 @@ function getGeeklistStats(geeklistId){
 	});
 }
 
-function getBoardgameStat(geeklistId, boardgameId, currentDate, postDate, editDate){
+function getBoardgameStat(geeklistId, boardgameId, currentDate, postDate, editDate, listtype){
 	var l = boardgameStats.filter(function(e){
-		return e.objectid == boardgameId && e.geeklistid == geeklistId
+		return e.objectid == boardgameId && e.geeklistid == geeklistId 
 	});
 	var i;
 
 	if(l.length === 0){
-		i = new BoardgameStat(boardgameId, geeklistId, currentDate, postDate, editDate);
+		i = new BoardgameStat(boardgameId, geeklistId, currentDate, postDate, editDate, listtype);
 		boardgameStats.push(i);
 	}else{
 		i = l[0];
@@ -515,26 +517,19 @@ function getGeeklistStat(geeklistId, currentDate){
 }
 */
 
-function updateBoardgameStat(e, boardgameStats, rootGeeklistId, geeklistId){
+function updateBoardgameStat(e, boardgameStats, rootGeeklistId, geeklistId, rootListType){
 	var bgStat;
-	/*
-	var itemId = xmlObj.attr('id');
-	var bgId = xmlObj.attr('objectid');
-	var thumbs = parseInt(xmlObj.attr('thumbs'));
-	var postdate = Date.parse(xmlObj.attr('postdate'));
-	var editdate = Date.parse(xmlObj.attr('editdate'));
-	*/
-	
 	var itemId = e.id;
 	var bgId = e.objectid;
 	var thumbs = parseInt(e.thumbs);
 	var postdate = Date.parse(e.postdate);
 	var editdate = Date.parse(e.editdate);
-	
+	var wants = parseInt(e.wants);	
+
 	var bgStats = boardgameStats.filter((e) => (e.objectid == bgId && e.geeklistid == rootGeeklistId));
 
 	if(bgStats.length === 0){
-		bgStat = new BoardgameStat(bgId, rootGeeklistId, currentDate, postdate, editdate);
+		bgStat = new BoardgameStat(bgId, rootGeeklistId, currentDate, postdate, editdate, rootListType);
 		boardgameStats.push(bgStat);
 	}else{
 		bgStat = bgStats[0];
@@ -550,13 +545,11 @@ function updateBoardgameStat(e, boardgameStats, rootGeeklistId, geeklistId){
 		} 
 	}
 	
-	//TODO:
-	//var bgStat = getBoardgameStat(bgId, geeklistid, currentDate, postdate, editdate);
-		
 	//Here we tally all stats.
 	bgStat.cnt++;
 	bgStat.thumbs += thumbs;
 	bgStat.obs.push({'geeklist': geeklistId, 'id': itemId});
+	bgStat.wants += wants;
 }
 
 //XXX: Rewrite, should contain rootGeeklist, parentGeeklist, currentGeeklist, visitedGeeklists, boardgameStats, geeklistStats.
@@ -603,7 +596,7 @@ function getGeeklistData(listtype, geeklistid, subgeeklistid, visitedGeeklists, 
 			res.forEach(function(e){
 				if(e.objecttype === 'thing'){
 					if(e.subtype === 'boardgame'){
-						updateBoardgameStat(e, boardgameStats, geeklistid, subgeeklistid)
+						updateBoardgameStat(e, boardgameStats, geeklistid, subgeeklistid, listtype)
 						
 						geeklistStat.numBoardgames++;
 					}

@@ -57,7 +57,7 @@ function getGeeklist(listtype, geeklistId){
 								return JSON.parse(convPreview).map(
 									x => (
 										{
-											'id': 0, 
+											'id': x.itemid, 
 											'objecttype':x.objecttype, 
 											'subtype': 'boardgame', 
 											'objectid': parseInt(x.objectid), 
@@ -66,7 +66,8 @@ function getGeeklist(listtype, geeklistId){
 											'postdate': new Date(Date.parse(x.date_created)).toISOString(),
 											'editdate': new Date(Date.parse(x.date_updated)).toISOString(),
 											'thumbs': parseInt(x.reactions.thumbs),
-											'imageid': parseInt(x.geekitem.item.imageid)
+											'imageid': parseInt(x.geekitem.item.imageid),
+											'wants': parseInt(x.stats.interested || 0) + parseInt(x.stats.musthave || 0)
 										}
 									)
 								)
@@ -117,7 +118,9 @@ function getGeeklist(listtype, geeklistId){
 					}
 				)
 			})).then(function(res){
-				logger.info(res.geeklist.numitems + " items");
+				logger.debug(res.geeklist.numitems + " items");
+				res["wants"] = cnt;
+				
 				return res
 			});
 		}
@@ -153,14 +156,14 @@ function getGeeklist(listtype, geeklistId){
                         			let numItems = parseInt(res.geeklist.numitems);
 						
 						let numpages = (pagesize === 0 ? 1 : (parseInt(numItems / pagesize) + 1));
-						logger.info("Need to fetch " + numpages + " pages for " + geeklistId);
+						logger.debug("Need to fetch " + numpages + " pages for " + geeklistId);
 						items = items.concat(pageItems);
 						
 						if(numpages > 1 && numItems === totPageItems){
-							logger.info("Got all items in first query - pagesize ignored by server!");
+							logger.debug("Got all items in first query - pagesize ignored by server!");
 							numpages = 1;
 						}else{
-							logger.info("Got " + pageItems.length + " out of " + numItems + "on first fetch");
+							logger.debug("Got " + pageItems.length + " out of " + numItems + "on first fetch");
 						}
 						
 						let p = [];

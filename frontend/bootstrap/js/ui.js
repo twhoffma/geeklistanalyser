@@ -487,57 +487,20 @@ function init_ui(){
 				bg.geeklists = bg.geeklists.filter(x => x.objectid === parseInt(geeklistid));
 				bg.bgid = bg.objectid;
 				
+				let obsData  = bg.geeklists[0].latest.obs.map(x => "" + x.geeklist + ":" + x.id).join(",");
 				
-				bg.obsies = bg.geeklists[0].latest.obs.map(x => "" + x.geeklist + ":" + x.id).join(",");
+				switch(bg.geeklists[0].latest.listtype){
+					case "preview":
+						bg.probsies = obsData;
+						break;
+					case "tradelist":
+						bg.tobsies = obsData;
+						break;
+					default:
+						bg.obsies = obsData;
+				}
 					
 				var l = Handlebars.templates.bg(bg);
-				//console.log(l);
-				/*	
-				var n = r[i].name.filter(function(e){
-								return e.primary === "true";
-							}
-						)[0].name  || r[i].name[0].name;
-				
-				var geeklist = r[i].geeklists.filter(function(o){return o.objectid == geeklistid})[0];
-				var boardgamestat = geeklist.latest; 
-				
-				//For certain sort terms, print subheaders
-				if(sortby === "name" || sortby === "thumbs" || sortby === "yearpublished"){
-					if(sortby === "name"){
-						currentTerm = n.substring(0,1);
-					}else if(sortby === "thumbs"){
-						currentTerm = "&le; " + (100 * (Math.max(Math.ceil(boardgamestat.thumbs / 100, 0), 1)));
-					}else if(sortby === "yearpublished"){
-						currentTerm = r[i].yearpublished;
-					}
-				
-					if($('.subheader[data-subheader="' + currentTerm + '"]').length === 0){
-						list.append("<tr class=\"subheader\" data-subheader=\"" + currentTerm + "\"><td colspan=\"10\">" + currentTerm + "</td></tr>");
-					}
-				}
-				
-				prevSortTerm = currentTerm;
-				var obs = "";
-
-				if(boardgamestat.obs && boardgamestat.obs.length <= 10){
-					boardgamestat.obs.forEach(function(o, i){
-						obs += '<a href="https://www.boardgamegeek.com/geeklist/item/' + o.id + '" target="_blank" class="btn btn-default btn-xs btn-circle">' + (i+1) + '</a>';
-					});
-				}
-					
-				var l = "<tr class=\"gameline\"><td><a href=\"http://www.boardgamegeek.com/boardgame/" + r[i].objectid + "\" target=\"_blank\">" + n + "</a>" + obs + "</td>";
-				l += "<td class=\"hidden-xs\">" + r[i].yearpublished  + "</td>";
-				l += "<td class=\"hidden-xs\">" + r[i].minplayers  + "</td>";
-				l += "<td class=\"hidden-xs\">" + r[i].maxplayers  + "</td>";
-				l += "<td class=\"hidden-xs\">" + r[i].playingtime  + "</td>";
-				l += "<td class=\"hidden-xs\">" + r[i].minplaytime  + "</td>";
-				l += "<td class=\"hidden-xs\">" + r[i].maxplaytime  + "</td>";
-				l += "<td class=\"hidden-xs\">" + boardgamestat.thumbs  + "</td>";
-				l += "<td class=\"hidden-xs\">" + boardgamestat.cnt  + "</td>";
-				l += "<td class=\"hidden-s\">" + geeklist.crets  + "</td>";
-				
-				l += "</tr>";
-				*/
 					
 				list.append(l);
 			}
