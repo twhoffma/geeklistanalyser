@@ -3,7 +3,7 @@
 	"format":
 		{
 			"date": "YYYY-MM-DD",
-			"dateandtime": "YYYY-MM-DD[T]HH:mm:ss"
+			"dateandtime": "YYYY-MM-DD[T]HH:mm:ssZ"
 		},
 	"db":
 		{

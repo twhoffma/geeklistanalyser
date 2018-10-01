@@ -98,7 +98,7 @@ templates['bg'] = template({"1":function(container,depth0,helpers,partials,data,
     + alias4(alias5(((stack1 = ((stack1 = ((stack1 = (depth0 != null ? depth0.geeklists : depth0)) != null ? stack1["0"] : stack1)) != null ? stack1.latest : stack1)) != null ? stack1.cnt : stack1), depth0))
     + " </li>\r\n        <li><i class=\"fas fa-heart\"></i> \r\n"
     + ((stack1 = helpers["if"].call(alias1,((stack1 = ((stack1 = ((stack1 = (depth0 != null ? depth0.geeklists : depth0)) != null ? stack1["0"] : stack1)) != null ? stack1.latest : stack1)) != null ? stack1.wants : stack1),{"name":"if","hash":{},"fn":container.program(16, data, 0, blockParams, depths),"inverse":container.program(18, data, 0, blockParams, depths),"data":data})) != null ? stack1 : "")
-    + "        </li>\r\n      </ul>\r\n    </div>\r\n    <div class=\"block topmarg-10 details-bg\">\r\n"
+    + "        </li>\r\n      </ul>\r\n    </div>\r\n    <div class=\"block topmarg-10 details-bg attrs\">\r\n"
     + ((stack1 = container.invokePartial(partials.render_attr,depth0,{"name":"render_attr","hash":{"icon":"fas fa-wrench","attrnm":"boardgamemechanic","attrs":(depth0 != null ? depth0.boardgamemechanic : depth0)},"data":data,"indent":"      ","helpers":helpers,"partials":partials,"decorators":container.decorators})) != null ? stack1 : "")
     + ((stack1 = container.invokePartial(partials.render_attr,depth0,{"name":"render_attr","hash":{"icon":"fas fa-pen-fancy","attrnm":"boardgamedesigner","attrs":(depth0 != null ? depth0.boardgamedesigner : depth0)},"data":data,"indent":"      ","helpers":helpers,"partials":partials,"decorators":container.decorators})) != null ? stack1 : "")
     + ((stack1 = container.invokePartial(partials.render_attr,depth0,{"name":"render_attr","hash":{"icon":"fas fa-paint-brush","attrnm":"boardgameartist","attrs":(depth0 != null ? depth0.boardgameartist : depth0)},"data":data,"indent":"      ","helpers":helpers,"partials":partials,"decorators":container.decorators})) != null ? stack1 : "")
@@ -111,7 +111,7 @@ templates['bgobs'] = template({"1":function(container,depth0,helpers,partials,da
     var stack1;
 
   return "  	<li class=\"lists\">\r\n      <div class=\"tobsies\">\r\n      	<span><i class=\"fa fa-handshake-o\"></i></span>\r\n"
-    + ((stack1 = helpers.each.call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? depth0.tobies : depth0),{"name":"each","hash":{},"fn":container.program(2, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + ((stack1 = helpers.each.call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? depth0.tobsies : depth0),{"name":"each","hash":{},"fn":container.program(2, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
     + "      </div>\r\n  	</li>\r\n";
 },"2":function(container,depth0,helpers,partials,data) {
     var alias1=container.lambda, alias2=container.escapeExpression;

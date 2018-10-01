@@ -119,14 +119,19 @@ function getGeeklist(listtype, geeklistId){
 				)
 			})).then(function(res){
 				logger.debug(res.geeklist.numitems + " items");
-				res["wants"] = cnt;
-				
 				return res
 			});
 		}
 		
 		function getBGGItems(res){
-			let items = res.geeklist.item.map(x => x['$']);
+			var items = [];
+			
+			if(res.geeklist.item === undefined){
+				console.log(res);
+				logger.error("Undefined!");
+			}else{
+				let items = res.geeklist.item.map(x => x['$']);
+			}
 			
             		return items
 		}

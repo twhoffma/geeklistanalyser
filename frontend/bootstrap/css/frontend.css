@@ -33,3 +33,7 @@
 	from {transform: rotate(0deg);}
 	to {transform: rotate(360deg);}
 }
+
+#geeklistitems[data-glaze-collapsed="Y"] div.attrs {
+  display: none;
+}

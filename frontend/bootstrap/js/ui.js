@@ -46,10 +46,10 @@ function init_ui(){
 	      var o = "" + p.data("tobsies") || "";
 	      var tobsies = o.split(",").filter(x=>x!="").map(x => x.split(":")[1]);
 	      
+	      console.log(tobsies); 
 	      o = "" + p.data("obsies") || "";
 	      var obsies = o.split(",").filter(x=>x!="").map(x => x.split(":")[1]);
 	      
-	      console.log(obsies); 
 	      o = "" + p.data("probsies") || "";
 	      var probsies = o.split(",").filter(x=>x!="").map(x=>({"previewid": x.split(":")[0], "objectid": x.split(":")[1]}));
 	      
@@ -86,16 +86,22 @@ function init_ui(){
 		
 		if(bi.className == "fas fa-compress"){
 			bi.className = "fas fa-expand";
-		
+			
+			document.getElementById('geeklistitems').dataset.glazeCollapsed = "Y";
+			/*
 			$(".details-bg").each(function(i, e){
 				$(e).addClass("collapsedStatic");
 			});
+			*/
 		}else{
 			bi.className = "fas fa-compress";
 		
+			document.getElementById("geeklistitems").dataset.glazeCollapsed = "N";
+			/*
 			$(".details-bg").each(function(i, e){
 				$(e).removeClass("collapsedStatic");
 			});
+			*/
 		}
 		
 	});

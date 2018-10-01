@@ -287,15 +287,18 @@ function BoardgameStat(boardgameid, geeklistid, analysisdate, postdate, editdate
 	this.geeklistid = geeklistid;
 	this.listtype = listtype;
 	this.analysisDate = analysisdate;
-	this.crets = moment().format(c.format.dateandtime);
+	//this.crets = moment().format(c.format.dateandtime);
+	this.crets = moment().format();
 	this.cnt = 0;
 	this.thumbs = 0;
 	this.wants = 0;
 	this.type = "boardgamestat";
 	this.hist = {}; //Histogram based on position
 	this.obs = [];
-	this.postdate = moment(postdate).format(c.format.dateandtime);
-	this.editdate = moment(editdate).format(c.format.dateandtime);
+	this.postdate = moment(postdate).format();
+	//this.postdate = moment(postdate).format(c.format.dateandtime);
+	this.editdate = moment(editdate).format();
+	//this.editdate = moment(editdate).format(c.format.dateandtime);
 }
 
 function GeeklistStat(geeklistid, statDate){
@@ -524,7 +527,7 @@ function updateBoardgameStat(e, boardgameStats, rootGeeklistId, geeklistId, root
 	var thumbs = parseInt(e.thumbs);
 	var postdate = Date.parse(e.postdate);
 	var editdate = Date.parse(e.editdate);
-	var wants = parseInt(e.wants);	
+	var wants = parseInt(e.wants) || e.cnt;	
 
 	var bgStats = boardgameStats.filter((e) => (e.objectid == bgId && e.geeklistid == rootGeeklistId));
 

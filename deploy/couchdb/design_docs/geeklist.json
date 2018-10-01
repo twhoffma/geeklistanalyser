@@ -19,6 +19,12 @@
     },
     "geeklist_by_cnt": {
       "map": "function(doc) {\n  if(doc.geeklists.length > 0 && doc.type === 'boardgame'){\n\tfor(idx = 0; idx < doc.geeklists.length; idx++){\n      \t  emit([doc.geeklists[idx].objectid, parseInt(doc.geeklists[idx].latest.cnt)], null);\n\t}\n  }\n}"
+    },
+    "geeklist_by_wants": {
+      "map": "function(doc) {\n  if(doc.geeklists.length > 0 && doc.type === 'boardgame'){\n\tfor(idx = 0; idx < doc.geeklists.length; idx++){\n      \t  emit([doc.geeklists[idx].objectid, parseInt(doc.geeklists[idx].latest.wants || 0)], null);\n\t}\n  }\n}"
+    },
+    "geeklist_by_chgts": {
+      "map": "function(doc) {\n  if(doc.geeklists.length > 0 && doc.type === 'boardgame'){\n\tfor(idx = 0; idx < doc.geeklists.length; idx++){\n      \t  emit([doc.geeklists[idx].objectid, Date.parse(doc.geeklists[idx].latest.chgts)], null);\n\t}\n  }\n}"
     }
   }
 }
