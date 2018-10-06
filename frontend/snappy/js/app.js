@@ -10,7 +10,8 @@
 			ui = init_ui();
 			data = init_data();
 			sidenav_geeklists = init_sidebar_geeklists();
-	
+			hdr = init_header();
+				
 			ui.clearErrorMessage();
 							
 			data.getGeeklists().then(function(r){
@@ -70,8 +71,16 @@
 				ui.resetFilters();
 			});
 
-			$('#menuBtnLists').on('click', function(){
-				$('#sidenavGeeklists').toggle();
+			$('.listHeaderButton').on('click', function(e){
+				if(e.target.tagName.toUpperCase() === 'I'){
+					e = e.target.parentNode;
+				}
+				
+				if(e.target.dataset.glazeShow == "sidebar_list"){
+					$('#sidenavGeeklists').toggle();
+				}else if(e.target.dataset.glazeShow == "geeklist"){
+					$('#sidenavGeeklists').hide();
+				}
 			});
 			
 			function loadGeeklist(geeklistId, clearList, clearOptions, clearInfo){
@@ -80,11 +89,18 @@
 				}
 				
 				var p = new Promise(function(resolve, reject){
+					console.log("Start loading effect :)");
+					hdr.toggleLoadingEffect();
+					
 					if(clearInfo){
 						//Load geeklist info
 						console.log("get some data!");
 						data.getGeeklistDetails(geeklistId).then(function(r){
-							return ui.renderGeeklistDetails(r);
+							//return ui.renderGeeklistDetails(r);
+							let d = r[0];
+							d.stats = {};
+							hdr.setDetails(d);
+							console.log(d);
 						});
 						
 						//Load static geeklist filters
@@ -132,6 +148,8 @@
 					data.getGeeklist(selectedGeeklist, numLoaded, filter, sorting).then(function(r){
 						ui.renderGeeklist(r, '', selectedGeeklist, clearList);
 						
+						console.log("Stop loading effect :)");	
+						hdr.toggleLoadingEffect();
 						if(r.length < 100){
 							ui.setLoadButtonState("finished");
 						}else{

@@ -10,6 +10,8 @@
 @media only screen and (min-width : 768px) {
   .bg {
     width: 90%;
+    margin-left: auto;
+    margin-right: auto;
   }
 }
 
@@ -41,10 +43,14 @@ i.fa {
   font-size: smaller;
 }
 
-.tp {
+.smallbox {
   margin-left: 0.1em;
   font-size: smaller;
   padding: 0.1em; 
+  /*color: #fff;*/
+}
+
+.tp {
   color: #fff;
 }
 

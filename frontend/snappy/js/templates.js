@@ -48,33 +48,33 @@ templates['bg'] = template({"1":function(container,depth0,helpers,partials,data,
 },"6":function(container,depth0,helpers,partials,data) {
     var stack1;
 
-  return "      	<span class=\"tp tpBoardgame\"><a href=\"https://glaze.hoffy.no?id="
+  return "      	<span class=\"smallbox tp tpBoardgame\"><a href=\"https://glaze.hoffy.no?id="
     + container.escapeExpression(container.lambda(((stack1 = ((stack1 = (depth0 != null ? depth0.geeklists : depth0)) != null ? stack1["0"] : stack1)) != null ? stack1.objectid : stack1), depth0))
     + "&releasetype=boardgame\" target=\"blank_\">Boardgame</a></span>\r\n";
 },"8":function(container,depth0,helpers,partials,data) {
     var stack1;
 
-  return "      	<span class=\"tp tpExpansion\"><a href=\"https://glaze.hoffy.no?id="
+  return "      	<span class=\"smallbox tp tpExpansion\"><a href=\"https://glaze.hoffy.no?id="
     + container.escapeExpression(container.lambda(((stack1 = ((stack1 = (depth0 != null ? depth0.geeklists : depth0)) != null ? stack1["0"] : stack1)) != null ? stack1.objectid : stack1), depth0))
     + "&releasetype=expansion\" target=\"blank_\">Expansion</a></span>\r\n";
 },"10":function(container,depth0,helpers,partials,data) {
     var stack1;
 
-  return "      	<span class=\"tp tpCollection\"><a href=\"https://glaze.hoffy.no?id="
+  return "      	<span class=\"smallbox tp tpCollection\"><a href=\"https://glaze.hoffy.no?id="
     + container.escapeExpression(container.lambda(((stack1 = ((stack1 = (depth0 != null ? depth0.geeklists : depth0)) != null ? stack1["0"] : stack1)) != null ? stack1.objectid : stack1), depth0))
     + "&releasetype=collection\" target=\"blank_\">Collection</a></span>\r\n";
 },"12":function(container,depth0,helpers,partials,data) {
     var stack1;
 
-  return "      	<span class=\"tp tpReimplementation\"><a href=\"https://glaze.hoffy.no?id="
+  return "      	<span class=\"smallbox tp tpReimplementation\"><a href=\"https://glaze.hoffy.no?id="
     + container.escapeExpression(container.lambda(((stack1 = ((stack1 = (depth0 != null ? depth0.geeklists : depth0)) != null ? stack1["0"] : stack1)) != null ? stack1.objectid : stack1), depth0))
-    + "&releasetype=reimplementation\" target=\"blank_\">Reimpl.</span>\r\n";
+    + "&releasetype=reimplementation\" target=\"blank_\">Reimpl.</a></span>\r\n";
 },"14":function(container,depth0,helpers,partials,data) {
     var stack1;
 
-  return "      	<span class=\"tp tpIntegrates\"><a href=\"https://glaze.hoffy.no?id="
+  return "      	<span class=\"smallbox tp tpIntegrates\"><a href=\"https://glaze.hoffy.no?id="
     + container.escapeExpression(container.lambda(((stack1 = ((stack1 = (depth0 != null ? depth0.geeklists : depth0)) != null ? stack1["0"] : stack1)) != null ? stack1.objectid : stack1), depth0))
-    + "&releasetype=integration\" target=\"blank_\">Integrates</span>\r\n";
+    + "&releasetype=integration\" target=\"blank_\">Integrates</a></span>\r\n";
 },"16":function(container,depth0,helpers,partials,data) {
     var stack1;
 
@@ -136,7 +136,7 @@ templates['bgobs'] = template({"1":function(container,depth0,helpers,partials,da
 },"2":function(container,depth0,helpers,partials,data) {
     var alias1=container.lambda, alias2=container.escapeExpression;
 
-  return "        	<span class=\"tp obs\"><a href=\"https://www.boardgamegeek.com/geeklist/item/"
+  return "        	<span class=\"smallbox obs\"><a href=\"https://www.boardgamegeek.com/geeklist/item/"
     + alias2(alias1(depth0, depth0))
     + "\" target=\"_blank\">"
     + alias2(alias1(depth0, depth0))
@@ -156,7 +156,7 @@ templates['bgobs'] = template({"1":function(container,depth0,helpers,partials,da
 },"7":function(container,depth0,helpers,partials,data) {
     var helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression;
 
-  return "        	<span class=\"tp obs\"><a href=\"https://www.boardgamegeek.com/geekpreview/"
+  return "        	<span class=\"smallbox obs\"><a href=\"https://www.boardgamegeek.com/geekpreview/"
     + alias4(((helper = (helper = helpers.previewid || (depth0 != null ? depth0.previewid : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"previewid","hash":{},"data":data}) : helper)))
     + "/item/"
     + alias4(((helper = (helper = helpers.objectid || (depth0 != null ? depth0.objectid : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"objectid","hash":{},"data":data}) : helper)))

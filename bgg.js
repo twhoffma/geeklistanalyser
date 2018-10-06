@@ -130,7 +130,7 @@ function getGeeklist(listtype, geeklistId){
 				console.log(res);
 				logger.error("Undefined!");
 			}else{
-				let items = res.geeklist.item.map(x => x['$']);
+				items = res.geeklist.item.map(x => x['$']);
 			}
 			
             		return items

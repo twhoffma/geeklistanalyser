@@ -46,7 +46,7 @@ function init_ui(){
 	      var o = "" + p.data("tobsies") || "";
 	      var tobsies = o.split(",").filter(x=>x!="").map(x => x.split(":")[1]);
 	      
-	      console.log(tobsies); 
+	      //console.log(tobsies); 
 	      o = "" + p.data("obsies") || "";
 	      var obsies = o.split(",").filter(x=>x!="").map(x => x.split(":")[1]);
 	      
@@ -71,7 +71,7 @@ function init_ui(){
 		  			);
 					}
 	    	}else{
-					console.log("No obs!");	
+					//console.log("No obs!");	
 	    	}
 			}
 
@@ -301,7 +301,7 @@ function init_ui(){
 							
 							var rng = {};
 							var key = '';
-							console.log(v);
+							//console.log(v);
 							rng['min'] = Math.min.apply(null, v);
 							rng['max'] = Math.max.apply(null, v);
 							
@@ -476,7 +476,7 @@ function init_ui(){
 			for(i = 0; i < r.length; i++){
 				var bg = r[i];
 				
-				console.log(bg);	
+				//console.log(bg);	
 				bg.geeklists = bg.geeklists.filter(x => x.objectid === parseInt(geeklistid));
 				bg.bgid = bg.objectid;
 				
