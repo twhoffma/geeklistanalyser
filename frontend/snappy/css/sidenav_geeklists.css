@@ -7,18 +7,22 @@
 .sidebar{
   background-color: white;
   border: 1px solid #9f9f9f;
-  max-width: 80%;
-  min-width: 60%;
-  position: absolute;
+  margin-bottom: 1em;
+}
+
+#sidenavGeeklists {
+  position: fixed;
   top:0.5em;
   left: 0.5em;
-  margin-bottom: 1em;
   z-index: 300;
+  height: 90vh;
+  max-width: 80%;
+  min-width: 60%;
 }
 
 #sidenavLists {
-  overflow-y: scroll;
-  overflow-x: clip;
+  overflow-y: auto;
+  height: 75vh;
 }
 
 .sideNavBtn {

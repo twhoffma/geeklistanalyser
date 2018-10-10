@@ -9,16 +9,19 @@
   border: 1px solid #9f9f9f;
   max-width: 95%;
   min-width: 60%;
-  position: absolute;
-  top:10px;
-  left: 10px;
+  max-height: 80%;
   margin-bottom: 1em;
+}
+
+#sidenavGeeklists {
+  position: fixed;
+  top: 10px;
+  left: 10px;
   z-index: 300;
 }
 
 #sidenavLists {
-  overflow-y: scroll;
-  overflow-x: clip;
+  overflow-y: auto;
 }
 
 .sideNavBtn {

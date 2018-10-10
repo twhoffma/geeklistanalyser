@@ -199,3 +199,9 @@ ul {
 .collapsedStatic {
   display: none;
 }
+
+ul.geeklist {
+  padding: 0px;
+  margin-left: auto;
+  margin-right: auto;
+}

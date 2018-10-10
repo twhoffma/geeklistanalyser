@@ -119,13 +119,13 @@
   opacity: 0.5;
 }
 
-.left {
+#glaze-hdr .left {
   position: fixed;
   top: 50%;
   left: 0px;
 }
 
-.right {
+#glase-hdr .right {
   position: fixed;
   top: 50%;
   right: 0px;
