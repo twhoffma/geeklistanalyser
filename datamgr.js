@@ -3,6 +3,7 @@ var srch = require('./srch-elastic.js');
 var bgg = require('./bgg.js');
 var winston = require('winston');
 var q = require('q');
+var moment = require('moment');
 
 function finalizeDb(){
 	return db.finalizeDb
@@ -125,7 +126,7 @@ function getGeeklist(geeklistId, skip, num, sortby, asc){
 function deleteBoardgameStats(geeklistId, analysisDate){
 	var url = db.getViewURL('boardgamestats', 'boardgamestats')+'?startkey=[{id}, \"{date}\"]&endkey=[{id}, \"{date}\", {}]&include_docs=true';
 	url = url.replace(/\{id\}/g, geeklistId);
-	url = url.replace(/\{date\}/g, analysisDate);
+	url = url.replace(/\{date\}/g, moment(analysisDate).unix());
 	
 	return db.deleteDocs(url)
 }
@@ -155,7 +156,7 @@ function updateBoardgameStats(boardgameStats){
 function deleteGeeklistStats(geeklistId, analysisDate){
 	var url = db.getViewURL('geekliststats', 'geekliststats')+'?key=[{id}, \"{date}\"]&include_docs=true';
 	url = url.replace(/\{id\}/g, geeklistId);
-	url = url.replace(/\{date\}/g, analysisDate);
+	url = url.replace(/\{date\}/g, moment(analysisDate).unix());
 	
 	return db.deleteDocs(url)
 }
@@ -172,7 +173,8 @@ function saveGeeklistStats(geeklistStats){
 function deleteFilterRanges(geeklistId, analysisDate){
 	var url = db.getViewURL('geeklistfilters', 'geeklistfilters')+'?key=[{id}, {date}]&include_docs=true';
 	url = url.replace(/\{id\}/g, geeklistId);
-	url = url.replace(/\{date\}/g, Date.parse(analysisDate));
+	//url = url.replace(/\{date\}/g, Date.parse(analysisDate));
+	url = url.replace(/\{date\}/g, moment(analysisDate).unix());
 	
 	return db.deleteDocs(url)
 }
@@ -242,33 +244,38 @@ function getGeeklistFiltersLive(geeklistid){
 	);
 }
 
-function getBoardgameData(boardgameIds){
+function getBoardgameData(boardgameIds, priority="db"){
 	var boardgames = [];
 	var p = [];
 	var bggList = [];
 	var pBGG = [];	
 	
 	//console.log(boardgameIds);
-	 
-	boardgameIds.forEach(function(boardgameId){	
-		p.push(getBoardgame(boardgameId).then(
-			function(bg){
-				/*
-				TODO:
-				if(!bg.isComplete()){
-					bggList.push(bg.objectid);
+	
+	if(priority === "db"){
+		boardgameIds.forEach(function(boardgameId){	
+			p.push(getBoardgame(boardgameId).then(
+				function(bg){
+					/*
+					TODO:
+					if(!bg.isComplete()){
+						bggList.push(bg.objectid);
+					}
+					*/
+					
+					boardgames.push(bg);
+					return true
+				},
+				function(bgId){
+					bggList.push(bgId);
+					return false
 				}
-				*/
-				
-				boardgames.push(bg);
-				return true
-			},
-			function(bgId){
-				bggList.push(bgId);
-				return false
-			}
-		));
-	});
+			));
+		});
+	}else{
+		bggList = boardgameIds;
+		p.push(Promise.resolve());
+	}
 	
 	return q.allSettled(p).then(
 		function(){

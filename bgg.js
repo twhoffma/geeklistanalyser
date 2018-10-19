@@ -2,6 +2,7 @@ cheerio = require('cheerio');
 qrequest = require('./qrequest.js');
 q = require('q');
 parseString = require('xml2js').parseString;
+moment = require('moment');
 
 var c = JSON.parse(fs.readFileSync('localconfig.json', 'utf8'));
 
@@ -42,14 +43,11 @@ function Boardgame(boardgameId){
 function getGeeklist(listtype, geeklistId){
 	//Look up a geeklist - use queueing
 	if(listtype === "preview"){
-		console.log("requesting a preview");
 		return qrequest.qrequest("GET", `https://api.geekdo.com/api/geekpreviews?nosession=1&previewid=${geeklistId}`, null, null, true, 0, true).then(
 			function(results){
 				let r = JSON.parse(results);
 				let p = [];
 				
-				//console.log(`Wow! ${r.config.numpages} pages!`);
-
 				for(let i = 1; i <=r.config.numpages; i++){
 					p.push(
 						qrequest.qrequest("GET", `https://api.geekdo.com/api/geekpreviewitems?nosession=1&pageid=${i}&previewid=${geeklistId}`, null, null, true, 0, true).then(
@@ -63,8 +61,10 @@ function getGeeklist(listtype, geeklistId){
 											'objectid': parseInt(x.objectid), 
 											'objectname':x.geekitem.item.primaryname.name, 
 											'username':'',
-											'postdate': new Date(Date.parse(x.date_created)).toISOString(),
-											'editdate': new Date(Date.parse(x.date_updated)).toISOString(),
+											//'postdate': new Date(Date.parse(x.date_created)).toISOString(),
+											//'editdate': new Date(Date.parse(x.date_updated)).toISOString(),
+											'postdate': moment(x.date_created).toDate().toISOString(),
+											'editdate': moment(x.date_updated).toDate().toISOString(),
 											'thumbs': parseInt(x.reactions.thumbs),
 											'imageid': parseInt(x.geekitem.item.imageid),
 											'wants': parseInt(x.stats.interested || 0) + parseInt(x.stats.musthave || 0)
@@ -101,7 +101,8 @@ function getGeeklist(listtype, geeklistId){
         		if(['objectid','thumbs','id','imageid'].includes(name)){
                 		return parseInt(value)
         		}else if(['postdate','editdate'].includes(name)){
-                		return new Date(Date.parse(value)).toISOString()
+                		//return new Date(Date.parse(value)).toISOString()
+                		return new Date(moment(value).toDate()).toISOString()
         		}else{
                 		return value
         		}
@@ -126,9 +127,9 @@ function getGeeklist(listtype, geeklistId){
 		function getBGGItems(res){
 			var items = [];
 			
-			if(res.geeklist.item === undefined){
-				console.log(res);
-				logger.error("Undefined!");
+			if(parseInt(res.geeklist.numitems) === 0){
+				//console.log(res);
+				logger.error("List " + res.geeklist['$'].id + " is empty!");
 			}else{
 				items = res.geeklist.item.map(x => x['$']);
 			}
@@ -158,7 +159,7 @@ function getGeeklist(listtype, geeklistId){
 						//Filter out geeklists and boardgames	
 						//pageItems = pageItems.filter(x => ((x.objecttype === 'thing' && x.subtype === 'boardgame') || x.objecttype === 'geeklist'));
 						pageItems = filterBgGl(pageItems);
-                        			let numItems = parseInt(res.geeklist.numitems);
+            let numItems = parseInt(res.geeklist.numitems);
 						
 						let numpages = (pagesize === 0 ? 1 : (parseInt(numItems / pagesize) + 1));
 						logger.debug("Need to fetch " + numpages + " pages for " + geeklistId);
@@ -172,16 +173,16 @@ function getGeeklist(listtype, geeklistId){
 						}
 						
 						let p = [];
-                        			//Start on page two, since we've already fetched the first one..
+            //Start on page two, since we've already fetched the first one..
 						for(let i = 2; i <= numpages; i++){
-			                           	logger.info(`Queued page request #${i}`);
-                        				let url = geeklistURL + geeklistId + `&comments=0&page=${i}&pagesize=${pagesize}`;
+							logger.info(`Queued page request #${i}`);
+              let url = geeklistURL + geeklistId + `&comments=0&page=${i}&pagesize=${pagesize}`;
 
 							p.push(
-                                				qrequest.qrequest("GET", url, null, null, true, 0, true).then(
-				                                    r => parseBGGXML(r).then(rr => filterBgGl(getBGGItems(rr)))
-                                				)
-                            				);
+             		qrequest.qrequest("GET", url, null, null, true, 0, true).then(
+				        	r => parseBGGXML(r).then(rr => filterBgGl(getBGGItems(rr)))
+                )
+              );
 						}
 					    
 			                        if(p.length > 0){	

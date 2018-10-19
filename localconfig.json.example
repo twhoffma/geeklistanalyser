@@ -28,5 +28,9 @@
 	"bgg": 
 		{
 			"xmlapi_geeklist_pagesize": 0
+		},	
+	"rss":
+		{
+			"output_folder": ""
 		}	
 }

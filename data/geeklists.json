@@ -606,7 +606,7 @@
     "name": "XMLAPI Test 2",
     "group": "Test",
     "year": 2015,
-    "update": false,
+    "update": true,
     "objectid": 191095,
     "visible": true,
     "fromDate": "2016-12-31",
@@ -793,7 +793,7 @@
     "name": "Origins 2018 Preview",
     "group": "Origins",
     "year": 2018,
-    "update": true,
+    "update": false,
     "objectid": 11,
     "visible": true,
     "fromDate": "2018-09-01",
@@ -807,7 +807,7 @@
     "name": "GenCon 2018 Preview",
     "group": "GenCon",
     "year": 2018,
-    "update": true,
+    "update": false,
     "objectid": 7,
     "visible": true,
     "fromDate": "2018-09-01",
@@ -827,7 +827,8 @@
     "fromDate": "2018-09-01",
     "toDate": "2018-09-30",
     "excluded": [],
-    "tradeLists": []
+    "tradeLists": [],
+    "rss": true
   },
   {
     "_id": "245130",
@@ -835,7 +836,7 @@
     "name": "Spiel 2018 Math Trade",
     "group": "Math Trade",
     "year": 2018,
-    "update": true,
+    "update": false,
     "objectid": 245130,
     "visible": true,
     "fromDate": "2018-09-01",
@@ -855,7 +856,8 @@
     "fromDate": "2018-09-01",
     "toDate": "2018-09-30",
     "excluded": [241844,245130,243137,244674,237009,244050,242462,241168,245673,240568,240569,240570,242445,241012,243213,244744],
-    "tradeLists": []
+    "tradeLists": [],
+    "rss": true
   },
   {
     "_id": "243137",

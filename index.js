@@ -113,17 +113,56 @@ function updateStatic(geeklists){
 	
 	new Promise(function(resolve, reject){
 		if(!args['lists']){
-			resolve(datamgr.getBoardgames());
+			resolve(datamgr.getBoardgames().map(b=>b.doc));
 		}else{
-			resolve(datamgr.getGeeklist(args['lists'], 0, 10000));
+			resolve(datamgr.getGeeklist(args['lists'], 0, 10000).then(x=>x.map(y=>y.doc)));
 		}
 	}).then(
-		function(boardgames){
-			var ids = boardgames.map(r => r.doc.objectid);
+		function(dbBoardgames){
+			//var ids = dbBoardgames.map(r => r.doc.objectid);
+			var ids = dbBoardgames.map(r => r.objectid);
 			logger.info("Found " + ids.length + " boardgames to update.");
-			logger.error("Feature not implemented!");
 			//1. Forcefully tell datamgr to load boardgame data from BGG
+			return datamgr.getBoardgameData(ids, "bgg").then(
+				function(bggBoardgames){
+					logger.info("Got " + bggBoardgames.length + " games from BGG");
+					
+					var bgStats = dbBoardgames.map(b=>b.geeklists).map(gl=>gl.latest);
+					//console.log(bgStats[0]);
+					var updBoardgames = [];
+					
+					bggBoardgames.forEach(function(newBg){
+						let oldBg = dbBoardgames.filter(x=>parseInt(x.objectid) === parseInt(newBg.objectid))[0];
+						newBg["_id"] = oldBg._id;
+						newBg["_rev"] = oldBg._rev;
+						newBg.geeklists = oldBg.geeklists;
+						
+						updBoardgames.push(newBg);
+					});
+					
+					/*	
+					console.log("---- DB bg: ----\n\n");
+					console.log(dbBoardgames[0]);
+					console.log("---- BGG bg: ----\n");
+					console.log(updBoardgames.filter(x=>parseInt(x.objectid) === parseInt(dbBoardgames[0].objectid))[0]);
+					*/
+					
+					logger.info("Saving all updated boardgames to DB.");
+				
+					return datamgr.saveBoardgames(updBoardgames).then(
+						function(){
+							return true
+						}
+					).fail(
+						function(e){
+							console.log(e)
+						}
+					)
+				}
+			)
+
 			//2. Merge boardgame most recent from 
+			//return loadBoardgames(boardgameIdList).then(boardgames=>addBoardgameStats(boardgames, bgStats))	
 		}
 	).catch(
 		function(err){
@@ -181,7 +220,8 @@ function syncLists(loadedGeeklists){
 				[]
 			);
 			
-			return loadBoardgames(boardgameIdList, bgStats)	
+			logger.info(bgStats[0]);	
+			return loadBoardgames(boardgameIdList).then(boardgames=>addBoardgameStats(boardgames, bgStats))	
 		}
 	).then(
 		function(boardgames){
@@ -217,9 +257,105 @@ function syncLists(loadedGeeklists){
 		}
 	).then(
 		function(boardgames){
+			let rssLists = geeklists.filter(x=>(x.rss || false));
+			
+			var xmlEscape = (nm => nm.replace(/&/g, '&amp;').replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace(/\"/g, '&quot;').replace(/\'/g, '&apos;'));
+			
+			logger.info("Generating rss for " + rssLists.length + " lists");
+			moment.locale("en");
+			rssLists.forEach(function(r){
+				var l = boardgames.filter(x=>x.geeklists.filter(y=>y.objectid === r.objectid).length > 0);
+				
+				var sortFn = {
+					'crets': function(a,b){
+						let aCrets = a.geeklists.filter(x=>x.objectid === r.objectid)[0].latest.postdate;
+						let aDate = moment(aCrets).toDate();
+						let bCrets = b.geeklists.filter(x=>x.objectid === r.objectid)[0].latest.postdate;
+						let bDate = moment(bCrets).toDate();
+						
+						return -1 * (aDate < bDate ? -1 : 1)
+					},
+					'thumbs': function(a,b){
+						let aThumbs = parseInt(a.geeklists.filter(x=>x.objectid === r.objectid)[0].latest.thumbs || 0);
+						let bThumbs = parseInt(b.geeklists.filter(x=>x.objectid === r.objectid)[0].latest.thumbs || 0);
+						
+						return -1 * (aThumbs < bThumbs ? -1 : 1)
+					},
+					'cnt': function(a,b){
+						let aDate = parseInt(a.geeklists.filter(x=>x.objectid === r.objectid)[0].latest.cnt || 0);
+						let bDate = parseInt(b.geeklists.filter(x=>x.objectid === r.objectid)[0].latest.cnt || 0);
+						
+						return -1 * (aDate < bDate ? -1 : 1)
+					},
+					'wants': function(a,b){
+						let aDate = parseInt(a.geeklists.filter(x=>x.objectid === r.objectid)[0].latest.wants || 0);
+						let bDate = parseInt(b.geeklists.filter(x=>x.objectid === r.objectid)[0].latest.wants || 0);
+						
+						return -1 * (aDate < bDate ? -1 : 1)
+					}
+				};
+				
+				//['crets', 'cnt', 'wants', 'thumbs'].forEach(function(s){
+				['crets'].forEach(function(s){
+					logger.info("Writing to: " + c.rss.output_folder + r.objectid + "-" + s + ".rss");	
+					var f = fs.createWriteStream(c.rss.output_folder + r.objectid + "-" + s + ".rss");	
+					logger.debug("Num games for RSS:" + l.length);
+				
+					f.write('<?xml version="1.0" encoding="UTF-8" ?>\n');
+					f.write('<rss version="2.0">\n');
+					f.write('<channel>\n');
+					f.write('<title>' + r.name + ' - ' + s + '</title>\n');
+					f.write('<link>https://glaze.hoffy.no?id=' + r.objectid + '</link>\n');
+					f.write('<description>Latest geeklist analytics</description>\n');
+				
+					l.sort(sortFn[s]);
+						
+					l.forEach(function(b){
+						let nm = b.name.filter(x=>(x.primary || false))[0].name;
+						//nm = nm.replace(/&/g, '&amp;').replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace(/\"/g, '&quot;').replace(/\'/g, '&apos;');
+						nm = xmlEscape(nm);
+						
+						let latest = b.geeklists.filter(x=>x.objectid === r.objectid)[0].latest;
+						f.write('<item>\n');
+						f.write('<title>' + nm + '</title>\n');	
+
+						let desc = '<ul>';
+						desc += '<li>count: ' + latest.cnt + '</li>';
+						desc += '<li>' + 'thumbs: ' + latest.thumbs + '</li>';
+						desc += '<li>' + 'wants: ' + (latest.wants || 0)+'</li>';
+						desc += '</ul>';
+						f.write('<description><![CDATA[' + desc + ']]></description>\n');
+						
+						let pubDate = moment(latest.postdate).format('ddd, DD MMM YYYY hh:mm:ss ZZ');
+						f.write('<pubDate>' + pubDate + '</pubDate>\n');	
+						f.write('<link>' + 'https://www.boardgamegeek.com/boardgame/' + b.objectid + '</link>\n');
+						f.write('<guid isPermaLink="false">' + r.objectid + ":" + b.objectid + '</guid>\n');
+
+						//Iterate over mechanics/designer/category TBA... as <category>
+						b.boardgamemechanic.forEach(function(x){
+							f.write('<category>' + 'Mechanic/' + xmlEscape(x.name) + '</category>\n');	
+						});
+						
+						b.boardgamedesigner.forEach(function(x){
+							f.write('<category>' + 'Designer/' + xmlEscape(x.name) + '</category>\n');	
+						});
+							
+						f.write('</item>\n');
+					});
+					
+					f.write('</channel>\n');
+					f.write('</rss>');
+					f.end();
+				});
+			});
+
+			return boardgames
+		}
+	).then(
+		function(boardgames){
 			logger.info("Updating search engine");
 			
-			return datamgr.updateSearch(boardgames).catch(
+			return datamgr.updateSearch(boardgames).then(b=>b).catch(
 				function(err){
 					logger.error("Failed in saving db/search engine step.");
 					logger.error(err);
@@ -328,29 +464,8 @@ function loadBoardgames(boardgameIdList, bgStats){
 		function(boardgames){
 			//Populate the latest geeklist stat for each boardgame
 		
-			logger.info("Adding most recent stats to boardgame data");
-			
-			return addBoardgameStats(boardgames, bgStats)
-
-			/*
-			boardgames.forEach(function(boardgame){
-				bgStats.filter(function(e){return e.objectid === boardgame.objectid}).forEach(function(bgStat){
-					
-					var geeklist = boardgame.geeklists.filter(function(e){return e.objectid === bgStat.geeklistid});
-						
-					if(geeklist.length === 0){
-						geeklist = {'objectid': bgStat.geeklistid, 'crets': moment(bgStat.postdate).format(c.format.dateandtime), 'latest': bgStat};
-						//geeklist = new Geeklist(bgStat.geeklistid, moment(bgStat.postdate).format(c.format.dateandtime), bgStat);
-						boardgame['geeklists'].push(geeklist);
-					}else{
-						//There is only one latest per geeklist per boardgame
-						geeklist[0].latest = bgStat;
-					}
-				});
-			});
-
-			return boardgames
-			*/
+			return boardgames	
+			//return addBoardgameStats(boardgames, bgStats)
 		},
 		function(err){
 			logger.error("Couldn't find boardgame in db or bgg..");
@@ -370,6 +485,7 @@ function loadBoardgames(boardgameIdList, bgStats){
 
 //There will be a warning if a boardgame does not have any corresponding stats
 function addBoardgameStats(boardgames, boardgamesStats){
+	logger.info("Adding most recent stats to boardgame data");
 	return q.Promise(function(resolve, reject){
 		console.log("Appending stats to " + boardgames.length + " boardgames");
 		boardgames.forEach(function(boardgame){
@@ -389,9 +505,9 @@ function addBoardgameStats(boardgames, boardgamesStats){
 						
 					if(geeklist.length === 0){
 						geeklist = {
-										'objectid': s.geeklistid, 
-										'crets': moment(s.postdate).format(c.format.dateandtime), 
-										'latest': s
+							'objectid': s.geeklistid, 
+							'crets': moment(s.postdate).format(c.format.dateandtime), 
+							'latest': s
 						};
 						
 						boardgame['geeklists'].push(geeklist);
@@ -489,12 +605,14 @@ function getBoardgameStat(geeklistId, boardgameId, currentDate, postDate, editDa
 		i = l[0];
 		
 		//The first post defines creation time.
-		if(Date.parse(i.postdate) > postDate){
+		//if(Date.parse(i.postdate) > postDate){
+		if(moment(i.postdate).toDate() > postDate){
 			i.postdate = moment(postDate).format(c.format.dateandtime);
 		}
 		
 		//The latest editdate is the one that is used.
-		if(Date.parse(i.editdate) < editDate){
+		//if(Date.parse(i.editdate) < editDate){
+		if(moment(i.editdate).toDate() < editDate){
 			i.editdate = moment(editDate).format(c.format.dateandtime);
 		} 
 	}
@@ -525,8 +643,10 @@ function updateBoardgameStat(e, boardgameStats, rootGeeklistId, geeklistId, root
 	var itemId = e.id;
 	var bgId = e.objectid;
 	var thumbs = parseInt(e.thumbs);
-	var postdate = Date.parse(e.postdate);
-	var editdate = Date.parse(e.editdate);
+	//var postdate = Date.parse(e.postdate);
+	var postdate = moment(e.postdate).toDate();
+	//var editdate = Date.parse(e.editdate);
+	var editdate = moment(e.editdate).toDate();
 	var wants = parseInt(e.wants) || e.cnt;	
 
 	var bgStats = boardgameStats.filter((e) => (e.objectid == bgId && e.geeklistid == rootGeeklistId));
@@ -538,12 +658,14 @@ function updateBoardgameStat(e, boardgameStats, rootGeeklistId, geeklistId, root
 		bgStat = bgStats[0];
 		
 		//The first post defines creation time.
-		if(Date.parse(bgStat.postdate) > postdate){
+		//if(Date.parse(bgStat.postdate) > postdate){
+		if(moment(bgStat.postdate).toDate() > postdate){
 			bgStat.postdate = moment(postdate).format(c.format.dateandtime);
 		}
 		
 		//The latest editdate is the one that is used.
-		if(Date.parse(bgStat.editdate) < editdate){
+		//if(Date.parse(bgStat.editdate) < editdate){
+		if(moment(bgStat.editdate).toDate() < editdate){
 			bgStat.editdate = moment(editdate).format(c.format.dateandtime);
 		} 
 	}
