@@ -119,14 +119,24 @@ function getGeeklist(listtype, geeklistId){
 					}
 				)
 			})).then(function(res){
+				if(res.error){
+					//logger.error(res.error['$'].message);
+					return q.reject(res.error['$'].message);
+				}
+					
 				logger.debug(res.geeklist.numitems + " items");
-				return res
+				return q(res);
 			});
 		}
 		
 		function getBGGItems(res){
 			var items = [];
 			
+			if(res.geeklist === undefined){
+				logger.error("res.geeklist undefined 2!");
+				console.log(res);
+			}
+				
 			if(parseInt(res.geeklist.numitems) === 0){
 				//console.log(res);
 				logger.error("List " + res.geeklist['$'].id + " is empty!");
@@ -173,16 +183,16 @@ function getGeeklist(listtype, geeklistId){
 						}
 						
 						let p = [];
-            //Start on page two, since we've already fetched the first one..
+			            		//Start on page two, since we've already fetched the first one..
 						for(let i = 2; i <= numpages; i++){
 							logger.info(`Queued page request #${i}`);
-              let url = geeklistURL + geeklistId + `&comments=0&page=${i}&pagesize=${pagesize}`;
+              						let url = geeklistURL + geeklistId + `&comments=0&page=${i}&pagesize=${pagesize}`;
 
 							p.push(
-             		qrequest.qrequest("GET", url, null, null, true, 0, true).then(
-				        	r => parseBGGXML(r).then(rr => filterBgGl(getBGGItems(rr)))
-                )
-              );
+					             		qrequest.qrequest("GET", url, null, null, true, 0, true).then(
+				        				r => parseBGGXML(r).then(rr => filterBgGl(getBGGItems(rr)))
+                						)
+              						);
 						}
 					    
 			                        if(p.length > 0){	
@@ -206,7 +216,9 @@ function getGeeklist(listtype, geeklistId){
 			                            	return items
                         			}   
 					}
-				)
+				).catch(function(e){
+					return q.reject("Geeklistid=" + geeklistId + ": " + e)
+				})
 			}
 		);
 	}

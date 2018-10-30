@@ -123,6 +123,7 @@ app.use(uri + '/data/getGeeklist', function(req, res, next){
 	}
 	
 	if(p.geeklistId != undefined){
+		var pagenum = p.page || 1;
 		var skip = p.skip || 0;
 		var limit = c.middleware.limit;
 		
@@ -134,7 +135,8 @@ app.use(uri + '/data/getGeeklist', function(req, res, next){
 		
 		logger.info("Sort options:" + sortby + " " + (sortby_asc ? "ASC" : "DESC"));
 		console.log(filterJSON);
-			
+		
+		
 		if(filterJSON != ''){
 			logger.info("Fetch method: Search engine");
 			
@@ -166,8 +168,7 @@ app.use(uri + '/data/getGeeklist', function(req, res, next){
 		}else{
 			console.log('Fetch method: Database');
 			
-			//db.getGeeklist(p.geeklistId, skip, limit, sortby, sortby_asc).then(
-			datamgr.getGeeklist(p.geeklistId, skip, limit, sortby, sortby_asc).then(
+			datamgr.getGeeklist(p.geeklistId, skip, limit, sortby, sortby_asc, true).then(
 				function(reply){
 					//XXX: Add logging
 					var u = req._parsedUrl.href;

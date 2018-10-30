@@ -85,7 +85,7 @@ function getGeeklists(isUpdateable, isVisible, geeklistIds){
 }
 
 //Gets the content of the geeklist
-function getGeeklist(geeklistId, skip, num, sortby, asc){
+function getGeeklist(geeklistId, skip, num, sortby, asc, staleOK = false){
 	var viewname;
 	
 	switch(sortby){
@@ -108,6 +108,12 @@ function getGeeklist(geeklistId, skip, num, sortby, asc){
 	var startkey = '[' + geeklistId + ']';
 	var endkey = '[' + geeklistId + ', {}]'
 	var url = db.getViewURL('geeklist', viewname) + '?include_docs=true&reduce=false';
+	
+	//Could possibly also use stable=false&update=lazy
+	if(staleOK){
+		url += "&stale=update_after"
+	}
+	
 	url = url + "&skip=" + (skip || 0) + "&limit=" + (num || 100);
 	
 	if(asc == 0){
