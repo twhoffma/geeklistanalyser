@@ -32,5 +32,9 @@
 	"rss":
 		{
 			"output_folder": ""
+		},	
+	"graphdata":
+		{
+			"output_folder": ""
 		}	
 }

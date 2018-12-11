@@ -108,6 +108,7 @@ function generateFilters(geeklists){
 	)
 }
 
+//TODO: This cannot be intertwined with regular sync_list run since it reloads stuff from database, which during run will be stale.
 function updateStatic(geeklists){
 	logger.info("Updating bordgame static");
 	
@@ -192,12 +193,15 @@ function syncLists(loadedGeeklists){
 					
 				return resolve(q.allSettled(p))
 			}else{
-				return reject("No lists to sync!");
+				return reject("No lists to sync. Any found were inactive..");
 			}
 		}
 	).then(
+		//TODO: We do not atm use stats for anything, so might as well not save them?
 		function(results){
 			logger.debug("Saving stats");
+			
+			//The previous step return several promises, so filter out the ones that resolved.
 			return saveStats(results.filter((v) => v.value).map((v) => v.value))
 		},
 		function(err){
@@ -220,7 +224,6 @@ function syncLists(loadedGeeklists){
 				[]
 			);
 			
-			logger.info(bgStats[0]);	
 			return loadBoardgames(boardgameIdList).then(boardgames=>addBoardgameStats(boardgames, bgStats))	
 		}
 	).then(
@@ -228,15 +231,17 @@ function syncLists(loadedGeeklists){
 			logger.info("Saving all boardgames to DB.");
 				
 			return datamgr.saveBoardgames(boardgames).then(
+				/*
 				function(){
 					return boardgames
 				}
-			).fail(
-				function(e){
-					console.log(e)
-				}
-			)
+				*/
+				x => q(boardgames)
+			).fail(e => q.Reject(e))
+			
+			
 			/*
+			//TODO: Implement partial update functions in couchDB
 			return datamgr.saveBoardgames(boardgames).then(
 				//	function(){
 				//		logger.info("Running update function in CouchDB for stats");
@@ -256,6 +261,7 @@ function syncLists(loadedGeeklists){
 			*/
 		}
 	).then(
+		//TODO: Refactor
 		function(boardgames){
 			let rssLists = geeklists.filter(x=>(x.rss || false));
 			
@@ -351,6 +357,9 @@ function syncLists(loadedGeeklists){
 
 			return boardgames
 		}
+	//Some issue with empty lists. Definitively should at the very least be non-blocking if it fails..
+	//).then(
+	//	boardgames => generateGraphData(boardgames).then(x =>boardgames)
 	).then(
 		function(boardgames){
 			logger.info("Updating search engine");
@@ -401,6 +410,68 @@ function syncLists(loadedGeeklists){
 }
 
 /* END OF MAIN */
+
+function generateGraphData(boardgames){
+	var gd = {
+		objectid: 0, //geeklistid
+		boardgamemechanics: [], //contains mapping id to name to reduce data
+		boardgamecategories: [], //...
+		data: []
+	};
+	
+	var graphData = [];
+	//var geeklists = [...(boardgames.map(x=>x.geeklists))];//.map(x=>x.objectid);
+	//console.log(geeklists);
+	//if it doesn't exist, create it..
+	
+	geeklists.map(x=>x.objectid).forEach(function(v){
+		//console.log(boardgames.map(z=>z.geeklists.objectid));	
+		let geeklistBoardgames = boardgames.filter(x=>(x.geeklists.filter(g=>parseInt(g.objectid) === parseInt(v)).length > 0));
+		console.log('' + v + ' has ' + geeklistBoardgames.length + ' boardgames');
+		
+		let data = graphData.filter(x=>x.geeklistid === parseInt(v));
+		
+		if(data.length > 0){
+			data = data[0];
+		}else{
+			data = {geeklistid: parseInt(v), graphData:[], bordgamemechanics:[], bordgamecategories:[]};
+			graphData.push(data);
+		}
+		
+		geeklistBoardgames.forEach(function(b){
+			data.graphData.push(
+				{
+					boardgamemechanic: b.boardgamemechanic.map(x=>x.objectid),
+					boardgamecategory: b.boardgamecategory.map(x=>x.objectid),
+					boardgamefamily: b.boardgamefamily.map(x=>x.objectid),
+					playingtime: b.playingtime,
+					minplaytime: b.minplaytime,
+					maxplaytime: b.maxplaytime,
+					minplayers: b.minplayers,
+					maxplayers: b.maxplayers
+				}
+			);
+		});
+
+		//console.log(data.graphData);
+		//console.log(boardgames[0].geeklists.map(x=>x.objectid));
+		//debugger;
+		//console.log(b);
+	});
+	
+	graphData.forEach(function(v){
+			var f = fs.createWriteStream(c.graphdata.output_folder + v.geeklistid + ".json");	
+			f.write(JSON.stringify(v));
+			f.end();
+		}
+	);
+	
+	return q(boardgames)	
+}
+
+function genereateRSS(){
+	
+}
 
 function FilterValue(analysisDate, geeklistId){
 	this.type = 'filtervalue';

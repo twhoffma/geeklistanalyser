@@ -1,0 +1,1 @@
+15 3 * * * /usr/bin/certbot renew --quiet --renew-hook "/bin/systemctl restart nginx"
