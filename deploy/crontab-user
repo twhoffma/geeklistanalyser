@@ -1,0 +1,3 @@
+0 */12 * * * cd /home/toby/projects/geeklistanalyser && node index.js sync_lists
+
+
