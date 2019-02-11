@@ -38,7 +38,9 @@ function init_ui(){
 	
 	//Handlebars
 	Handlebars.registerPartial('render_attr', Handlebars.templates.bgattr);
-	
+	Handlebars.registerPartial('sidenav_rangeslider', Handlebars.templates.sidenav_rangeslider);
+	Handlebars.registerPartial('sidenav_dropdown', Handlebars.templates.sidenav_dropdown);
+		
 	function toggleDetails(e, op){
 	      var p = $(e.target).parent().parent().parent().parent(); //It's pretty far up there
 	      var c = p.children(".details");

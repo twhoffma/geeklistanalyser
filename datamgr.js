@@ -26,37 +26,10 @@ function saveBoardgames(boardgames){
 
 
 /* --- Geeklist --- */
-function getGeeklists(isUpdateable, isVisible, geeklistIds){
+function getGeeklists(isUpdateable, isVisible, geeklistIds, staleOK = false){
 	var d;
 	var geeklists;
-	//console.log(geeklistIds);	
-	//Can't seem to make this work even if it is according to spec.
-	/*	
-	if(geeklistId){
-		url += '&startkey_docid=' + geeklistId + '&endkey_docid=' + geeklistId
-	}
-	*/
-	/*
-	var url = db.getViewURL('geeklists', 'geeklists') + '?include_docs=true'
-	return db.getDocs(url).then(
-		function(rows){
-			var geeklists = [];
-			
-			rows.forEach(function(row, i){
-				if((!geeklistId || parseInt(row.id) === parseInt(geeklistId)) && (!isUpdateable || row.doc.update === true) && (!isVisible || row.doc.visible === true)){
-					geeklists.push(row.doc);
-				}
-			});
-			
-			return geeklists
-		}
-	).fail(
-		function(err){
-			console.log(err);
-		}
-	)
-	*/
-	
+		
 	geeklists = [];
 	d  = q.defer();
 	fs.readFile('data/geeklists.json', "utf-8", function (error, text) {
@@ -66,6 +39,7 @@ function getGeeklists(isUpdateable, isVisible, geeklistIds){
 		d.resolve(JSON.parse(text));
 	    }
 	});
+	
 	return d.promise.then(
 		function(lists){
 			lists.forEach(function(list, i){

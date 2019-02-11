@@ -3,7 +3,6 @@ var http = require('http')
 var bodyParser = require('body-parser')
 var compression = require('compression')
 var qs = require('qs')
-//var db = require('../db-couch')
 var datamgr = require('../datamgr.js')
 var Memcached = require('memcached')
 var Q = require('q');
@@ -65,7 +64,6 @@ app.use(uri + '/data/getGeeklistFilters', function(req, res, next){
 	
 	if(p.geeklistid != undefined){
 		//datamgr.getGeeklistFiltersLive(p.geeklistid).then(
-		//db.getGeeklistFiltersLive(p.geeklistid).then(
 		datamgr.getGeeklistFilters(p.geeklistid).then(
 			function(val){
 				if(val.length > 0){
@@ -88,7 +86,6 @@ app.use(uri + '/data/getGeeklistFilters', function(req, res, next){
 });
 
 app.use(uri + '/data/getGeeklists', function(req, res, next){
-//app.use('/data/getGeeklists', function(req, res, next){
 	if(c.devmode){
 		res.setHeader("Access-Control-Allow-Origin", "*");
 	}

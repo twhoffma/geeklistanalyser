@@ -44,35 +44,6 @@
 	
   </head>
   <body>
-	<!--
-	<nav class="navbar navbar-default">
-  		<div class="container-fluid">
-    		<div class="navbar-header">
-      			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-        			<span class="sr-only">Toggle navigation</span>
-        			<span class="icon-bar"></span>
-        			<span class="icon-bar"></span>
-        			<span class="icon-bar"></span>
-      			</button>
-      			<a class="navbar-brand" href="#">GLAZE - GeekList Analyzer</a>
-    		</div>
-
-    		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-     			<ul class="nav navbar-nav">
-        			<li class="dropdown" id="geeklists">
-          				<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-list" aria-hidden="true"></i>Geeklists</a>
-          				<ul class="dropdown-menu" role="menu"></ul>
-        			</li>
-      			</ul>
-      			<ul class="nav navbar-nav navbar-right">
-						<button type="button" class="btn" data-toggle="modal" data-target="#modSortingAndFilters" id="menuBtnSort" alt="Options"><i class="fa fa-cogs" aria-hidden="true"></i>Options</button>
-						<button type="button" class="btn" data-glaze-action="show_sidebar_lists" id="menuBtnLists" alt="Lists"><i class="fa fa-lists" aria-hidden="true"></i>Lists</button>
-      			</ul>
-    		</div>
-  		</div>
-	</nav>
-	-->
-	
 	<div class="listHeader" id="glaze-hdr">
 	    <div class="appName">
 	      <p>
@@ -92,7 +63,7 @@
 		<span class="numLists">| Lists: <span id="glaze-hdr-numlists">?</span> </span>
 		<span class="num">| Count: <span id="glaze-hdr-numitems">?</span> </span>
 		<span class="numDisctinct" >| Distinct: <span id="glaze-hdr-distinct">?</span></span>
-		<span class="directLink">| <a id="glaze-hdr-link" href="http://boardgamegeek.com" target="blank_" rel="noopener" alt="Visit geeklist on BoardGameGeek">List on BGG</a></span>
+		<span class="directLink">| <a id="glaze-hdr-link" href="http://boardgamegeek.com" target="blank_" rel="noopener" alt="Visit geeklist on BoardGameGeek"><i class="fas fa-link"></i> BGG</a></span>
 	      </p>
 	    </div>
 	    <div class="listHeaderButtons">
@@ -212,8 +183,8 @@
 										<label for="yearpublished">Year Published</label>
 										<div id="yearpublished" class="filterslider"></div>
 										<div>
-										<input class="min" for="number" step="1"></input>
-										<input class="max" for="number" step="1"></input>
+											<input class="min" for="number" step="1"></input>
+											<input class="max" for="number" step="1"></input>
 										</div>
 									</div>
 								</form>

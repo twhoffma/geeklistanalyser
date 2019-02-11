@@ -1,0 +1,73 @@
+<div id="modSortingAndFilters" class="modal fade" role="dialog">
+	<div class="modal-dialog">
+		
+		<div class="modal-content">
+			<div class="modal-header">
+				<div>
+					<button type="button" class="close pull-right pull-up" data-dismiss="modal">&times;</button>
+				</div>
+				<button type="button" class="btn btn-default btn-block btn-primary" data-dismiss="modal" id="apply">Apply</button>
+			</div>
+			<div class="modal-body">
+				<h3>Sorting</h3>
+				<div>
+					<form>
+						<li>
+							<select id="sortby" class="form-control">
+								<option value="crets" selected>Addition time</option>
+								<option value="name">Name</option>
+								<option value="cnt">Count</option>
+								<option value="thumbs">Thumbs</option>
+								<option value="yearpublished">Year</option>
+							</select>
+						</li>	
+						<li>
+							<label class="radio-inline">
+							<input type="radio" name="sortby_asc" value="1">Ascending</input>
+							</label>
+							<label class="radio-inline">
+							<input type="radio" name="sortby_asc" value="0" checked="checked">Descending</input>
+							</label>
+						</li>
+					</form>
+				</div>
+					
+				<h3>Filters</h3>
+				<div>
+					<form>
+						<div class="form-group">
+								<label for="releasetype">
+								<select id="releasetype" class="form-control">
+									<option value="">All</option>
+									<option value="boardgame">Boardgames</option>
+									<option value="expansion">Expansions</option>
+									<option value="collection">Collections</option>
+									<option value="reimplementation">Reimplementations</option>
+									<option value="integration">Integrates with..</option>
+								</select>
+						</div>
+						{{> sidenav_dropdown filterattr="boardgamedesigner" filterattrnm="Designer" default_value="All"}}
+						{{> sidenav_dropdown filterattr="boardgamepublisher" filterattrnm="Publisher" default_value="All"}}
+						{{> sidenav_dropdown filterattr="boardgameartist" filterattrnm="Artist" default_value="All"}}
+						{{> sidenav_dropdown filterattr="boardgamemechanic" filterattrnm="Mechanic" default_value="All"}}
+						{{> sidenav_dropdown filterattr="boardgamecategory" filterattrnm="Category" default_value="All"}}
+						{{> sidenav_dropdown filterattr="boardgamefamily" filterattrnm="Family" default_value="All"}}
+						{{> sidenav_rangeslider filterattr="playingtime" filterattrnm="Playing Time" default_min="0" default_max="100"}}
+						{{> sidenav_rangeslider filterattr="numplayers" filterattrnm="Numer of players" default_min="0" default_max="100"}}
+						{{> sidenav_rangeslider filterattr="yearpublished" filterattrnm="Year Published" default_min="-5000" default_max="4712"}}
+					</form>
+				</div>
+					
+				<h3>Info</h3>
+				<p>All data is taken for free from BoardGameGeek's XMLAPI. As with that data, this data is strictly for non-commerical use and should not be altered.</p>
+				<p>I made it to get my ducks in a row before Essen 2015 and to learn new technologies. I won't guarantee anything about what you see here. It may be counting right, it may be wrong. In the case where lists-of-lists are available, some lists have been excluded to avoid "poisoning" the data.</p>
+				<p>Please do not try to exploit or crash my server. It's probably not that hard - but we're all friends here right?</p>
+				<p>If you want to play around with the code you can find it on <a href="https://github.com/twhoffma/geeklistanalyser" target="_blank">GitHub</a>.</p>
+			</div>
+			
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default btn-block btn-primary" data-dismiss="modal" id="apply">Apply</button>
+			</div>
+		</div>
+	</div>
+</div>

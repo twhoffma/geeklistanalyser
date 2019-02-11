@@ -170,6 +170,34 @@ templates['bgobs'] = template({"1":function(container,depth0,helpers,partials,da
     + ((stack1 = helpers["if"].call(alias1,((stack1 = (depth0 != null ? depth0.obsies : depth0)) != null ? stack1.length : stack1),{"name":"if","hash":{},"fn":container.program(4, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
     + ((stack1 = helpers["if"].call(alias1,((stack1 = (depth0 != null ? depth0.probsies : depth0)) != null ? stack1.length : stack1),{"name":"if","hash":{},"fn":container.program(6, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "");
 },"useData":true});
+templates['sidenav_dropdown'] = template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
+    var helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression;
+
+  return "<div class=\"form-group glaze-tmpl-filter-dropdown\">\n	<label for=\""
+    + alias4(((helper = (helper = helpers.filterattr || (depth0 != null ? depth0.filterattr : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"filterattr","hash":{},"data":data}) : helper)))
+    + "\">"
+    + alias4(((helper = (helper = helpers.filterattr_label || (depth0 != null ? depth0.filterattr_label : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"filterattr_label","hash":{},"data":data}) : helper)))
+    + "</label>\n	<select id=\""
+    + alias4(((helper = (helper = helpers.filterattr || (depth0 != null ? depth0.filterattr : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"filterattr","hash":{},"data":data}) : helper)))
+    + "\" class=\"form-control\" data-live-search=\"true\" data-glaze-default=\""
+    + alias4(((helper = (helper = helpers.default_value || (depth0 != null ? depth0.default_value : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"default_value","hash":{},"data":data}) : helper)))
+    + "\"></select>\n	<span class=\"sidenav-reset-button\"><i class=\"fa fa-refresh\">reset</i></span>\n</div>\n";
+},"useData":true});
+templates['sidenav_filters'] = template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
+    var stack1;
+
+  return "<div id=\"modSortingAndFilters\" class=\"modal fade\" role=\"dialog\">\n	<div class=\"modal-dialog\">\n		\n		<div class=\"modal-content\">\n			<div class=\"modal-header\">\n				<div>\n					<button type=\"button\" class=\"close pull-right pull-up\" data-dismiss=\"modal\">&times;</button>\n				</div>\n				<button type=\"button\" class=\"btn btn-default btn-block btn-primary\" data-dismiss=\"modal\" id=\"apply\">Apply</button>\n			</div>\n			<div class=\"modal-body\">\n				<h3>Sorting</h3>\n				<div>\n					<form>\n						<li>\n							<select id=\"sortby\" class=\"form-control\">\n								<option value=\"crets\" selected>Addition time</option>\n								<option value=\"name\">Name</option>\n								<option value=\"cnt\">Count</option>\n								<option value=\"thumbs\">Thumbs</option>\n								<option value=\"yearpublished\">Year</option>\n							</select>\n						</li>	\n						<li>\n							<label class=\"radio-inline\">\n							<input type=\"radio\" name=\"sortby_asc\" value=\"1\">Ascending</input>\n							</label>\n							<label class=\"radio-inline\">\n							<input type=\"radio\" name=\"sortby_asc\" value=\"0\" checked=\"checked\">Descending</input>\n							</label>\n						</li>\n					</form>\n				</div>\n					\n				<h3>Filters</h3>\n				<div>\n					<form>\n						<div class=\"form-group\">\n								<label for=\"releasetype\">\n								<select id=\"releasetype\" class=\"form-control\">\n									<option value=\"\">All</option>\n									<option value=\"boardgame\">Boardgames</option>\n									<option value=\"expansion\">Expansions</option>\n									<option value=\"collection\">Collections</option>\n									<option value=\"reimplementation\">Reimplementations</option>\n									<option value=\"integration\">Integrates with..</option>\n								</select>\n						</div>\n"
+    + ((stack1 = container.invokePartial(partials.sidenav_dropdown,depth0,{"name":"sidenav_dropdown","hash":{"default_value":"All","filterattrnm":"Designer","filterattr":"boardgamedesigner"},"data":data,"indent":"\t\t\t\t\t\t","helpers":helpers,"partials":partials,"decorators":container.decorators})) != null ? stack1 : "")
+    + ((stack1 = container.invokePartial(partials.sidenav_dropdown,depth0,{"name":"sidenav_dropdown","hash":{"default_value":"All","filterattrnm":"Publisher","filterattr":"boardgamepublisher"},"data":data,"indent":"\t\t\t\t\t\t","helpers":helpers,"partials":partials,"decorators":container.decorators})) != null ? stack1 : "")
+    + ((stack1 = container.invokePartial(partials.sidenav_dropdown,depth0,{"name":"sidenav_dropdown","hash":{"default_value":"All","filterattrnm":"Artist","filterattr":"boardgameartist"},"data":data,"indent":"\t\t\t\t\t\t","helpers":helpers,"partials":partials,"decorators":container.decorators})) != null ? stack1 : "")
+    + ((stack1 = container.invokePartial(partials.sidenav_dropdown,depth0,{"name":"sidenav_dropdown","hash":{"default_value":"All","filterattrnm":"Mechanic","filterattr":"boardgamemechanic"},"data":data,"indent":"\t\t\t\t\t\t","helpers":helpers,"partials":partials,"decorators":container.decorators})) != null ? stack1 : "")
+    + ((stack1 = container.invokePartial(partials.sidenav_dropdown,depth0,{"name":"sidenav_dropdown","hash":{"default_value":"All","filterattrnm":"Category","filterattr":"boardgamecategory"},"data":data,"indent":"\t\t\t\t\t\t","helpers":helpers,"partials":partials,"decorators":container.decorators})) != null ? stack1 : "")
+    + ((stack1 = container.invokePartial(partials.sidenav_dropdown,depth0,{"name":"sidenav_dropdown","hash":{"default_value":"All","filterattrnm":"Family","filterattr":"boardgamefamily"},"data":data,"indent":"\t\t\t\t\t\t","helpers":helpers,"partials":partials,"decorators":container.decorators})) != null ? stack1 : "")
+    + ((stack1 = container.invokePartial(partials.sidenav_rangeslider,depth0,{"name":"sidenav_rangeslider","hash":{"default_max":"100","default_min":"0","filterattrnm":"Playing Time","filterattr":"playingtime"},"data":data,"indent":"\t\t\t\t\t\t","helpers":helpers,"partials":partials,"decorators":container.decorators})) != null ? stack1 : "")
+    + ((stack1 = container.invokePartial(partials.sidenav_rangeslider,depth0,{"name":"sidenav_rangeslider","hash":{"default_max":"100","default_min":"0","filterattrnm":"Numer of players","filterattr":"numplayers"},"data":data,"indent":"\t\t\t\t\t\t","helpers":helpers,"partials":partials,"decorators":container.decorators})) != null ? stack1 : "")
+    + ((stack1 = container.invokePartial(partials.sidenav_rangeslider,depth0,{"name":"sidenav_rangeslider","hash":{"default_max":"4712","default_min":"-5000","filterattrnm":"Year Published","filterattr":"yearpublished"},"data":data,"indent":"\t\t\t\t\t\t","helpers":helpers,"partials":partials,"decorators":container.decorators})) != null ? stack1 : "")
+    + "					</form>\n				</div>\n					\n				<h3>Info</h3>\n				<p>All data is taken for free from BoardGameGeek's XMLAPI. As with that data, this data is strictly for non-commerical use and should not be altered.</p>\n				<p>I made it to get my ducks in a row before Essen 2015 and to learn new technologies. I won't guarantee anything about what you see here. It may be counting right, it may be wrong. In the case where lists-of-lists are available, some lists have been excluded to avoid \"poisoning\" the data.</p>\n				<p>Please do not try to exploit or crash my server. It's probably not that hard - but we're all friends here right?</p>\n				<p>If you want to play around with the code you can find it on <a href=\"https://github.com/twhoffma/geeklistanalyser\" target=\"_blank\">GitHub</a>.</p>\n			</div>\n			\n			<div class=\"modal-footer\">\n				<button type=\"button\" class=\"btn btn-default btn-block btn-primary\" data-dismiss=\"modal\" id=\"apply\">Apply</button>\n			</div>\n		</div>\n	</div>\n</div>\n";
+},"usePartial":true,"useData":true});
 templates['sidenav_listitem'] = template({"1":function(container,depth0,helpers,partials,data) {
     var stack1, helper, alias1=depth0 != null ? depth0 : (container.nullContext || {});
 
@@ -207,5 +235,20 @@ templates['sidenav_lists'] = template({"1":function(container,depth0,helpers,par
   return "<div class=\"sidebar left\" id=\"sideNavLeft\">\r\n  <div class=\"header\">\r\n    <div class=\"closeSideNavBtn\">x</div>\r\n    <h1>\r\n      Geeklists/Previews\r\n    </h1>\r\n    <div class=\"sidebarorder\">\r\n      Order by: \r\n"
     + ((stack1 = helpers.each.call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? depth0.orderby : depth0),{"name":"each","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
     + "    </div>\r\n  </div>\r\n \r\n  <div id=\"sidenavLists\">\r\n   \r\n  </div>\r\n</div>\r\n";
+},"useData":true});
+templates['sidenav_rangeslider'] = template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
+    var helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression;
+
+  return "<div class=\"form-group glaze-tmpl-filter-rangeslider\">\n	<label for=\""
+    + alias4(((helper = (helper = helpers.filterattr || (depth0 != null ? depth0.filterattr : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"filterattr","hash":{},"data":data}) : helper)))
+    + "\">"
+    + alias4(((helper = (helper = helpers.filterattr_label || (depth0 != null ? depth0.filterattr_label : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"filterattr_label","hash":{},"data":data}) : helper)))
+    + "</label>\n	<div id=\""
+    + alias4(((helper = (helper = helpers.filterattr || (depth0 != null ? depth0.filterattr : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"filterattr","hash":{},"data":data}) : helper)))
+    + "\" class=\"filterslider\" data-glaze-default-min=\""
+    + alias4(((helper = (helper = helpers.default_min || (depth0 != null ? depth0.default_min : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"default_min","hash":{},"data":data}) : helper)))
+    + "\" data-glaze-default-max=\""
+    + alias4(((helper = (helper = helpers.default_max || (depth0 != null ? depth0.default_max : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"default_max","hash":{},"data":data}) : helper)))
+    + "\"></div>\n	\n	<input class=\"min\" for=\"number\" step=\"1\"></input>\n	<input class=\"max\" for=\"number\" step=\"1\"></input>\n	<span class=\"sidenav-reset-button\"><i class=\"fa fa-refresh\">reset</i></span>\n</div>\n";
 },"useData":true});
 })();
