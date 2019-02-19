@@ -48,41 +48,41 @@ templates['bg'] = template({"1":function(container,depth0,helpers,partials,data,
 },"6":function(container,depth0,helpers,partials,data) {
     var stack1;
 
-  return "      	<span class=\"smallbox tp tpBoardgame\"><a href=\"https://glaze.hoffy.no?id="
+  return "                <span class=\"smallbox tp tpBoardgame\"><a href=\"https://glaze.hoffy.no?id="
     + container.escapeExpression(container.lambda(((stack1 = ((stack1 = (depth0 != null ? depth0.geeklists : depth0)) != null ? stack1["0"] : stack1)) != null ? stack1.objectid : stack1), depth0))
     + "&releasetype=boardgame\" target=\"blank_\">Boardgame</a></span>\r\n";
 },"8":function(container,depth0,helpers,partials,data) {
     var stack1;
 
-  return "      	<span class=\"smallbox tp tpExpansion\"><a href=\"https://glaze.hoffy.no?id="
+  return "                <span class=\"smallbox tp tpExpansion\"><a href=\"https://glaze.hoffy.no?id="
     + container.escapeExpression(container.lambda(((stack1 = ((stack1 = (depth0 != null ? depth0.geeklists : depth0)) != null ? stack1["0"] : stack1)) != null ? stack1.objectid : stack1), depth0))
     + "&releasetype=expansion\" target=\"blank_\">Expansion</a></span>\r\n";
 },"10":function(container,depth0,helpers,partials,data) {
     var stack1;
 
-  return "      	<span class=\"smallbox tp tpCollection\"><a href=\"https://glaze.hoffy.no?id="
+  return "                <span class=\"smallbox tp tpCollection\"><a href=\"https://glaze.hoffy.no?id="
     + container.escapeExpression(container.lambda(((stack1 = ((stack1 = (depth0 != null ? depth0.geeklists : depth0)) != null ? stack1["0"] : stack1)) != null ? stack1.objectid : stack1), depth0))
     + "&releasetype=collection\" target=\"blank_\">Collection</a></span>\r\n";
 },"12":function(container,depth0,helpers,partials,data) {
     var stack1;
 
-  return "      	<span class=\"smallbox tp tpReimplementation\"><a href=\"https://glaze.hoffy.no?id="
+  return "                <span class=\"smallbox tp tpReimplementation\"><a href=\"https://glaze.hoffy.no?id="
     + container.escapeExpression(container.lambda(((stack1 = ((stack1 = (depth0 != null ? depth0.geeklists : depth0)) != null ? stack1["0"] : stack1)) != null ? stack1.objectid : stack1), depth0))
     + "&releasetype=reimplementation\" target=\"blank_\">Reimpl.</a></span>\r\n";
 },"14":function(container,depth0,helpers,partials,data) {
     var stack1;
 
-  return "      	<span class=\"smallbox tp tpIntegrates\"><a href=\"https://glaze.hoffy.no?id="
+  return "                <span class=\"smallbox tp tpIntegrates\"><a href=\"https://glaze.hoffy.no?id="
     + container.escapeExpression(container.lambda(((stack1 = ((stack1 = (depth0 != null ? depth0.geeklists : depth0)) != null ? stack1["0"] : stack1)) != null ? stack1.objectid : stack1), depth0))
     + "&releasetype=integration\" target=\"blank_\">Integrates</a></span>\r\n";
 },"16":function(container,depth0,helpers,partials,data) {
     var stack1;
 
-  return "	  "
+  return "                    "
     + container.escapeExpression(container.lambda(((stack1 = ((stack1 = ((stack1 = (depth0 != null ? depth0.geeklists : depth0)) != null ? stack1["0"] : stack1)) != null ? stack1.latest : stack1)) != null ? stack1.wants : stack1), depth0))
     + " \r\n";
 },"18":function(container,depth0,helpers,partials,data) {
-    return "          ?\r\n";
+    return "                    ?\r\n";
 },"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data,blockParams,depths) {
     var stack1, helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression, alias5=container.lambda;
 
@@ -94,31 +94,37 @@ templates['bg'] = template({"1":function(container,depth0,helpers,partials,data,
     + alias4(((helper = (helper = helpers.probsies || (depth0 != null ? depth0.probsies : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"probsies","hash":{},"data":data}) : helper)))
     + "\">\r\n    <div class=\"block header\">\r\n"
     + ((stack1 = helpers.each.call(alias1,(depth0 != null ? depth0.name : depth0),{"name":"each","hash":{},"fn":container.program(1, data, 0, blockParams, depths),"inverse":container.program(4, data, 0, blockParams, depths),"data":data})) != null ? stack1 : "")
-    + "    </div>\r\n    <div class=\"block time\">\r\n      <span class=\"crets\">"
+    + "    </div>\r\n    <div class=\"block\">\r\n    <div style=\"float: left; text-align: left;\">\r\n            <div class=\"block time\">\r\n              <span class=\"crets\">"
     + alias4(alias5(((stack1 = ((stack1 = (depth0 != null ? depth0.geeklists : depth0)) != null ? stack1["0"] : stack1)) != null ? stack1.crets : stack1), depth0))
-    + "</span>\r\n    </div>\r\n    <div class=\"block\">\r\n    <p>\r\n"
+    + "</span>\r\n            </div>\r\n            <div class=\"block\">\r\n            <p>\r\n"
     + ((stack1 = helpers.unless.call(alias1,((stack1 = (depth0 != null ? depth0.expands : depth0)) != null ? stack1.length : stack1),{"name":"unless","hash":{},"fn":container.program(6, data, 0, blockParams, depths),"inverse":container.noop,"data":data})) != null ? stack1 : "")
     + ((stack1 = helpers["if"].call(alias1,((stack1 = (depth0 != null ? depth0.expands : depth0)) != null ? stack1.length : stack1),{"name":"if","hash":{},"fn":container.program(8, data, 0, blockParams, depths),"inverse":container.noop,"data":data})) != null ? stack1 : "")
     + ((stack1 = helpers["if"].call(alias1,((stack1 = (depth0 != null ? depth0.boardgamecompilation : depth0)) != null ? stack1.length : stack1),{"name":"if","hash":{},"fn":container.program(10, data, 0, blockParams, depths),"inverse":container.noop,"data":data})) != null ? stack1 : "")
     + ((stack1 = helpers["if"].call(alias1,((stack1 = (depth0 != null ? depth0.boardgameimplementation : depth0)) != null ? stack1.length : stack1),{"name":"if","hash":{},"fn":container.program(12, data, 0, blockParams, depths),"inverse":container.noop,"data":data})) != null ? stack1 : "")
     + ((stack1 = helpers["if"].call(alias1,((stack1 = (depth0 != null ? depth0.boardgameintegration : depth0)) != null ? stack1.length : stack1),{"name":"if","hash":{},"fn":container.program(14, data, 0, blockParams, depths),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-    + "    </p>\r\n    </div>\r\n\r\n\r\n    <div class=\"block\">\r\n      <ul>\r\n        <li><i class=\"fas fa-calendar\"></i> "
+    + "            </p>\r\n            </div>\r\n\r\n\r\n            <div class=\"block\">\r\n              <ul>\r\n                <li><i class=\"fas fa-calendar\"></i> "
     + alias4(((helper = (helper = helpers.yearpublished || (depth0 != null ? depth0.yearpublished : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"yearpublished","hash":{},"data":data}) : helper)))
-    + "</li>\r\n        <li><i class=\"fas fa-users\"></i> "
+    + "</li>\r\n                <li><i class=\"fas fa-users\"></i> "
     + alias4(((helper = (helper = helpers.minplayers || (depth0 != null ? depth0.minplayers : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"minplayers","hash":{},"data":data}) : helper)))
     + " - "
     + alias4(((helper = (helper = helpers.maxplayers || (depth0 != null ? depth0.maxplayers : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"maxplayers","hash":{},"data":data}) : helper)))
-    + "</li>\r\n        <li><i class=\"far fa-clock\"></i> "
+    + "</li>\r\n                <li><i class=\"far fa-clock\"></i> "
     + alias4(((helper = (helper = helpers.minplaytime || (depth0 != null ? depth0.minplaytime : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"minplaytime","hash":{},"data":data}) : helper)))
     + " - "
     + alias4(((helper = (helper = helpers.maxplaytime || (depth0 != null ? depth0.maxplaytime : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"maxplaytime","hash":{},"data":data}) : helper)))
-    + "</li>\r\n        <li><i class=\"far fa-thumbs-up\"></i> "
+    + "</li>\r\n                <!--<li><i class=\"far fa-thumbs-up\"></i> "
     + alias4(alias5(((stack1 = ((stack1 = ((stack1 = (depth0 != null ? depth0.geeklists : depth0)) != null ? stack1["0"] : stack1)) != null ? stack1.latest : stack1)) != null ? stack1.thumbs : stack1), depth0))
-    + " </li>\r\n        <li><i class=\"fas fa-hashtag\"></i> "
+    + " </li>\r\n                <li><i class=\"fas fa-hashtag\"></i> "
     + alias4(alias5(((stack1 = ((stack1 = ((stack1 = (depth0 != null ? depth0.geeklists : depth0)) != null ? stack1["0"] : stack1)) != null ? stack1.latest : stack1)) != null ? stack1.cnt : stack1), depth0))
-    + " </li>\r\n        <li><i class=\"fas fa-heart\"></i> \r\n"
+    + " </li>\r\n                <li><i class=\"fas fa-heart\"></i> \r\n"
     + ((stack1 = helpers["if"].call(alias1,((stack1 = ((stack1 = ((stack1 = (depth0 != null ? depth0.geeklists : depth0)) != null ? stack1["0"] : stack1)) != null ? stack1.latest : stack1)) != null ? stack1.wants : stack1),{"name":"if","hash":{},"fn":container.program(16, data, 0, blockParams, depths),"inverse":container.program(18, data, 0, blockParams, depths),"data":data})) != null ? stack1 : "")
-    + "        </li>\r\n      </ul>\r\n    </div>\r\n    <div class=\"block topmarg-10 details-bg attrs\">\r\n"
+    + "                </li>-->\r\n              </ul>\r\n            </div>\r\n      </div>\r\n      <div style=\"float: right; padding-right: 2px; padding-top: 2px;\">\r\n              <ul style=\"text-align: right;\">\r\n                <li>"
+    + alias4(alias5(((stack1 = ((stack1 = ((stack1 = (depth0 != null ? depth0.geeklists : depth0)) != null ? stack1["0"] : stack1)) != null ? stack1.latest : stack1)) != null ? stack1.thumbs : stack1), depth0))
+    + " <i class=\"far fa-thumbs-up\"></i></li>\r\n                <li>"
+    + alias4(alias5(((stack1 = ((stack1 = ((stack1 = (depth0 != null ? depth0.geeklists : depth0)) != null ? stack1["0"] : stack1)) != null ? stack1.latest : stack1)) != null ? stack1.cnt : stack1), depth0))
+    + " <i class=\"fas fa-hashtag\"></i></li>\r\n                <li>\r\n"
+    + ((stack1 = helpers["if"].call(alias1,((stack1 = ((stack1 = ((stack1 = (depth0 != null ? depth0.geeklists : depth0)) != null ? stack1["0"] : stack1)) != null ? stack1.latest : stack1)) != null ? stack1.wants : stack1),{"name":"if","hash":{},"fn":container.program(16, data, 0, blockParams, depths),"inverse":container.program(18, data, 0, blockParams, depths),"data":data})) != null ? stack1 : "")
+    + "		  <i class=\"fas fa-heart\"></i> \r\n                </li>\r\n              </ul>\r\n      </div>\r\n    </div>\r\n    <div class=\"block topmarg-10 details-bg attrs\">\r\n"
     + ((stack1 = container.invokePartial(partials.render_attr,depth0,{"name":"render_attr","hash":{"icon":"fas fa-wrench","attrnm":"boardgamemechanic","attrs":(depth0 != null ? depth0.boardgamemechanic : depth0)},"data":data,"indent":"      ","helpers":helpers,"partials":partials,"decorators":container.decorators})) != null ? stack1 : "")
     + ((stack1 = container.invokePartial(partials.render_attr,depth0,{"name":"render_attr","hash":{"icon":"fas fa-pen-fancy","attrnm":"boardgamedesigner","attrs":(depth0 != null ? depth0.boardgamedesigner : depth0)},"data":data,"indent":"      ","helpers":helpers,"partials":partials,"decorators":container.decorators})) != null ? stack1 : "")
     + ((stack1 = container.invokePartial(partials.render_attr,depth0,{"name":"render_attr","hash":{"icon":"fas fa-paint-brush","attrnm":"boardgameartist","attrs":(depth0 != null ? depth0.boardgameartist : depth0)},"data":data,"indent":"      ","helpers":helpers,"partials":partials,"decorators":container.decorators})) != null ? stack1 : "")
@@ -174,11 +180,11 @@ templates['sidenav_dropdown'] = template({"compiler":[7,">= 4.0.0"],"main":funct
     var helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression;
 
   return "<div class=\"form-group glaze-tmpl-filter-dropdown\">\n	<label for=\""
-    + alias4(((helper = (helper = helpers.filterattr || (depth0 != null ? depth0.filterattr : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"filterattr","hash":{},"data":data}) : helper)))
+    + alias4(((helper = (helper = helpers.attr || (depth0 != null ? depth0.attr : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"attr","hash":{},"data":data}) : helper)))
     + "\">"
-    + alias4(((helper = (helper = helpers.filterattr_label || (depth0 != null ? depth0.filterattr_label : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"filterattr_label","hash":{},"data":data}) : helper)))
+    + alias4(((helper = (helper = helpers.attrnm || (depth0 != null ? depth0.attrnm : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"attrnm","hash":{},"data":data}) : helper)))
     + "</label>\n	<select id=\""
-    + alias4(((helper = (helper = helpers.filterattr || (depth0 != null ? depth0.filterattr : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"filterattr","hash":{},"data":data}) : helper)))
+    + alias4(((helper = (helper = helpers.attr || (depth0 != null ? depth0.attr : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"attr","hash":{},"data":data}) : helper)))
     + "\" class=\"form-control\" data-live-search=\"true\" data-glaze-default=\""
     + alias4(((helper = (helper = helpers.default_value || (depth0 != null ? depth0.default_value : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"default_value","hash":{},"data":data}) : helper)))
     + "\"></select>\n	<span class=\"sidenav-reset-button\"><i class=\"fa fa-refresh\">reset</i></span>\n</div>\n";
@@ -240,11 +246,11 @@ templates['sidenav_rangeslider'] = template({"compiler":[7,">= 4.0.0"],"main":fu
     var helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression;
 
   return "<div class=\"form-group glaze-tmpl-filter-rangeslider\">\n	<label for=\""
-    + alias4(((helper = (helper = helpers.filterattr || (depth0 != null ? depth0.filterattr : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"filterattr","hash":{},"data":data}) : helper)))
+    + alias4(((helper = (helper = helpers.attr || (depth0 != null ? depth0.attr : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"attr","hash":{},"data":data}) : helper)))
     + "\">"
-    + alias4(((helper = (helper = helpers.filterattr_label || (depth0 != null ? depth0.filterattr_label : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"filterattr_label","hash":{},"data":data}) : helper)))
+    + alias4(((helper = (helper = helpers.attrrm || (depth0 != null ? depth0.attrrm : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"attrrm","hash":{},"data":data}) : helper)))
     + "</label>\n	<div id=\""
-    + alias4(((helper = (helper = helpers.filterattr || (depth0 != null ? depth0.filterattr : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"filterattr","hash":{},"data":data}) : helper)))
+    + alias4(((helper = (helper = helpers.attr || (depth0 != null ? depth0.attr : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"attr","hash":{},"data":data}) : helper)))
     + "\" class=\"filterslider\" data-glaze-default-min=\""
     + alias4(((helper = (helper = helpers.default_min || (depth0 != null ? depth0.default_min : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"default_min","hash":{},"data":data}) : helper)))
     + "\" data-glaze-default-max=\""
