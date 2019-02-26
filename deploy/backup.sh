@@ -4,9 +4,15 @@ base="$HOME/backup/"
 filebase="-geeklistdb.dump"
 dest="$base`date +%Y%m%d-%H%M%S`$filebase"
 
-couchdb-dump -b 100 "http://127.0.0.1:5984/geeklistdb" > $dest &&
-gzip $dest &&
-s3cmd put "$dest.gz" s3://hoffy-geeklistdb &&
+couchdb-dump -b 100 "http://127.0.0.1:5984/geeklistdb" > $dest 2>"${dest}.log"
+
+echo "zipping couchdb backup"
+gzip $dest 
+
+echo "pushing to s3"
+s3cmd put "$dest.gz" s3://hoffy-geeklistdb 
+
+echo "Cleaning up old"
 find $dest -type f -name "*${filebase}.gz" -mtime +30 -delete
 
 #TODO: Cleanup using find
