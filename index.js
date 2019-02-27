@@ -114,7 +114,7 @@ function updateStatic(geeklists){
 	
 	new Promise(function(resolve, reject){
 		if(!args['lists']){
-			resolve(datamgr.getBoardgames().map(b=>b.doc));
+			resolve(datamgr.getBoardgames().then(x=>x.map(b=>b.doc)));
 		}else{
 			resolve(datamgr.getGeeklist(args['lists'], 0, 10000).then(x=>x.map(y=>y.doc)));
 		}
@@ -134,11 +134,16 @@ function updateStatic(geeklists){
 					
 					bggBoardgames.forEach(function(newBg){
 						let oldBg = dbBoardgames.filter(x=>parseInt(x.objectid) === parseInt(newBg.objectid))[0];
-						newBg["_id"] = oldBg._id;
-						newBg["_rev"] = oldBg._rev;
-						newBg.geeklists = oldBg.geeklists;
 						
-						updBoardgames.push(newBg);
+						if(typeof(oldBg) === "undefined"){
+							logger.error("" + newBg.objectid + " was not found in old boardgames, although it was returned by BGG");
+						}else{
+							newBg["_id"] = oldBg._id;
+							newBg["_rev"] = oldBg._rev;
+							newBg.geeklists = oldBg.geeklists;
+						
+							updBoardgames.push(newBg);
+						}
 					});
 					
 					/*	
@@ -223,7 +228,7 @@ function syncLists(loadedGeeklists){
 				},
 				[]
 			);
-			
+				
 			return loadBoardgames(boardgameIdList).then(boardgames=>addBoardgameStats(boardgames, bgStats))	
 		}
 	).then(
@@ -358,8 +363,8 @@ function syncLists(loadedGeeklists){
 			return boardgames
 		}
 	//Some issue with empty lists. Definitively should at the very least be non-blocking if it fails..
-	//).then(
-	//	boardgames => generateGraphData(boardgames).then(x =>boardgames)
+	).then(
+		boardgames => generateGraphData(boardgames).finally(x =>boardgames)
 	).then(
 		function(boardgames){
 			logger.info("Updating search engine");
@@ -425,7 +430,6 @@ function generateGraphData(boardgames){
 	//if it doesn't exist, create it..
 	
 	geeklists.map(x=>x.objectid).forEach(function(v){
-		//console.log(boardgames.map(z=>z.geeklists.objectid));	
 		let geeklistBoardgames = boardgames.filter(x=>(x.geeklists.filter(g=>parseInt(g.objectid) === parseInt(v)).length > 0));
 		console.log('' + v + ' has ' + geeklistBoardgames.length + ' boardgames');
 		
@@ -452,11 +456,6 @@ function generateGraphData(boardgames){
 				}
 			);
 		});
-
-		//console.log(data.graphData);
-		//console.log(boardgames[0].geeklists.map(x=>x.objectid));
-		//debugger;
-		//console.log(b);
 	});
 	
 	graphData.forEach(function(v){
@@ -567,29 +566,28 @@ function addBoardgameStats(boardgames, boardgamesStats){
 			}
 			
 			boardgameStats.forEach(function(s){
-					if(boardgame.geeklists === undefined){
-						boardgame['geeklists'] = [];
-						//console.log(boardgame.objectid + " Zing!");
-					}
-
-					var geeklist = boardgame.geeklists.filter(e =>  (parseInt(e.objectid) === parseInt(s.geeklistid)));
-						
-					if(geeklist.length === 0){
-						geeklist = {
-							'objectid': s.geeklistid, 
-							'crets': moment(s.postdate).format(c.format.dateandtime), 
-							'latest': s
-						};
-						
-						boardgame['geeklists'].push(geeklist);
-					}else{
-						//There is only one latest per geeklist per boardgame
-						geeklist[0].latest = s;
-					}
-				});
+				if(boardgame.geeklists === undefined){
+					boardgame['geeklists'] = [];
+				}
+				
+				var geeklist = boardgame.geeklists.filter(e =>  (parseInt(e.objectid) === parseInt(s.geeklistid)));
+					
+				if(geeklist.length === 0){
+					geeklist = {
+						'objectid': s.geeklistid, 
+						'crets': moment(s.postdate).format(c.format.dateandtime), 
+						'latest': s
+					};
+					
+					boardgame['geeklists'].push(geeklist);
+				}else{
+					//There is only one latest per geeklist per boardgame
+					geeklist[0].latest = s;
+				}
 			});
-
-			resolve(boardgames);
+		});
+		
+		resolve(boardgames);
 	})
 }
 

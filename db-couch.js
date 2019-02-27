@@ -147,7 +147,7 @@ function saveDocs(docs){
 						).catch(
 							function(e){
 								logger.error("Failed to save doc: " + doc._id);
-								//console.log("Failed doc: " + JSON.stringify(doc));
+								console.log("Failed doc: " + JSON.stringify(doc));
 								
 								throw e
 							}

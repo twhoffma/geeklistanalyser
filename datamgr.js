@@ -248,6 +248,7 @@ function getBoardgameData(boardgameIds, priority="db"){
 				},
 				function(bgId){
 					bggList.push(bgId);
+					logger.warn("Looking up: " + bgId);
 					return false
 				}
 			));
@@ -267,7 +268,7 @@ function getBoardgameData(boardgameIds, priority="db"){
 					
 				if(idList.length === 100 || (bggList.length-1) === i){
 					var idBatch = Math.floor(i / 100);
-					console.log("Looking up boardgames " + (idBatch + 1) + " - " + ((idBatch + 1)*100));
+					console.info("Looking up boardgames " + (idBatch * 100 + 1) + " - " + ((idBatch + 1)*100));
 						
 					p.push(bgg.getBoardgame(idList.join(",")));
 					idList = [];

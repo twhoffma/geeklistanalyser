@@ -53,12 +53,16 @@ function getGeeklist(listtype, geeklistId){
 						qrequest.qrequest("GET", `https://api.geekdo.com/api/geekpreviewitems?nosession=1&pageid=${i}&previewid=${geeklistId}`, null, null, true, 0, true).then(
 							function(convPreview){
 								return JSON.parse(convPreview).map(
-									x => (
-										{
+									function(x){
+										//logger.warn("" + x.itemid + " " + x.geekitem.item.objectid + "=>" + parseInt(x.geekitem.item.objectid));
+									//x => (
+									return	{
 											'id': x.itemid, 
 											'objecttype':x.objecttype, 
 											'subtype': 'boardgame', 
-											'objectid': parseInt(x.objectid), 
+											'objectid': parseInt(x.geekitem.item.objectid || x.objectid), 
+											//'objectid': parseInt(x.geekitem.item.objectid), 
+											//'objectid': parseInt(x.objectid), 
 											'objectname':x.geekitem.item.primaryname.name, 
 											'username':'',
 											//'postdate': new Date(Date.parse(x.date_created)).toISOString(),
@@ -69,7 +73,8 @@ function getGeeklist(listtype, geeklistId){
 											'imageid': parseInt(x.geekitem.item.imageid),
 											'wants': parseInt(x.stats.interested || 0) + parseInt(x.stats.musthave || 0)
 										}
-									)
+									//)
+									}
 								)
 							}
 						)
@@ -98,16 +103,17 @@ function getGeeklist(listtype, geeklistId){
 		//First one can read number of items, then spawn enough page requests to load the entire list. Depends on the size of the list.
 		function parseBGGXML(results){
 			let n = function(value,name){
-        		if(['objectid','thumbs','id','imageid'].includes(name)){
-                		return parseInt(value)
-        		}else if(['postdate','editdate'].includes(name)){
-                		//return new Date(Date.parse(value)).toISOString()
-                		return new Date(moment(value).toDate()).toISOString()
-        		}else{
-                		return value
-        		}
+        			if(['objectid','thumbs','id','imageid'].includes(name)){
+               	 			return parseInt(value)
+        			}else if(['postdate','editdate'].includes(name)){
+                			//return new Date(Date.parse(value)).toISOString()
+                			return new Date(moment(value).toDate()).toISOString()
+        			}else{
+                			return value
+        			}
 			}
 			
+			//FIXME: Appearantly returns an empty Boardgame even if parsing fails.. Need validation.
 			return q(new Promise(function(resolve, reject){
 				parseString(results, {attrValueProcessors: [n]}, 
 					function(err, res){
@@ -169,7 +175,7 @@ function getGeeklist(listtype, geeklistId){
 						//Filter out geeklists and boardgames	
 						//pageItems = pageItems.filter(x => ((x.objecttype === 'thing' && x.subtype === 'boardgame') || x.objecttype === 'geeklist'));
 						pageItems = filterBgGl(pageItems);
-            let numItems = parseInt(res.geeklist.numitems);
+            					let numItems = parseInt(res.geeklist.numitems);
 						
 						let numpages = (pagesize === 0 ? 1 : (parseInt(numItems / pagesize) + 1));
 						logger.debug("Need to fetch " + numpages + " pages for " + geeklistId);
@@ -230,98 +236,102 @@ function getBoardgame(boardgameId){
 		function(val){
 			var $ = cheerio.load(val);
 			var boardgames = [];
-			
+				
 			$('boardgame').each(function(index, elem){
-				var bg = new Boardgame($(this).attr('objectid'));
+				if($('error', $(this)).length > 0){
+					logger.error("BGG returned error for boardgameId(s) " + boardgameId + ": " + ($('error', $(this)).attr('message')));
+				}else{
+					var bg = new Boardgame($(this).attr('objectid'));
 				
-				bg.yearpublished = $('yearpublished', $(this)).text();
-				bg.minplayers = $('minplayers', $(this)).text();
-				bg.maxplayers = $('maxplayers', $(this)).text();
-				bg.playingtime = $('playingtime', $(this)).text();
-				bg.minplaytime = $('minplaytime', $(this)).text();
-				bg.maxplaytime = $('maxplaytime', $(this)).text();
-				bg.thumbnail = $('thumbnail', $(this)).text();
-				
-				$('name', $(this)).each(function(index, elem){
-					bg.name.push({'name': $(this).text(), 'primary': $(this).attr('primary')});
-				});
-		
-				$('boardgamecategory', $(this)).each(function(index, elem){
-					var id = $(this).attr('objectid');
-					var val = $(this).text();
+					bg.yearpublished = $('yearpublished', $(this)).text();
+					bg.minplayers = $('minplayers', $(this)).text();
+					bg.maxplayers = $('maxplayers', $(this)).text();
+					bg.playingtime = $('playingtime', $(this)).text();
+					bg.minplaytime = $('minplaytime', $(this)).text();
+					bg.maxplaytime = $('maxplaytime', $(this)).text();
+					bg.thumbnail = $('thumbnail', $(this)).text();
 					
-					bg.boardgamecategory.push({objectid: id, name: val});
-				});
+					$('name', $(this)).each(function(index, elem){
+						bg.name.push({'name': $(this).text(), 'primary': $(this).attr('primary')});
+					});
 			
-				$('boardgamemechanic', $(this)).each(function(index, elem){
-					var id = $(this).attr('objectid');
-					var val = $(this).text();
-					bg.boardgamemechanic.push({objectid: id, name: val});
-				});
+					$('boardgamecategory', $(this)).each(function(index, elem){
+						var id = $(this).attr('objectid');
+						var val = $(this).text();
+						
+						bg.boardgamecategory.push({objectid: id, name: val});
+					});
 				
-				$('boardgamedesigner', $(this)).each(function(index, elem){
-					var id = $(this).attr('objectid');
-					var val = $(this).text();
-					bg.boardgamedesigner.push({objectid: id, name: val});
-				});
-		
-				$('boardgamefamily', $(this)).each(function(index, elem){
-					var id = $(this).attr('objectid');
-					var val = $(this).text();
-					bg.boardgamefamily.push({objectid: id, name: val});
-				});
-				
-				$('boardgameartist', $(this)).each(function(index, elem){
-					var id = $(this).attr('objectid');
-					var val = $(this).text();
-					bg.boardgameartist.push({objectid: id, name: val});
-				});
-		
-				$('boardgamepublisher', $(this)).each(function(index, elem){
-					var id = $(this).attr('objectid');
-					var val = $(this).text();
-					bg.boardgamepublisher.push({objectid: id, name: val});
-				});
-				
-				$('boardgameintegration', $(this)).each(function(index, elem){
-					var id = $(this).attr('objectid');
-					var val = $(this).text();
+					$('boardgamemechanic', $(this)).each(function(index, elem){
+						var id = $(this).attr('objectid');
+						var val = $(this).text();
+						bg.boardgamemechanic.push({objectid: id, name: val});
+					});
 					
-					if($(this).attr('inbound') === "true"){
-						bg.boardgameintegration.push({objectid: id, name: val});
-					}
-				});
-				
-				$('boardgameimplementation', $(this)).each(function(index, elem){
-					var id = $(this).attr('objectid');
-					var val = $(this).text();
+					$('boardgamedesigner', $(this)).each(function(index, elem){
+						var id = $(this).attr('objectid');
+						var val = $(this).text();
+						bg.boardgamedesigner.push({objectid: id, name: val});
+					});
+			
+					$('boardgamefamily', $(this)).each(function(index, elem){
+						var id = $(this).attr('objectid');
+						var val = $(this).text();
+						bg.boardgamefamily.push({objectid: id, name: val});
+					});
 					
-					if($(this).attr('inbound') === "true"){
-						bg.boardgameimplementation.push({objectid: id, name: val});
-					}
-				});
-				
-				$('boardgameexpansion', $(this)).each(function(index, elem){
-					var id = $(this).attr('objectid');
-					var val = $(this).text();
+					$('boardgameartist', $(this)).each(function(index, elem){
+						var id = $(this).attr('objectid');
+						var val = $(this).text();
+						bg.boardgameartist.push({objectid: id, name: val});
+					});
+			
+					$('boardgamepublisher', $(this)).each(function(index, elem){
+						var id = $(this).attr('objectid');
+						var val = $(this).text();
+						bg.boardgamepublisher.push({objectid: id, name: val});
+					});
 					
-					if($(this).attr('inbound') === "true"){
-						bg.expands.push({objectid: id, name: val});
-					}else{
-						bg.expansions.push({objectid: id, name: val});
-					}
-				});
-				
-				$('boardgamecompilation', $(this)).each(function(index, elem){
-					var id = $(this).attr('objectid');
-					var val = $(this).text();
+					$('boardgameintegration', $(this)).each(function(index, elem){
+						var id = $(this).attr('objectid');
+						var val = $(this).text();
+						
+						if($(this).attr('inbound') === "true"){
+							bg.boardgameintegration.push({objectid: id, name: val});
+						}
+					});
 					
-					if($(this).attr('inbound') === "true"){
-						bg.boardgamecompilation.push({objectid: id, name: val});
-					}
-				});
-				
-				boardgames.push(bg);
+					$('boardgameimplementation', $(this)).each(function(index, elem){
+						var id = $(this).attr('objectid');
+						var val = $(this).text();
+						
+						if($(this).attr('inbound') === "true"){
+							bg.boardgameimplementation.push({objectid: id, name: val});
+						}
+					});
+					
+					$('boardgameexpansion', $(this)).each(function(index, elem){
+						var id = $(this).attr('objectid');
+						var val = $(this).text();
+						
+						if($(this).attr('inbound') === "true"){
+							bg.expands.push({objectid: id, name: val});
+						}else{
+							bg.expansions.push({objectid: id, name: val});
+						}
+					});
+					
+					$('boardgamecompilation', $(this)).each(function(index, elem){
+						var id = $(this).attr('objectid');
+						var val = $(this).text();
+						
+						if($(this).attr('inbound') === "true"){
+							bg.boardgamecompilation.push({objectid: id, name: val});
+						}
+					});
+					
+					boardgames.push(bg);
+				}
 			});	
 			
 			return boardgames
