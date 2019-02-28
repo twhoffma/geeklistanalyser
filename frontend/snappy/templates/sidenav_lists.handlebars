@@ -2,14 +2,13 @@
   <div class="header">
     <div class="closeSideNavBtn">x</div>
     <h1>
-      Geeklists/Previews
+      <i class="fas fa-list"></i>
     </h1>
     <div class="sidebarorder">
       Order by: 
       {{#each orderby}}
       <div class="sideNavBtn" data-glaze-orderby="{{name}}" data-glaze-orderby-asc=1>
         	<i class="{{icon}}"></i>
-			</i>
       </div>
       {{#unless @last}}
         |

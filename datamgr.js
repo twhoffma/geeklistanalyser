@@ -43,6 +43,7 @@ function getGeeklists(isUpdateable, isVisible, geeklistIds, staleOK = false){
 	return d.promise.then(
 		function(lists){
 			lists.forEach(function(list, i){
+				//FIXME: Seems to be some room for improvement
 				let inSelection = !geeklistIds || (geeklistIds.filter(x => x === parseInt(list.objectid)).length > 0);
 				if((!geeklistIds || inSelection) && (!isUpdateable || list.update === true) && (!isVisible || list.visible === true)){
 					logger.debug("Found geeklist " + list.objectid + " in database.");

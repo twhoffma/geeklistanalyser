@@ -29,7 +29,7 @@ for(i = 2; i < process.argv.length; i++){
 		//All others are parameters
 		
 		if(arg[0].toLowerCase() === "lists"){
-			args[arg[0].toLowerCase()] = arg[1].toLowerCase().split(",").map(parseInt);
+			args[arg[0].toLowerCase()] = arg[1].toLowerCase().split(",").map(x=>parseInt(x));
 		}else{
 			args[arg[0].toLowerCase()] = arg[1].toLowerCase();
 		}
@@ -58,6 +58,7 @@ datamgr.getGeeklists(true, false, args['lists']).then(
 		return runAction(action, geeklists).catch(function(e){
 			logger.error("runAction failed");
 			logger.error(e);
+			return q.reject(e);
 		})
 	}
 );
@@ -93,7 +94,7 @@ function updateSearch(){
 			logger.error("Failed in saving db/search engine step.");
 			logger.error(err);
 				
-			throw err
+			return q.reject(err)
 		}
 	)
 }
@@ -112,12 +113,35 @@ function generateFilters(geeklists){
 function updateStatic(geeklists){
 	logger.info("Updating bordgame static");
 	
-	new Promise(function(resolve, reject){
+	return new Promise(function(resolve, reject){
+		/*
 		if(!args['lists']){
 			resolve(datamgr.getBoardgames().then(x=>x.map(b=>b.doc)));
 		}else{
 			resolve(datamgr.getGeeklist(args['lists'], 0, 10000).then(x=>x.map(y=>y.doc)));
 		}
+		*/
+		console.log(geeklists.map(x=>x.objectid));
+			
+		resolve(
+			q.all(geeklists.map(l => datamgr.getGeeklist(l.objectid, 0, 10000).then(x=>x.map(y=>y.doc)))).then(
+				function(boardgames){
+					return boardgames.reduce(function(a,b){
+						
+						b.forEach(function(y){
+							if(a.filter(x=>x.objectid === y.objectid).length === 0){
+								a.push(y);
+							}
+						});
+						
+						return a
+							 
+					},[]);
+				}
+			)
+		);
+		
+		//resolve(datamgr.getGeeklist(args['lists'], 0, 10000).then(x=>x.map(y=>y.doc)));
 	}).then(
 		function(dbBoardgames){
 			//var ids = dbBoardgames.map(r => r.doc.objectid);
@@ -174,8 +198,9 @@ function updateStatic(geeklists){
 		function(err){
 			logger.error("Failed to update static");
 			logger.error(err);
-
-			throw err
+			
+			return q.reject(err)
+			//throw err
 		}	
 	);
 }
@@ -212,7 +237,9 @@ function syncLists(loadedGeeklists){
 		function(err){
 			logger.error("Error occurred:");
 			logger.error(err);
-			throw err
+			
+			return q.reject(err)
+			//throw err
 		}
 	).then(
 		function(bgStats){
@@ -374,7 +401,8 @@ function syncLists(loadedGeeklists){
 					logger.error("Failed in saving db/search engine step.");
 					logger.error(err);
 					
-					throw err
+					return q.reject(err)	
+					//throw err
 				}
 			)
 		}
@@ -407,7 +435,8 @@ function syncLists(loadedGeeklists){
 		}
 	).catch(
 		function(e){
-			throw e
+			return q.reject(err)
+			//throw e
 			//logger.error("Failure using sync_lists");
 			//logger.error(e);
 		}
@@ -540,15 +569,17 @@ function loadBoardgames(boardgameIdList, bgStats){
 		function(err){
 			logger.error("Couldn't find boardgame in db or bgg..");
 			logger.error(err);
-
-			throw err
+			
+			return q.reject(err)
+			//throw err
 		}
 	).catch(
 		function(err){
 			logger.error("Caught error bg lookup..");
 			logger.error(err);
 			
-			throw err
+			return q.reject(err)
+			//throw err
 		}
 	)
 }
@@ -611,7 +642,8 @@ function saveStats(stats){
 			).fail(
 				function(err){
 					logger.error("Error saving boardgame stats: " + err);
-					throw err
+					return q.reject(err)
+					//throw err
 				}
 			)
 		);
@@ -626,8 +658,8 @@ function saveStats(stats){
 			).fail(
 				function(err){
 					logger.error("Error saving geeklist stats: " + err);
-					
-					throw err
+					return q.reject(err)	
+					//throw err
 				}
 			)
 		);
@@ -642,8 +674,9 @@ function saveStats(stats){
 		function(err){
 			console.log("Error in stats saving");
 			console.log(err);
-
-			throw err
+			
+			return q.reject(err)
+			//throw err
 		}
 	);
 }
@@ -804,13 +837,15 @@ function getGeeklistData(listtype, geeklistid, subgeeklistid, visitedGeeklists, 
 						promises.push(
 							getGeeklistData("geeklist", geeklistid, e.objectid, visitedGeeklists, boardgameStats, geeklistStats, excluded).then(
 								function(v){
-									("Promise resolved: " + e.objectid);
+									//("Promise resolved: " + e.objectid);
+									return q(v)
 								},
 								function(err){ 
 									logger.error("Error loading sublist:");
 									logger.error(err);
 
-									throw err
+									return q.reject(err)
+									//throw err
 								}
 							)
 						);
@@ -846,7 +881,9 @@ function getGeeklistData(listtype, geeklistid, subgeeklistid, visitedGeeklists, 
 			logger.error(err);
 			
 			p.reject(err);	
-			throw err
+			
+			return q.reject(err)
+			//throw err
 		}
 	);
 	
