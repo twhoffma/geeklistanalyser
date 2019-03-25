@@ -13,7 +13,7 @@ echo "pushing to s3"
 s3cmd put "$dest.gz" s3://hoffy-geeklistdb 
 
 echo "Cleaning up old"
-find $dest -type f -name "*${filebase}.gz" -mtime +30 -delete
+find $base -type f -name "*${filebase}.gz" -mtime +30 -delete
 
 #TODO: Cleanup using find
 #find /var/backups -type f -name "${media_basename}*" -mtime +$keep -delete

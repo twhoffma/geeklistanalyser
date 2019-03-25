@@ -921,7 +921,7 @@
     "name": "Spielwarenmesse/NY Toy Fair/FIJ 2019 Preview",
     "group": "Nürnberg",
     "year": 2019,
-    "update": true,
+    "update": false,
     "objectid": 14,
     "visible": true,
     "fromDate": "2019-01-01",
