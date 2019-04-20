@@ -1,0 +1,10 @@
+"/var/log/geeklistanalyzer-*.log" {
+  copytruncate
+  weekly
+  rotate 5
+  compress
+  delaycompress
+  missingok
+  notifempty
+  su syslog syslog
+}
