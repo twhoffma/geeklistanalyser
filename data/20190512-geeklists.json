@@ -928,19 +928,5 @@
     "toDate": "2019-12-31",
     "excluded": [],
     "tradeLists": []
-  },
-  {
-    "_id": "17",
-    "type": "preview",
-    "name": "Origins Game Fair 2019 Preview",
-    "group": "Origins",
-    "year": 2019,
-    "update": true,
-    "objectid": 17,
-    "visible": true,
-    "fromDate": "2019-05-01",
-    "toDate": "2019-06-20",
-    "excluded": [],
-    "tradeLists": []
   }
 ]

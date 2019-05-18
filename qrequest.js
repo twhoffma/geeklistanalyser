@@ -144,14 +144,14 @@ function reqGet(url){
 				//The request was accepted. This implies server rendering. Try back-off.
 				reject(202);
 			}else{
-				if((error && error.code == 'ECONNRESET') || (response.statusCode && response.statusCode == 503)){
+				if((error && error.code == 'ECONNRESET') || (response && response.statusCode && response.statusCode == 503)){
 					reject(503);
 				}else if(error && error.code == 'ETIMEDOUT'){
 					logger.error("Connection time out? " + (err.connect === true));
 					reject(504);
 				}else{
 					logger.error("reqGet failed: " + url);
-					logger.error(response.statusCode)
+					logger.error(error||response.statusCode)
 					reject(error||response.statusCode);
 				}
 			}

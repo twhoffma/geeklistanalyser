@@ -249,7 +249,7 @@ function getBoardgameData(boardgameIds, priority="db"){
 				},
 				function(bgId){
 					bggList.push(bgId);
-					logger.warn("Looking up: " + bgId);
+					//logger.warn("Looking up: " + bgId);
 					return false
 				}
 			));
