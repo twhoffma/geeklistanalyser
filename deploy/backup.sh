@@ -14,7 +14,7 @@ function glazebackup(){
 	s3cmd --no-progress put "$dest.gz" s3://hoffy-geeklistdb 
 
 	echo "Cleaning up old"
-        find $base -type f -name "*${filebase}.log" -mtime 1 -delete
+        find $base -type f -name "*${filebase}.log" -mtime +1 -delete
 	find $base -type f -name "*${filebase}" -mtime +3 -delete
 	find $base -type f -name "*${filebase}.gz" -mtime +7 -delete
 }
