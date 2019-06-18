@@ -4,8 +4,9 @@ function glazebackup(){
 	base="$HOME/backup/"
 	filebase="-geeklistdb.dump"
 	dest="$base`date +%Y%m%d-%H%M%S`$filebase"
-
-	couchdb-dump -b 100 "http://127.0.0.1:5984/geeklistdb" > $dest 2>"${dest}.log"
+	
+	echo "dumping couchdb"	
+	couchdb-dump "http://127.0.0.1:5984/geeklistdb" > $dest 2>/dev/null #"${dest}.log"
 
 	echo "zipping couchdb backup"
 	gzip $dest 

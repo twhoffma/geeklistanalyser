@@ -942,5 +942,19 @@
     "toDate": "2019-06-20",
     "excluded": [],
     "tradeLists": []
+  },
+  {
+    "_id": "13",
+    "type": "preview",
+    "name": "GenCon 2019 Preview",
+    "group": "GenCon",
+    "year": 2019,
+    "update": true,
+    "objectid": 13,
+    "visible": true,
+    "fromDate": "2019-06-18",
+    "toDate": "2019-08-15",
+    "excluded": [],
+    "tradeLists": []
   }
 ]
