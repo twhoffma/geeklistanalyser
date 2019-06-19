@@ -956,5 +956,19 @@
     "toDate": "2019-08-15",
     "excluded": [],
     "tradeLists": []
+  },
+  {
+    "_id": "257813",
+    "type": "geeklist",
+    "name": "Essen 2019 collection of lists",
+    "group": "Essen",
+    "year": 2019,
+    "update": true,
+    "objectid": 257813,
+    "visible": true,
+    "fromDate": "2019-06-18",
+    "toDate": "2019-11-01",
+    "excluded": [257747,257748,257749,257825,257864],
+    "tradeLists": []
   }
 ]
