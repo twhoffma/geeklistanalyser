@@ -14,15 +14,37 @@
 				
 			ui.clearErrorMessage();
 							
+			var h = ui.getHistory();
+			
 			data.getGeeklists().then(function(r){
-				ui.renderMenuGeeklists(r);
 				sidenav_geeklists.setGeeklistsSidebar(r);
+				
+				let filters = {};
+				
+				if(h.active !== undefined){
+					filters['active'] = (h.active === "true");
+				}
+				
+				if(h.listgroup !== undefined){
+					filters['listgroup'] = h.listgroup;
+				}
+				
+				if(h.listyear !== undefined){
+					filters['listyear'] = parseInt(h.listyear);
+				}
+				
+				if(h.listtype !== undefined){
+					filters['listtype'] = h.listtype;
+				}
+				
+				ui.renderMenuGeeklists(r, filters);
+				
+				if(h.id !== undefined){
+					$('#geeklists').hide();
+				}
 			}).catch(function(e){
 				ui.setErrorMessage(e);
 			});
-
-			
-			var h = ui.getHistory();
 			
 			if(h.id != undefined){
 				selectedGeeklist = h.id;
@@ -39,7 +61,7 @@
 				
 				loadGeeklist(h.id, true, false, true);
 			}else{
-				$('#sidenavGeeklists').toggle();	
+				//$('#sidenavGeeklists').toggle();	
 			}	
 			
 			$('#loadmore').on("click", function(){

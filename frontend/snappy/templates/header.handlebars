@@ -2,24 +2,24 @@
 	    <h1 id="glaze-hdr-listname">
 		{{#if listview}}
 		<a href="https://glaze.hoffy.no">&lt;</a> {{name}}
-		{{/if}}
-		{{#else}}
+		{{else}}
 		GLAZE - Geeklist Analyzer
+		{{/if}}
 	    </h1>
 	    {{#if isListview}}
-	    <div class="listHeaderDetails">
-	      <p>
-		<span class="syncStatus syncInactive" id="glaze-hdr-update">INACTIVE</span>
-		<span class="lastSyncTime" id="glaze-hdr-chgts">When was it updated?</span>
-	      </p>
-	      <p>
-		<span class="depthLists">Max Depth: <span id="glaze-hdr-depth">?</span> </span>
-		<span class="numLists">| Lists: <span id="glaze-hdr-numlists">?</span> </span>
-		<span class="num">| Count: <span id="glaze-hdr-numitems">?</span> </span>
-		<span class="numDisctinct" >| Distinct: <span id="glaze-hdr-distinct">?</span></span>
-		<span class="directLink">| <a id="glaze-hdr-link" href="http://boardgamegeek.com" target="blank_" rel="noopener" alt="Visit geeklist on BoardGameGeek"><i class="fas fa-link"></i> BGG</a></span>
-	      </p>
-	    </div>
+		    <div class="listHeaderDetails">
+		      <p>
+			<span class="syncStatus syncInactive" id="glaze-hdr-update">INACTIVE</span>
+			<span class="lastSyncTime" id="glaze-hdr-chgts">When was it updated?</span>
+		      </p>
+		      <p>
+			<span class="depthLists">Max Depth: <span id="glaze-hdr-depth">?</span> </span>
+			<span class="numLists">| Lists: <span id="glaze-hdr-numlists">?</span> </span>
+			<span class="num">| Count: <span id="glaze-hdr-numitems">?</span> </span>
+			<span class="numDisctinct" >| Distinct: <span id="glaze-hdr-distinct">?</span></span>
+			<span class="directLink">| <a id="glaze-hdr-link" href="http://boardgamegeek.com" target="blank_" rel="noopener" alt="Visit geeklist on BoardGameGeek"><i class="fas fa-link"></i> BGG</a></span>
+		      </p>
+		    </div>
 	    {{/if}}
 	    <div class="listHeaderButtons">
 		<div class="listHeaderButton" data-glaze-show="charts"><i class="fas fa-chart-area"></i></div>

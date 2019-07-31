@@ -568,35 +568,39 @@ function init_ui(){
 			$('input[name="sortby_asc"][value="0"]').prop("checked", true);
 			//$('.glyphicon-sort-by-attributes').css('color', 'black');
 		},
-		
-		'renderMenuGeeklists': function renderMenuGeeklists(r){
-			var geeklists = $('#geeklists .dropdown-menu');
-			r.sort(function(a, b){
-				if(a.group < b.group){
-					return -1;
-				}else if(b.group < a.group){
-					return 1;
+		'renderMenuGeeklists': function renderMenuGeeklists(r, filters){
+			var ul = $('ul#geeklists');
+			ul.children().remove();
+			
+			var cmpYear = function(a,b){
+				if(a.year > b.year){
+					return -1
+				}else if(a.year === b.year){
+					return a.name < b.name ? -1 : 1
 				}else{
-					if(a.year < b.year){
-						return -1;
-					}else if(a.year > b.year){
-						return 1;
-					}else{
-						return 0;
-					}
+					return 1
+				}
+				
+			};
+			
+			r.sort(function(a,b){
+				if((a.update && b.update) || !(a.update && b.update)){
+					return cmpYear(a,b)
+				}else{
+					return -1
 				}
 			});
 				
 			for(i = 0; i < r.length; i++){
-				var g = $('li[data-geeklistgroup="' + r[i].group  + '"]');
-				//var grp;
-				var geeklistitem = "<li><a class=\"geeklist-menu-item\" data-geeklistid=\"" + r[i].objectid + "\">" + r[i].name + "</a></li>";	
-				if(g.length === 0)
-				{
-					geeklists.append('<li class="dropdown-header" data-geeklistgroup="' + r[i].group + '">' + r[i].group + '</li>');
-				}
+				var matchActive = (filters.active === r[i].update || filters.active === undefined);
+				var matchGroup = (filters.listgroup === r[i].group || filters.listgroup === undefined);
+				var matchYear = (filters.listyear === r[i].year || filters.listyear === undefined);
+				var matchType = (filters.listtype === r[i].type || filters.listtype === undefined);
 				
-				geeklists.append(geeklistitem);
+				if(matchActive && matchGroup && matchYear && matchType){
+					var l = Handlebars.templates.list(r[i]);
+					ul.append(l);
+				}
 			}
 		}
 	}

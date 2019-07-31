@@ -176,6 +176,60 @@ templates['bgobs'] = template({"1":function(container,depth0,helpers,partials,da
     + ((stack1 = helpers["if"].call(alias1,((stack1 = (depth0 != null ? depth0.obsies : depth0)) != null ? stack1.length : stack1),{"name":"if","hash":{},"fn":container.program(4, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
     + ((stack1 = helpers["if"].call(alias1,((stack1 = (depth0 != null ? depth0.probsies : depth0)) != null ? stack1.length : stack1),{"name":"if","hash":{},"fn":container.program(6, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "");
 },"useData":true});
+templates['header'] = template({"1":function(container,depth0,helpers,partials,data) {
+    var helper;
+
+  return "		<a href=\"https://glaze.hoffy.no\">&lt;</a> "
+    + container.escapeExpression(((helper = (helper = helpers.name || (depth0 != null ? depth0.name : depth0)) != null ? helper : helpers.helperMissing),(typeof helper === "function" ? helper.call(depth0 != null ? depth0 : (container.nullContext || {}),{"name":"name","hash":{},"data":data}) : helper)))
+    + "\n";
+},"3":function(container,depth0,helpers,partials,data) {
+    return "		GLAZE - Geeklist Analyzer\n";
+},"5":function(container,depth0,helpers,partials,data) {
+    return "		    <div class=\"listHeaderDetails\">\n		      <p>\n			<span class=\"syncStatus syncInactive\" id=\"glaze-hdr-update\">INACTIVE</span>\n			<span class=\"lastSyncTime\" id=\"glaze-hdr-chgts\">When was it updated?</span>\n		      </p>\n		      <p>\n			<span class=\"depthLists\">Max Depth: <span id=\"glaze-hdr-depth\">?</span> </span>\n			<span class=\"numLists\">| Lists: <span id=\"glaze-hdr-numlists\">?</span> </span>\n			<span class=\"num\">| Count: <span id=\"glaze-hdr-numitems\">?</span> </span>\n			<span class=\"numDisctinct\" >| Distinct: <span id=\"glaze-hdr-distinct\">?</span></span>\n			<span class=\"directLink\">| <a id=\"glaze-hdr-link\" href=\"http://boardgamegeek.com\" target=\"blank_\" rel=\"noopener\" alt=\"Visit geeklist on BoardGameGeek\"><i class=\"fas fa-link\"></i> BGG</a></span>\n		      </p>\n		    </div>\n";
+},"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
+    var stack1, alias1=depth0 != null ? depth0 : (container.nullContext || {});
+
+  return "	<div class=\"listHeader\" id=\"glaze-hdr\">\n	    <h1 id=\"glaze-hdr-listname\">\n"
+    + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.listview : depth0),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.program(3, data, 0),"data":data})) != null ? stack1 : "")
+    + "	    </h1>\n"
+    + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.isListview : depth0),{"name":"if","hash":{},"fn":container.program(5, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + "	    <div class=\"listHeaderButtons\">\n		<div class=\"listHeaderButton\" data-glaze-show=\"charts\"><i class=\"fas fa-chart-area\"></i></div>\n		<div class=\"listHeaderButton\" data-glaze-show=\"ml\"><i class=\"fas fa-robot\"></i></div>\n		<div class=\"listHeaderButton\" data-glaze-show=\"filters\" data-toggle=\"modal\" data-target=\"#modSortingAndFilters\" ><i class=\"fas fa-filter\"></i></div>\n	    </div>\n	</div>\n";
+},"useData":true});
+templates['list'] = template({"1":function(container,depth0,helpers,partials,data) {
+    var helper;
+
+  return "	      		<a href=\"https://glaze.hoffy.no?active="
+    + container.escapeExpression(((helper = (helper = helpers.update || (depth0 != null ? depth0.update : depth0)) != null ? helper : helpers.helperMissing),(typeof helper === "function" ? helper.call(depth0 != null ? depth0 : (container.nullContext || {}),{"name":"update","hash":{},"data":data}) : helper)))
+    + "\" target=\"blank_\"><span class=\"syncStatus syncActive\" id=\"glaze-hdr-update\">ACTIVE</span></a>\r\n";
+},"3":function(container,depth0,helpers,partials,data) {
+    var helper;
+
+  return "	      		<a href=\"https://glaze.hoffy.no?active="
+    + container.escapeExpression(((helper = (helper = helpers.update || (depth0 != null ? depth0.update : depth0)) != null ? helper : helpers.helperMissing),(typeof helper === "function" ? helper.call(depth0 != null ? depth0 : (container.nullContext || {}),{"name":"update","hash":{},"data":data}) : helper)))
+    + "\" target=\"blank_\"><span class=\"syncStatus syncInactive\" id=\"glaze-hdr-update\">INACTIVE</span></a>\r\n";
+},"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
+    var stack1, helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression;
+
+  return "  <li class=\"bg\">\r\n    <div class=\"block header\">\r\n      	<span class=\"nm\"><a href=\"https://glaze.hoffy.no?id="
+    + alias4(((helper = (helper = helpers.objectid || (depth0 != null ? depth0.objectid : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"objectid","hash":{},"data":data}) : helper)))
+    + "\" target=\"_blank\">"
+    + alias4(((helper = (helper = helpers.name || (depth0 != null ? depth0.name : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"name","hash":{},"data":data}) : helper)))
+    + "</a></span>\r\n    </div>\r\n    <div class=\"block\">\r\n        <div style=\"float: left; text-align: left;\">\r\n            <div class=\"block time\">\r\n              <span class=\"crets\"></span>\r\n            </div>\r\n	    </div class=\"block\">\r\n"
+    + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.update : depth0),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.program(3, data, 0),"data":data})) != null ? stack1 : "")
+    + "	    </div>\r\n            <div class=\"block\">\r\n		    <p>\r\n			<span class=\"smallbox tp tpExpansion\"><a href=\"https://glaze.hoffy.no?listtype="
+    + alias4(((helper = (helper = helpers.type || (depth0 != null ? depth0.type : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"type","hash":{},"data":data}) : helper)))
+    + "\" target=\"blank_\">"
+    + alias4(((helper = (helper = helpers.type || (depth0 != null ? depth0.type : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"type","hash":{},"data":data}) : helper)))
+    + "</a></span>\r\n		    </p>\r\n            </div>\r\n\r\n            <div class=\"block\">\r\n              <ul>\r\n		<!-- Linking year should allow filtering on that -->\r\n                <li><i class=\"fas fa-calendar\"></i> <a href=\"https://glaze.hoffy.no?listyear="
+    + alias4(((helper = (helper = helpers.year || (depth0 != null ? depth0.year : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"year","hash":{},"data":data}) : helper)))
+    + "\" target=\"blank_\">"
+    + alias4(((helper = (helper = helpers.year || (depth0 != null ? depth0.year : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"year","hash":{},"data":data}) : helper)))
+    + "</a></li>\r\n                <li><i class=\"far fa-thumbs-up\"></i> ? </li>\r\n                <li><i class=\"fas fa-buffer\"></i> ?  </li>\r\n                <li><i class=\"fas fa-hashtag\"></i> ?  </li>\r\n                <li><i class=\"fas fa-list\"></i> ?  </li>\r\n                <li><i class=\"far fa-object-group\"></i> <a href=\"https://glaze.hoffy.no?listgroup="
+    + alias4(((helper = (helper = helpers.group || (depth0 != null ? depth0.group : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"group","hash":{},"data":data}) : helper)))
+    + "\" target=\"blank_\">"
+    + alias4(((helper = (helper = helpers.group || (depth0 != null ? depth0.group : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"group","hash":{},"data":data}) : helper)))
+    + "</a> </li>\r\n              </ul>\r\n            </div>\r\n        </div>\r\n    </div>\r\n  </li> \r\n";
+},"useData":true});
 templates['sidenav_dropdown'] = template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
     var helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression;
 

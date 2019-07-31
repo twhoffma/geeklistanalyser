@@ -22,6 +22,7 @@ function init_header(){
 
   }
   
+  /*
   window.addEventListener('scroll', function(e) {
     var h = document.querySelectorAll(".listHeader")[0];
     
@@ -36,21 +37,27 @@ function init_header(){
       h.classList.remove("headerFixed");
     }
   });
-  
+  */
+
   function setDetails(details){
-  	document.getElementById("glaze-hdr-listname").innerHTML = details.name || "Name of list";
+	if(details.name){ 
+  		document.getElementById("glaze-hdr-listname").innerHTML = details.name ;
+	}
 	
-  	document.getElementById("glaze-hdr-depth").innerHTML = details.stats.depth || "?";
-    document.getElementById("glaze-hdr-numlists").innerHTML = details.stats.numlists || "?";
-    document.getElementById("glaze-hdr-numitems").innerHTML = details.stats.numitems || "?";
-    document.getElementById("glaze-hdr-distinct").innerHTML = details.stats.distictitems || "?";
-    document.getElementById("glaze-hdr-link").href = 'https://www.boardgamegeek.com/' + (details.type === "preview" ? "geekpreview/" : "geeklist/") + details.objectid ;
-    var e = document.getElementById("glaze-hdr-update");
+	//document.getElementById("glaze-back-to-menu").show();	
+	$("#glaze-back-to-menu").show();	
+  	
+	//document.getElementById("glaze-hdr-depth").innerHTML = details.stats.depth || "?";
+    	//document.getElementById("glaze-hdr-numlists").innerHTML = details.stats.numlists || "?";
+    	//document.getElementById("glaze-hdr-numitems").innerHTML = details.stats.numitems || "?";
+    	//document.getElementById("glaze-hdr-distinct").innerHTML = details.stats.distictitems || "?";
+    	document.getElementById("glaze-hdr-link").href = 'https://www.boardgamegeek.com/' + (details.type === "preview" ? "geekpreview/" : "geeklist/") + details.objectid ;
+    	//var e = document.getElementById("glaze-hdr-update");
     
-    e.innerHTML = details.update ? "ACTIVE" : "INACTIVE";
-    e.className = "syncStatus " + (details.update ? "syncActive" : "syncInactive");
+    	//e.innerHTML = details.update ? "ACTIVE" : "INACTIVE";
+    	//e.className = "syncStatus " + (details.update ? "syncActive" : "syncInactive");
     
-    document.getElementById("glaze-hdr-chgts").innerHTML = details.stats.chgts || "Who knows when it was last updated?";
+    	//document.getElementById("glaze-hdr-chgts").innerHTML = details.stats.chgts || "Who knows when it was last updated?";
   }
   
   function getSampleData(){
