@@ -210,7 +210,7 @@ templates['list'] = template({"1":function(container,depth0,helpers,partials,dat
 },"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
     var stack1, helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression;
 
-  return "  <li class=\"bg\">\r\n    <div class=\"block header\">\r\n      	<span class=\"nm\"><a href=\"https://glaze.hoffy.no?id="
+  return "  <li class=\"gl\">\r\n    <div class=\"block header\">\r\n      	<span class=\"nm\"><a href=\"https://glaze.hoffy.no?id="
     + alias4(((helper = (helper = helpers.objectid || (depth0 != null ? depth0.objectid : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"objectid","hash":{},"data":data}) : helper)))
     + "\" target=\"_blank\">"
     + alias4(((helper = (helper = helpers.name || (depth0 != null ? depth0.name : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"name","hash":{},"data":data}) : helper)))
