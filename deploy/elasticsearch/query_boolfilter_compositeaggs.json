@@ -1,0 +1,54 @@
+{
+  "size": 0,
+  "query": {
+    "bool": {
+	    "must": [
+		  {
+		    "filtered": {
+		      "filter": {
+			"nested": {
+			  "path": "geeklists",
+			  "filter": {
+			    "bool": {
+			      "must": [
+				{
+				  "term": {
+				    "geeklists.objectid": 191095
+				  }
+				}
+			      ]
+			    }
+			  }
+			 
+			}
+		      }
+		    }
+		  }
+	    ]
+  	}
+    },
+    "aggs": {
+	"mech_cat_buckets": {
+	  "composite": {
+	    "sources": [
+		{
+			"nested": {
+			  "path": "boardgamecategory",
+			  "filter": {
+			    "bool": {
+			      "must": [
+				{
+				  "term": {
+				    "boardgamecategory.objectid": "1035"
+				  }
+				}
+			      ]
+			    }
+			  }
+			}
+	      }
+	    ]
+	  }
+	}
+    }
+}
