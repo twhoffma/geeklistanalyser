@@ -217,7 +217,7 @@ function syncLists(loadedGeeklists){
 					//Only run lists that are provided at the commandline, or all with update === true if none is given.
 					geeklists.push(geeklist);
 						
-					p.push(getGeeklistData(geeklist.type, geeklist.objectid, geeklist.objectid, new Set(), [], [], geeklist.excluded, geeklist.saveObservations));
+					p.push(getGeeklistData(geeklist.type, geeklist.objectid, geeklist.objectid, new Set(), [], [], geeklist.excluded, geeklist.saveObservations, geeklist.excludedTitles || []));
 				});
 				
 					
@@ -780,7 +780,7 @@ function updateBoardgameStat(e, boardgameStats, rootGeeklistId, geeklistId, root
 }
 
 //XXX: Rewrite, should contain rootGeeklist, parentGeeklist, currentGeeklist, visitedGeeklists, boardgameStats, geeklistStats.
-function getGeeklistData(listtype, geeklistid, subgeeklistid, visitedGeeklists, boardgameStats, geeklistStats, excluded, saveObs){
+function getGeeklistData(listtype, geeklistid, subgeeklistid, visitedGeeklists, boardgameStats, geeklistStats, excluded, saveObs, excludedTitles){
 	var p = q.defer();
 	var promises = [];
 	
@@ -829,13 +829,23 @@ function getGeeklistData(listtype, geeklistid, subgeeklistid, visitedGeeklists, 
 					}
 				}else if(e.objecttype === 'geeklist'){
 					let isExcluded = (excluded.indexOf(e.objectid) > -1);
+					let isExcludedTitle = false;
 					
-					if(!visitedGeeklists.has(e.objectid) && !isExcluded){
+					excludedTitles.forEach(function(et){
+						let re = new RegExp(et,'i');
+						//console.log(e);
+						if(re.test(e.objectname)){
+							isExcludedTitle = true;
+							logger.warn("" + e.objectname + " excluded!");
+						}
+					});
+						
+					if(!visitedGeeklists.has(e.objectid) && !isExcluded && !isExcludedTitle){
 						logger.debug('Loading sublist: ' + e.objectid);
 						visitedGeeklists.add(e.objectid);
 							
 						promises.push(
-							getGeeklistData("geeklist", geeklistid, e.objectid, visitedGeeklists, boardgameStats, geeklistStats, excluded).then(
+							getGeeklistData("geeklist", geeklistid, e.objectid, visitedGeeklists, boardgameStats, geeklistStats, excluded, saveObs, excludedTitles).then(
 								function(v){
 									//("Promise resolved: " + e.objectid);
 									return q(v)
