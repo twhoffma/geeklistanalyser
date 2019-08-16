@@ -9,7 +9,8 @@ var srchType = c.elastic.srchType;
 
 /* --- Generic functions --- */
 function getSrchURL(){
-	return srchURL + "/" + srchIndex + "/" + srchType + "/_search" 
+	//return srchURL + "/" + srchIndex + "/" + srchType + "/_search" 
+	return srchURL + "/" + srchIndex + "/_search" 
 }
 
 //Update search engine
@@ -18,18 +19,20 @@ function updateSearch(docs){
 	var bulk_request = [];
 	var p = [];
 	var h = {};
-
+	
 	docs.forEach(function(doc){
 			var idx;
 			if(doc.type === "boardgame"){
 				idx = "boardgames";
 			}
 			
-			h = {'update': {"_id": doc._id, "_type": doc.type, "_index": idx}};
+			//h = {'update': {"_id": doc._id, "_type": doc.type, "_index": idx}};
+			h = {'update': {"_id": doc._id, "_index": idx}};
 			bulk_request.push(JSON.stringify(h));
 			bulk_request.push(JSON.stringify({"doc": doc, "doc_as_upsert": true}));
 	});
 	
+	logger.info("[SearchEngine] Updating to " + url);
 	return qrequest.qrequest("POST", url, bulk_request.join("\n") + "\n", {"Content-Type": "application/json"}).then(
 		function(v){
 			var r = JSON.parse(v);
@@ -68,19 +71,28 @@ function srchBoardgames(geeklistid, filters, sortby, sortby_asc, skip, lim){
 	q['size'] = lim;
 	
 	//Filtering
-	q['query'] = {};
+	//q['query'] = {};
+	q['query'] = (filterGeeklistId(geeklistid));	
 	q['query']['bool'] = {};
-	q['query']['bool']['must'] = [];
 	
-	q['query']['bool']['must'].push(filterGeeklistId(geeklistid));	
+	//q['query']['bool'] = (filterGeeklistId(geeklistid));	
+	//q['query']['bool']['must'] = [];
+	//q['query']['bool']['must'].push(filterGeeklistId(geeklistid));	
 	
 	['boardgamedesigner', 'boardgameartist', 'boardgamemechanic', 'boardgamecategory', 'boardgamepublisher', 'boardgamefamily'].forEach(function(e){	
 		if(filters[e] != undefined){ 
+			if(q['query']['bool']['must'] === undefined){
+				q['query']['bool']['must'] = [];
+			}
 			q['query']['bool']['must'].push(filterManyToMany(e, filters[e]));
 		}
 	});
 
 	if(filters["releasetype"] != undefined){
+		if(q['query']['bool']['must'] === undefined){
+			q['query']['bool']['must'] = [];
+		}
+		
 		switch(filters["releasetype"]){
 			case 'boardgame':
 				//q['query']['bool']['must'].push(filterIsExpansion());
@@ -116,6 +128,11 @@ function srchBoardgames(geeklistid, filters, sortby, sortby_asc, skip, lim){
 
 	//Playing time
 	if(filters["playingtimemin"] != undefined || filters["playingtimemax"] != undefined){
+
+		if(q['query']['bool']['must'] === undefined){
+			q['query']['bool']['must'] = [];
+		}
+		
 		q['query']['bool']['must'].push(filterRange("playingtime", filters["playingtimemin"] || -Infinity, filters["playingtimemax"] || Infinity));
 	}
 	
@@ -129,6 +146,10 @@ function srchBoardgames(geeklistid, filters, sortby, sortby_asc, skip, lim){
 		
 	//Year published
 	if(filters["yearpublishedmin"] != undefined || filters["yearpublishedmax"] != undefined){
+		if(q['query']['bool']['must'] === undefined){
+			q['query']['bool']['must'] = [];
+		}
+		
 		q['query']['bool']['must'].push(filterRange("yearpublished", filters["yearpublishedmin"] || -Infinity, filters["yearpublishedmax"] || Infinity));
 	}
 	
@@ -162,11 +183,12 @@ function srchBoardgames(geeklistid, filters, sortby, sortby_asc, skip, lim){
 	
 	console.log("this is q:\n" + json_query);
 	
-	return qrequest.qrequest("POST", getSrchURL(), json_query);
+	return qrequest.qrequest("POST", getSrchURL(), json_query, {"Content-Type": "application/json"});
 }
 
 function filterGeeklistId(geeklistid){
 	var q = {};
+	/*
 	q['filtered'] = {};
 	q['filtered']['filter'] = {};
 	q['filtered']['filter']['nested'] = {};
@@ -176,6 +198,15 @@ function filterGeeklistId(geeklistid){
 	q['filtered']['filter']['nested']['filter']['bool']['must'] = [];
 		
 	var m = q['filtered']['filter']['nested']['filter']['bool']['must'];
+	*/
+	
+	q['nested'] = {};
+	q['nested']['path'] = "geeklists";
+	q['nested']['query'] = {};
+	q['nested']['query']['bool'] = {};
+	q['nested']['query']['bool']['must'] = [];
+		
+	var m = q['nested']['query']['bool']['must'];
 	m.push({'term': {'geeklists.objectid': geeklistid}});
 
 	return q
@@ -183,6 +214,7 @@ function filterGeeklistId(geeklistid){
 
 function filterManyToMany(nameM2M, objectid){
 	var q = {};
+	/*
 	q['filtered'] = {};
 	q['filtered']['filter'] = {};
 	q['filtered']['filter']['nested'] = {};
@@ -192,6 +224,17 @@ function filterManyToMany(nameM2M, objectid){
 	q['filtered']['filter']['nested']['filter']['bool']['must'] = [];
 		
 	var m = q['filtered']['filter']['nested']['filter']['bool']['must'];
+	*/
+	
+	q['filter'] = {};
+	q['filter']['nested'] = {};
+	q['filter']['nested']['path'] = nameM2M;
+	q['filter']['nested']['filter'] = {};
+	q['filter']['nested']['filter']['bool'] = {};
+	q['filter']['nested']['filter']['bool']['must'] = [];
+		
+	var m = q['filter']['nested']['filter']['bool']['must'];
+	
 	var t = {};
 	t['term'] = {};
 	t['term'][nameM2M + '.objectid'] = objectid;
@@ -203,37 +246,63 @@ function filterManyToMany(nameM2M, objectid){
 
 function filterIsExpansion(){
 	var q = {};
+	/*
 	q['filtered'] = {};
 	q['filtered']['filter'] = {};
 	q['filtered']['filter']['missing'] = {};
 	q['filtered']['filter']['missing']['field'] = 'expands';
-
+	*/
+	
+	q['filter'] = {};
+	q['filter']['missing'] = {};
+	q['filter']['missing']['field'] = 'expands';
+	
 	return q
 }
 
 function filterIsEmpty(fieldName){
 	var q = {};
+	/*
 	q['filtered'] = {};
 	q['filtered']['filter'] = {};
 	q['filtered']['filter']['missing'] = {};
 	q['filtered']['filter']['missing']['field'] = fieldName;
+	*/
+
+	q['filter'] = {};
+	q['filter']['missing'] = {};
+	q['filter']['missing']['field'] = fieldName;
 
 	return q
 }
 
 function filterRange(name, min, max){
 	var q = {};
+	/*
 	q['filtered'] = {};
 	q['filtered']['filter'] = {};
 	q['filtered']['filter']['range'] = {};
 	q['filtered']['filter']['range'][name] = {};
-
+	
 	if(min > -Infinity){
 		q['filtered']['filter']['range'][name]['gte'] = min;
 	}
 
 	if(max < Infinity){
 		q['filtered']['filter']['range'][name]['lte'] = max;
+	}
+	*/
+	
+	q['filter'] = {};
+	q['filter']['range'] = {};
+	q['filter']['range'][name] = {};
+	
+	if(min > -Infinity){
+		q['filter']['range'][name]['gte'] = min;
+	}
+
+	if(max < Infinity){
+		q['filter']['range'][name]['lte'] = max;
 	}
 
 	return q

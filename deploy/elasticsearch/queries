@@ -1,1 +1,11 @@
-curl -XGET 'http://127.0.0.1:9200/boardgames/_search' -d @name_filter_query.json > output
+#curl -XGET 'http://127.0.0.1:9200/boardgames/_search' -d @name_filter_query.json > output
+
+curl -XGET 'http://127.0.0.1:9201/boardgames/_count'
+
+#Doesn't work for 7.3
+curl -XGET 'http://127.0.0.1:9201/boardgames/_search' -d @query_filtered_by_geeklistid_sorted_by_thumbs-7.3.json -H 'Content-type: application/json'
+
+#Doesn't work for 7.3
+#curl -XGET 'http://127.0.0.1:9201/boardgames/_search' -d @query_boolfilter-7.3.json -H 'Content-type: application/json'
+
+

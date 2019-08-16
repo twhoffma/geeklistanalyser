@@ -1,0 +1,18 @@
+{
+  "query": {
+        "nested": {
+          "path": "geeklists",
+          "query": {
+            "bool": {
+              "filter": [
+                {
+                  "term": {
+                    "geeklists.objectid": 257813
+                  }
+                }
+              ]
+            }
+          }
+        }
+  }
+}
