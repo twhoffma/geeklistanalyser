@@ -4,10 +4,10 @@ sudo apt-get update
 
 #nginx
 sudo apt-get install nginx
-
-
+sudo cp nginx/geeklistmonitor /etc/nginx/sites-available
+sudo ln -s /etc/nginx/sites-available/geeklistmonitor /etc/nginx/sites-enabled/
+sudo service nginx restart
 #/nginx
-
 
 #docker
 sudo apt-get install docker.io
@@ -58,8 +58,9 @@ sudo apt-get install nodejs
 
 sudo apt-get install npm
 sudo npm install pm2 -g
+sudo npm install jslint -g
+sudo npm install grunt -g
 
-#Install backend binaries
 cd ..
 sudo npm install
 
@@ -68,8 +69,15 @@ sudo npm install
 
 cd ..
 
+cd frontend/snappy
+sudo npm install grunt -g
+sudo npm install jslint -g
+sudo npm install
+
+sudo grunt
+
 #[Not done] Start middleware
 #sudo pm2 start ./middleware/index.js --watch
 
-sudo pm2 startup
+#sudo pm2 startup
 #/node
