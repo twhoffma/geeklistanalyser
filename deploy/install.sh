@@ -7,6 +7,9 @@ sudo apt-get install nginx
 sudo cp nginx/geeklistmonitor /etc/nginx/sites-available
 sudo ln -s /etc/nginx/sites-available/geeklistmonitor /etc/nginx/sites-enabled/
 sudo service nginx restart
+
+#for dev machine, this is done with local-geeklistmonitor for config
+#Probably have to setup the correct /etc/hosts to point 127.0.0.1 to hoffy.local
 #/nginx
 
 #docker
