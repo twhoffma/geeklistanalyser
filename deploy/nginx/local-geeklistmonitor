@@ -2,16 +2,16 @@ server {
     listen 80;
     #server_name hoffy-local.no;
     
-    root /var/www/hoffy.no/;
-    error_log /var/log/nginx/hoffy.no-glam-error_log;
-    access_log '/var/log/nginx/hoffy.no-glam-access_log';
+    root /var/www/glaze.hoffy.no/;
+    error_log /var/log/nginx/glaze.hoffy.no-error_log;
+    access_log /var/log/nginx/glaze.hoffy.no-access_log;
     
     
-    location /geeklistmonitor/ {
-        try_files $uri $uri/ $uri/index.html;
+    location / {
+        try_files $uri $uri/ =404;
     }
     
-    location /geeklistmonitor/data/ {
+    location /data {
         set            $memcached_key "$uri?$args";
         memcached_pass 127.0.0.1:11211;
         error_page     404 502 504 = @fallback;

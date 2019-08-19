@@ -29,6 +29,9 @@ function updateSearch(docs){
 			//h = {'update': {"_id": doc._id, "_type": doc.type, "_index": idx}};
 			h = {'update': {"_id": doc._id, "_index": idx}};
 			bulk_request.push(JSON.stringify(h));
+			//console.log(doc);
+			//Elastic 7.3.0 doesn't allow _id as part of a doc
+			delete doc._id;
 			bulk_request.push(JSON.stringify({"doc": doc, "doc_as_upsert": true}));
 	});
 	
@@ -38,17 +41,23 @@ function updateSearch(docs){
 			var r = JSON.parse(v);
 			var cntCreated = 0;
 			var cntUpdated = 0;
-			//console.log(r);	
+			var cntErrors = 0;
+			logger.debug(r);
 			r.items.forEach(function(i){
 				if(i.update.status == 201){
 					cntCreated++;
-				}else{
+				}else if(i.update.status >= 200 && i.update.status < 300){
 					cntUpdated++;
+				}else{
+					cntErrors++;
 				}
 			});
 			
-			logger.info("[SearchEngine] Created: " + cntCreated + ", Updated: " + cntUpdated);
-			
+			if(cntErrors === 0){
+				logger.info("[SearchEngine] Created: " + cntCreated + ", Updated: " + cntUpdated);
+			}else{
+				logger.error("[SearchEngine] Created: " + cntCreated + ", Updated: " + cntUpdated + ", Errors:" + cntErrors);
+			}
 			return v
 		},
 		function(e){
