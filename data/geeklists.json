@@ -1000,5 +1000,19 @@
     "toDate": "2019-11-01",
     "excluded": [],
     "tradeLists": []
+  },
+  {
+    "_id": "259955",
+    "type": "geeklist",
+    "name": "The Essen 2019 no-shipping auction list",
+    "group": "Essen - Trade Lists",
+    "year": 2019,
+    "update": true,
+    "objectid": 259955,
+    "visible": true,
+    "fromDate": "2019-08-17",
+    "toDate": "2019-11-01",
+    "excluded": [],
+    "tradeLists": []
   }
 ]
