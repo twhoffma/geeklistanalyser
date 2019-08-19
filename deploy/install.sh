@@ -9,7 +9,7 @@ sudo ln -s /etc/nginx/sites-available/geeklistmonitor /etc/nginx/sites-enabled/
 sudo service nginx restart
 
 #for dev machine, this is done with local-geeklistmonitor for config
-#Probably have to setup the correct /etc/hosts to point 127.0.0.1 to hoffy.local
+#Probably have to setup the correct /etc/hosts to point 127.0.0.1 to hoffy-local.no
 #/nginx
 
 #docker

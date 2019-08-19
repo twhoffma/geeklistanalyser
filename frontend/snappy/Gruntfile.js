@@ -66,7 +66,7 @@ module.exports = function(grunt) {
 															'node_modules/bootstrap-select/dist/js/bootstrap-select.min.js',
 															'node_modules/html5-history-api/history.min.js',
 															'node_modules/nouislider/distribute/nouislider.min.js',
-															'/usr/lib/node_modules/handlebars/dist/handlebars.runtime.min.js',
+															'node_modules/handlebars/dist/handlebars.runtime.min.js',
 															'./js/data.js',
 															'./js/ui.js',
 															'./js/ui.slider.js',
