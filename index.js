@@ -31,7 +31,9 @@ for(i = 2; i < process.argv.length; i++){
 		if(arg[0].toLowerCase() === "lists"){
 			args[arg[0].toLowerCase()] = arg[1].toLowerCase().split(",").map(x=>parseInt(x));
 		}else{
-			args[arg[0].toLowerCase()] = arg[1].toLowerCase();
+			logger.error("Dunno what to do with argument \"" + arg[0] + "\". Probably unsupported.");
+			process.exit();	
+			//args[arg[0].toLowerCase()] = arg[1].toLowerCase();
 		}
 	}else{
 		//First arg is action

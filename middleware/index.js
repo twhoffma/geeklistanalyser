@@ -141,7 +141,7 @@ app.use('/data/getGeeklist', function(req, res, next){
 		console.log(filterJSON);
 		
 		
-		if(filterJSON != ''){
+		if(filterJSON != '' || sortby === 'wants'){
 			logger.info("Fetch method: Search engine");
 			
 			validateFilters(p.filters).then(function(validFilters){	
@@ -203,8 +203,12 @@ app.use('/data/getGeeklist', function(req, res, next){
 
 function validateFilters(jsonString){
 	return Q.fcall(function(){
-		console.log(jsonString);
-		return JSON.parse(jsonString)
+		//console.log(jsonString);
+		if(jsonString === undefined){
+			return {}
+		}else{
+			return JSON.parse(jsonString)
+		}
 	/*
 	}).then(
 		function(o){

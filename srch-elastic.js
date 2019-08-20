@@ -87,79 +87,69 @@ function srchBoardgames(geeklistid, filters, sortby, sortby_asc, skip, lim){
 	//q['query']['bool'] = (filterGeeklistId(geeklistid));	
 	//q['query']['bool']['must'] = [];
 	//q['query']['bool']['must'].push(filterGeeklistId(geeklistid));	
-	
+	var must = [];
+	var must_not = [];
+	var should = [];
+
+	//For many2many fields, add them.	
 	['boardgamedesigner', 'boardgameartist', 'boardgamemechanic', 'boardgamecategory', 'boardgamepublisher', 'boardgamefamily'].forEach(function(e){	
 		if(filters[e] != undefined){ 
-			if(q['query']['bool']['must'] === undefined){
-				q['query']['bool']['must'] = [];
-			}
-			q['query']['bool']['must'].push(filterManyToMany(e, filters[e]));
+			must.push(filterManyToMany(e, filters[e]));
 		}
 	});
 
+	//For one to many relations..
 	if(filters["releasetype"] != undefined){
-		if(q['query']['bool']['must'] === undefined){
-			q['query']['bool']['must'] = [];
-		}
-		
 		switch(filters["releasetype"]){
 			case 'boardgame':
-				//q['query']['bool']['must'].push(filterIsExpansion());
-				q['query']['bool']['must'].push(filterIsEmpty('expands'));
+				must.push(filterIsEmpty('expands'));
 				break;
 			case 'expansion':
-				if(q['query']['bool']['must_not'] === undefined){  
-					q['query']['bool']['must_not'] = [];	
-				}
-				//q['query']['bool']['must_not'].push(filterIsExpansion());
-				q['query']['bool']['must_not'].push(filterIsEmpty('expands'));
+				must_not.push(filterIsEmpty('expands'));
 				break;
 			case 'reimplementation':
-				if(q['query']['bool']['must_not'] === undefined){  
-					q['query']['bool']['must_not'] = [];	
-				}
-				q['query']['bool']['must_not'].push(filterIsEmpty('boardgameimplementation'));
+				must_not.push(filterIsEmpty('boardgameimplementation'));
 				break;
 			case 'integration':
-				if(q['query']['bool']['must_not'] === undefined){  
-					q['query']['bool']['must_not'] = [];	
-				}
-				q['query']['bool']['must_not'].push(filterIsEmpty('boardgameintegration'));
+				must_not.push(filterIsEmpty('boardgameintegration'));
 				break;
 			case 'collection':
-				if(q['query']['bool']['must_not'] === undefined){  
-					q['query']['bool']['must_not'] = [];	
-				}
-				q['query']['bool']['must_not'].push(filterIsEmpty('boardgamecompilation'));
+				must_not.push(filterIsEmpty('boardgamecompilation'));
 				break;
 		}
 	}
 
 	//Playing time
-	if(filters["playingtimemin"] != undefined || filters["playingtimemax"] != undefined){
-
-		if(q['query']['bool']['must'] === undefined){
-			q['query']['bool']['must'] = [];
-		}
-		
-		q['query']['bool']['must'].push(filterRange("playingtime", filters["playingtimemin"] || -Infinity, filters["playingtimemax"] || Infinity));
+	if(filters["playingtimemin"] !== undefined || filters["playingtimemax"] !== undefined){
+		must.push(filterRange("playingtime", filters["playingtimemin"] || -Infinity, filters["playingtimemax"] || Infinity));
 	}
 	
 	//Number of players
-	if(filters["numplayersmin"] != undefined || filters["numplayersmax"] != undefined){
+	if(filters["numplayersmin"] !== undefined || filters["numplayersmax"] !== undefined){
 		q['query']['bool']['minimum_should_match'] = 1;
-		q['query']['bool']['should'] = [];
-		q['query']['bool']['should'].push(filterRange("minplayers", filters["numplayersmin"] || -Infinity, filters["numplayersmax"] || Infinity));
-		q['query']['bool']['should'].push(filterRange("maxplayers", filters["numplayersmin"] || -Infinity, filters["numplayersmax"] || Infinity));
+		
+		should.push(filterRange("minplayers", filters["numplayersmin"] || -Infinity, filters["numplayersmax"] || Infinity));
+		
+		should.push(filterRange("maxplayers", filters["numplayersmin"] || -Infinity, filters["numplayersmax"] || Infinity));
 	}
 		
 	//Year published
-	if(filters["yearpublishedmin"] != undefined || filters["yearpublishedmax"] != undefined){
-		if(q['query']['bool']['must'] === undefined){
-			q['query']['bool']['must'] = [];
-		}
+	if(filters["yearpublishedmin"] !== undefined || filters["yearpublishedmax"] !== undefined){
 		
-		q['query']['bool']['must'].push(filterRange("yearpublished", filters["yearpublishedmin"] || -Infinity, filters["yearpublishedmax"] || Infinity));
+		must.push(filterRange("yearpublished", filters["yearpublishedmin"] || -Infinity, filters["yearpublishedmax"] || Infinity));
+	}
+	
+
+	if(must.length > 0){
+		q['query']['bool']['must'] = must;
+	}
+
+	if(must_not.length > 0){
+		q['query']['bool']['must_not'] = must_not;
+	}
+
+	if(should.length > 0){
+		q['query']['bool']['should'] = should;
 	}
 	
 	//Sorting
@@ -174,14 +164,21 @@ function srchBoardgames(geeklistid, filters, sortby, sortby_asc, skip, lim){
 		
 	q['sort'] = [];
 	
-    if(sortby === "name"){
+    	if(sortby === "name"){
 		s = {"name.name": {"order": orderby, "nested_filter": {"term": {"name.primary": "true"}}}};	
+
 	}else if(sortby === "yearpublished"){
 		s = {"yearpublished": {"order": orderby}}
+
 	}else if(sortby === "thumbs"){
 		s = {"geeklists.latest.thumbs": {"order": orderby, "nested_path": "geeklists.latest", "nested_filter": {"term": {"geeklists.latest.geeklistid": geeklistid}}}}
+
 	}else if(sortby === "cnt"){
 		s = {"geeklists.latest.cnt": {"order": orderby, "nested_path": "geeklists.latest", "nested_filter": {"term": {"geeklists.latest.geeklistid": geeklistid}}}}	
+
+	}else if(sortby === "wants"){
+		s = {"geeklists.latest.cnt": {"order": orderby, "nested_path": "geeklists.latest", "nested_filter": {"term": {"geeklists.latest.geeklistid": geeklistid}}}}	
+
 	}else{
 		s = {"geeklists.crets": {"order": orderby, "nested_path": "geeklists", "nested_filter": {"term": {"geeklists.objectid": geeklistid}}}}	
 	}
