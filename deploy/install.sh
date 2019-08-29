@@ -5,8 +5,12 @@ sudo apt-get update
 #nginx
 sudo apt-get install nginx
 sudo cp nginx/geeklistmonitor /etc/nginx/sites-available
+sudo cp nginx/local-geeklistmonitor /etc/nginx/sites-available
 sudo ln -s /etc/nginx/sites-available/geeklistmonitor /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/local-geeklistmonitor /etc/nginx/sites-enabled/
 sudo service nginx restart
+
+#sudo echo "127.0.0.1	hoffy-local.no"|cat >> /etc/hosts
 
 #for dev machine, this is done with local-geeklistmonitor for config
 #Probably have to setup the correct /etc/hosts to point 127.0.0.1 to hoffy-local.no
@@ -24,6 +28,10 @@ sudo docker-compose up -d
 
 #We should add a user with the docker group to avoid running docker as sudo..
 #/docker
+
+sudo sysctl -w vm.max_map_count=262144
+
+echo "Remember to add vm.max_map_count=262144 to /etc/sysctl.conf"
 
 #couchdb
 cd couchdb
