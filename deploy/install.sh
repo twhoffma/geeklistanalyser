@@ -85,6 +85,7 @@ cd ..
 cd frontend/snappy
 sudo npm install grunt -g
 sudo npm install jslint -g
+sudo npm install handlebars -g
 sudo npm install
 
 sudo grunt

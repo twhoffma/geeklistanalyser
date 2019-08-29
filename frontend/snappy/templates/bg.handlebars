@@ -16,19 +16,19 @@
             <div class="block">
             <p>
               {{#unless expands.length}}
-                <span class="smallbox tp tpBoardgame"><a href="https://glaze.hoffy.no?id={{geeklists.0.objectid}}&releasetype=boardgame" target="blank_">Boardgame</a></span>
+                <span class="smallbox tp tpBoardgame"><a href="?id={{geeklists.0.objectid}}&releasetype=boardgame">Boardgame</a></span>
               {{/unless}}
               {{#if expands.length}}
-                <span class="smallbox tp tpExpansion"><a href="https://glaze.hoffy.no?id={{geeklists.0.objectid}}&releasetype=expansion" target="blank_">Expansion</a></span>
+                <span class="smallbox tp tpExpansion"><a href="?id={{geeklists.0.objectid}}&releasetype=expansion">Expansion</a></span>
               {{/if}}
               {{#if boardgamecompilation.length}}
-                <span class="smallbox tp tpCollection"><a href="https://glaze.hoffy.no?id={{geeklists.0.objectid}}&releasetype=collection" target="blank_">Collection</a></span>
+                <span class="smallbox tp tpCollection"><a href="?id={{geeklists.0.objectid}}&releasetype=collection">Collection</a></span>
               {{/if}}
               {{#if boardgameimplementation.length}}
-                <span class="smallbox tp tpReimplementation"><a href="https://glaze.hoffy.no?id={{geeklists.0.objectid}}&releasetype=reimplementation" target="blank_">Reimpl.</a></span>
+                <span class="smallbox tp tpReimplementation"><a href="?id={{geeklists.0.objectid}}&releasetype=reimplementation">Reimpl.</a></span>
               {{/if}}
               {{#if boardgameintegration.length}}
-                <span class="smallbox tp tpIntegrates"><a href="https://glaze.hoffy.no?id={{geeklists.0.objectid}}&releasetype=integration" target="blank_">Integrates</a></span>
+                <span class="smallbox tp tpIntegrates"><a href="?id={{geeklists.0.objectid}}&releasetype=integration">Integrates</a></span>
               {{/if}} 
             </p>
             </div>

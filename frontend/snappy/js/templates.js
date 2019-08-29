@@ -48,33 +48,33 @@ templates['bg'] = template({"1":function(container,depth0,helpers,partials,data,
 },"6":function(container,depth0,helpers,partials,data) {
     var stack1;
 
-  return "                <span class=\"smallbox tp tpBoardgame\"><a href=\"https://glaze.hoffy.no?id="
+  return "                <span class=\"smallbox tp tpBoardgame\"><a href=\"?id="
     + container.escapeExpression(container.lambda(((stack1 = ((stack1 = (depth0 != null ? depth0.geeklists : depth0)) != null ? stack1["0"] : stack1)) != null ? stack1.objectid : stack1), depth0))
-    + "&releasetype=boardgame\" target=\"blank_\">Boardgame</a></span>\r\n";
+    + "&releasetype=boardgame\">Boardgame</a></span>\r\n";
 },"8":function(container,depth0,helpers,partials,data) {
     var stack1;
 
-  return "                <span class=\"smallbox tp tpExpansion\"><a href=\"https://glaze.hoffy.no?id="
+  return "                <span class=\"smallbox tp tpExpansion\"><a href=\"?id="
     + container.escapeExpression(container.lambda(((stack1 = ((stack1 = (depth0 != null ? depth0.geeklists : depth0)) != null ? stack1["0"] : stack1)) != null ? stack1.objectid : stack1), depth0))
-    + "&releasetype=expansion\" target=\"blank_\">Expansion</a></span>\r\n";
+    + "&releasetype=expansion\">Expansion</a></span>\r\n";
 },"10":function(container,depth0,helpers,partials,data) {
     var stack1;
 
-  return "                <span class=\"smallbox tp tpCollection\"><a href=\"https://glaze.hoffy.no?id="
+  return "                <span class=\"smallbox tp tpCollection\"><a href=\"?id="
     + container.escapeExpression(container.lambda(((stack1 = ((stack1 = (depth0 != null ? depth0.geeklists : depth0)) != null ? stack1["0"] : stack1)) != null ? stack1.objectid : stack1), depth0))
-    + "&releasetype=collection\" target=\"blank_\">Collection</a></span>\r\n";
+    + "&releasetype=collection\">Collection</a></span>\r\n";
 },"12":function(container,depth0,helpers,partials,data) {
     var stack1;
 
-  return "                <span class=\"smallbox tp tpReimplementation\"><a href=\"https://glaze.hoffy.no?id="
+  return "                <span class=\"smallbox tp tpReimplementation\"><a href=\"?id="
     + container.escapeExpression(container.lambda(((stack1 = ((stack1 = (depth0 != null ? depth0.geeklists : depth0)) != null ? stack1["0"] : stack1)) != null ? stack1.objectid : stack1), depth0))
-    + "&releasetype=reimplementation\" target=\"blank_\">Reimpl.</a></span>\r\n";
+    + "&releasetype=reimplementation\">Reimpl.</a></span>\r\n";
 },"14":function(container,depth0,helpers,partials,data) {
     var stack1;
 
-  return "                <span class=\"smallbox tp tpIntegrates\"><a href=\"https://glaze.hoffy.no?id="
+  return "                <span class=\"smallbox tp tpIntegrates\"><a href=\"?id="
     + container.escapeExpression(container.lambda(((stack1 = ((stack1 = (depth0 != null ? depth0.geeklists : depth0)) != null ? stack1["0"] : stack1)) != null ? stack1.objectid : stack1), depth0))
-    + "&releasetype=integration\" target=\"blank_\">Integrates</a></span>\r\n";
+    + "&releasetype=integration\">Integrates</a></span>\r\n";
 },"16":function(container,depth0,helpers,partials,data) {
     var stack1;
 
@@ -198,35 +198,35 @@ templates['header'] = template({"1":function(container,depth0,helpers,partials,d
 templates['list'] = template({"1":function(container,depth0,helpers,partials,data) {
     var helper;
 
-  return "	      		<a href=\"https://glaze.hoffy.no?active="
+  return "	      		<a href=\"?active="
     + container.escapeExpression(((helper = (helper = helpers.update || (depth0 != null ? depth0.update : depth0)) != null ? helper : helpers.helperMissing),(typeof helper === "function" ? helper.call(depth0 != null ? depth0 : (container.nullContext || {}),{"name":"update","hash":{},"data":data}) : helper)))
-    + "\" target=\"blank_\"><span class=\"syncStatus syncActive\" id=\"glaze-hdr-update\">ACTIVE</span></a>\r\n";
+    + "\"><span class=\"syncStatus syncActive\" id=\"glaze-hdr-update\">ACTIVE</span></a>\r\n";
 },"3":function(container,depth0,helpers,partials,data) {
     var helper;
 
-  return "	      		<a href=\"https://glaze.hoffy.no?active="
+  return "	      		<a href=\"?active="
     + container.escapeExpression(((helper = (helper = helpers.update || (depth0 != null ? depth0.update : depth0)) != null ? helper : helpers.helperMissing),(typeof helper === "function" ? helper.call(depth0 != null ? depth0 : (container.nullContext || {}),{"name":"update","hash":{},"data":data}) : helper)))
-    + "\" target=\"blank_\"><span class=\"syncStatus syncInactive\" id=\"glaze-hdr-update\">INACTIVE</span></a>\r\n";
+    + "\"><span class=\"syncStatus syncInactive\" id=\"glaze-hdr-update\">INACTIVE</span></a>\r\n";
 },"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
     var stack1, helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression;
 
   return "  <li class=\"gl\">\r\n    <div class=\"block header\">\r\n      	<span class=\"nm\"><a href=\"https://glaze.hoffy.no?id="
     + alias4(((helper = (helper = helpers.objectid || (depth0 != null ? depth0.objectid : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"objectid","hash":{},"data":data}) : helper)))
-    + "\" target=\"_blank\">"
+    + "\">"
     + alias4(((helper = (helper = helpers.name || (depth0 != null ? depth0.name : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"name","hash":{},"data":data}) : helper)))
     + "</a></span>\r\n    </div>\r\n    <div class=\"block\">\r\n        <div style=\"float: left; text-align: left;\">\r\n            <div class=\"block time\">\r\n              <span class=\"crets\"></span>\r\n            </div>\r\n	    </div class=\"block\">\r\n"
     + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.update : depth0),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.program(3, data, 0),"data":data})) != null ? stack1 : "")
-    + "	    </div>\r\n            <div class=\"block\">\r\n		    <p>\r\n			<span class=\"smallbox tp tpExpansion\"><a href=\"https://glaze.hoffy.no?listtype="
+    + "	    </div>\r\n            <div class=\"block\">\r\n		    <p>\r\n			<span class=\"smallbox tp tpExpansion\"><a href=\"?listtype="
     + alias4(((helper = (helper = helpers.type || (depth0 != null ? depth0.type : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"type","hash":{},"data":data}) : helper)))
-    + "\" target=\"blank_\">"
+    + "\">"
     + alias4(((helper = (helper = helpers.type || (depth0 != null ? depth0.type : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"type","hash":{},"data":data}) : helper)))
-    + "</a></span>\r\n		    </p>\r\n            </div>\r\n\r\n            <div class=\"block\">\r\n              <ul>\r\n		<!-- Linking year should allow filtering on that -->\r\n                <li><i class=\"fas fa-calendar\"></i> <a href=\"https://glaze.hoffy.no?listyear="
+    + "</a></span>\r\n		    </p>\r\n            </div>\r\n\r\n            <div class=\"block\">\r\n              <ul>\r\n		<!-- Linking year should allow filtering on that -->\r\n                <li><i class=\"fas fa-calendar\"></i> <a href=\"?listyear="
     + alias4(((helper = (helper = helpers.year || (depth0 != null ? depth0.year : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"year","hash":{},"data":data}) : helper)))
-    + "\" target=\"blank_\">"
+    + "\">"
     + alias4(((helper = (helper = helpers.year || (depth0 != null ? depth0.year : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"year","hash":{},"data":data}) : helper)))
-    + "</a></li>\r\n                <li><i class=\"far fa-thumbs-up\"></i> ? </li>\r\n                <li><i class=\"fas fa-buffer\"></i> ?  </li>\r\n                <li><i class=\"fas fa-hashtag\"></i> ?  </li>\r\n                <li><i class=\"fas fa-list\"></i> ?  </li>\r\n                <li><i class=\"far fa-object-group\"></i> <a href=\"https://glaze.hoffy.no?listgroup="
+    + "</a></li>\r\n                <li><i class=\"far fa-thumbs-up\"></i> ? </li>\r\n                <li><i class=\"fas fa-buffer\"></i> ?  </li>\r\n                <li><i class=\"fas fa-hashtag\"></i> ?  </li>\r\n                <li><i class=\"fas fa-list\"></i> ?  </li>\r\n                <li><i class=\"far fa-object-group\"></i> <a href=\"?listgroup="
     + alias4(((helper = (helper = helpers.group || (depth0 != null ? depth0.group : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"group","hash":{},"data":data}) : helper)))
-    + "\" target=\"blank_\">"
+    + "\">"
     + alias4(((helper = (helper = helpers.group || (depth0 != null ? depth0.group : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"group","hash":{},"data":data}) : helper)))
     + "</a> </li>\r\n              </ul>\r\n            </div>\r\n        </div>\r\n    </div>\r\n  </li> \r\n";
 },"useData":true});
