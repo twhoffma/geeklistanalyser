@@ -46,7 +46,14 @@
 				ui.setErrorMessage(e);
 			});
 			
+			//Render args in header
+			ui.renderUntoggleLinks(h);
+				
+			//If id of a specific geeklist is in args, load that one.	
 			if(h.id != undefined){
+				$(".listHeaderButtons").show();
+				$("#loadmore").show();
+				
 				selectedGeeklist = h.id;
 				
 				if(h.sorting != undefined){
@@ -162,6 +169,9 @@
 					}
 					console.log("Options set");	
 					ui.setHistory(selectedGeeklist, 0, 0, filter, sorting);
+					var h = ui.getHistory();
+					console.log(h);
+					ui.renderUntoggleLinks(h);
 					
 					//Load geeklist contents
 					ui.setLoadButtonState("loading");

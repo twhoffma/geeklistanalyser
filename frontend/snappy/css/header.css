@@ -17,6 +17,7 @@
   position: sticky;
   position: -webkit-sticky;
   top: 0px;
+  
 }
 
 .listHeader > h1 {
@@ -54,6 +55,7 @@
 }
 
 .loading {
+  translateZ(0);
   animation: colorRotate 1s linear 0s infinite;
 }
   
@@ -108,6 +110,10 @@
 
 .selectedHeaderButton {
   border-bottom: 3px solid white;
+}
+
+.listHeaderButtons {
+  display: none;
 }
 
 .listHeaderButtons > :first-child {

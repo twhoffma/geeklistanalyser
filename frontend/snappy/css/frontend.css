@@ -14,9 +14,20 @@
 }
 
 .iconspin{
-	-webkit-animation: 0.5s linear 0s infinite spin;
+    -webkit-animation: 0.5s linear 0s infinite spin;
     -moz-animation: 0.5s linear 0s infinite spin;
     animation: 0.5s linear 0s infinite spin;
+}
+
+button#apply {
+    background-color: teal !important;
+}
+
+button#loadmore {
+    background-color: teal !important;
+    margin-left: 25% !important;
+    margin-right: 25% !important;
+    display: none;
 }
 
 @-moz-keyframes spin {

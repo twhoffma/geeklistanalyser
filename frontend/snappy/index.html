@@ -46,36 +46,17 @@
   </head>
   <body>
 	<div class="listHeader" id="glaze-hdr">
-	    <!--
-	    <div class="appName">
-	      <p>
-		GLAZE - Geeklist Analyzer
-	      </p>
-	    </div>
-	    -->
 	    <h1>
 	      <a id="glaze-back-to-menu" href="https://glaze.hoffy.no" style="display:none;">&lt;</a>
 	      <span id="glaze-hdr-listname">Geeklist Analyzer</span>
 	    </h1>
 	    <div class="listHeaderDetails">
-		<!--
 	      <p>
-		<span class="syncStatus syncInactive" id="glaze-hdr-update">INACTIVE</span>
-		<span class="lastSyncTime" id="glaze-hdr-chgts">When was it updated?</span>
-	      </p>
-		-->
-	      <p>
-		<!--
-		<span class="depthLists">Max Depth: <span id="glaze-hdr-depth">?</span> </span>
-		<span class="numLists">| Lists: <span id="glaze-hdr-numlists">?</span> </span>
-		<span class="num">| Count: <span id="glaze-hdr-numitems">?</span> </span>
-		<span class="numDisctinct" >| Distinct: <span id="glaze-hdr-distinct">?</span></span>
-		-->
 		<span class="directLink"><a id="glaze-hdr-link" href="http://boardgamegeek.com" target="blank_" rel="noopener" alt="Visit geeklist on BoardGameGeek"><i class="fas fa-link"></i> BGG</a></span>
 	      </p>
 	    </div>
 	    <div class="listHeaderButtons">
-		<div class="listHeaderButton selectedHeaderButton" data-glaze-show="sidebar_list"><i class="fas fa-list"></i></div>
+		<!-- <div class="listHeaderButton selectedHeaderButton" data-glaze-show="sidebar_list"><i class="fas fa-list"></i></div>-->
 		<div class="listHeaderButton" data-glaze-show="charts"><i class="fas fa-chart-area"></i></div>
 		<div class="listHeaderButton" data-glaze-show="geeklist"><i class="fas fa-chess-pawn"></i></div>
 		<div class="listHeaderButton" data-glaze-show="filters" data-toggle="modal" data-target="#modSortingAndFilters" ><i class="fas fa-filter"></i></div>
@@ -94,22 +75,9 @@
 					<button type="button" class="btn btn-default btn-block btn-primary" data-dismiss="modal" id="apply">Apply</button>
       			</div>
 				<div class="modal-body">
-					<!--
-					<ul class="nav nav-tabs" id="optionTabs">
-  	  	  	  	  	  <li class="active"><a data-toggle="tab" href="#tabSorting">Sorting</a></li>
-  	  	  	  	  	  <li><a data-toggle="tab" href="#tabFilters">Filters</a></li>
-  	  	  	  	  	  <li><a data-toggle="tab" href="#tabInfo">Info</a></li>
-					</ul>
-					-->
-					
-					<!--<div class="tab-content">-->
-  	  	  			<!--	<div id="tabSorting" class="tab-pane fade in active" role=tabpanel">-->
     						<h3>Sorting</h3>
       						<div>
-								<!--
-								<button type="button" class="btn btn-link btn-sm" style="float:right;" id="resetSorting"><i class="fa fa-reset" aria-hidden="true">Reset</button>
-								-->
-								<form>
+							<form>
             						<li>
 										<select id="sortby" class="form-control">
 											<option value="crets" selected>Addition time</option>
@@ -222,7 +190,9 @@
 		<h1>Oh man!</h1>
 		<div id="errormsg"></div>
 	</div>
-
+	
+	<div id="activefilters"></div>
+	
 	<!-- The actual list -->
 	<div id="geeklist">
 		<h1 id="geeklistname"></h1>

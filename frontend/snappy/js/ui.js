@@ -205,6 +205,32 @@ function init_ui(){
 			}
 			
 		},
+		'renderUntoggleLinks': function renderUntoggleLinks(h){
+			//Use history object h to render links here.
+			$("#activefilters").empty();
+			
+			var args = Object.getOwnPropertyNames(h).filter(e => e !== "id");
+			var linkparts = [];
+			args.forEach(function(k){
+				if(k !== "filters" && k !== "sorting"){
+					linkparts.push([k,h[k]].join("="))	
+				}else{
+					Object.getOwnPropertyNames(h[k]).forEach(function(fs){
+						linkparts.push([fs,h[k][fs]].join("="));
+					});
+				}	
+			});
+			
+			linkparts.forEach(function(l, i){
+				let html = "<a style=\"background-color: #c9c9c9; margin: 2px;\" href=\"?";
+				if(h["id"]){
+					html += "id=" + h["id"] + "&";
+				}
+				html += linkparts.filter(e => l !== e).join('&') + "\">" + l + "</a>";
+				
+				$("#activefilters").append(html);
+			});
+		},
 		'setErrorMessage': function setErrorMessage(e){
 			document.getElementById('errormsg').innerHTML = e;
 			$("#errorbox").show();
