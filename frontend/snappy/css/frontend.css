@@ -48,3 +48,18 @@ button#loadmore {
 #geeklistitems[data-glaze-collapsed="Y"] div.attrs {
   display: none;
 }
+
+.btnUntoggle {
+  background-color: #c9c9c9;
+  margin: 2px;
+  display: inline;
+  color: teal;
+  padding: 1px;
+}
+
+.btnUntoggle:after {
+  content: " \00d7 ";
+  background-color: teal;
+  color: white;
+  padding-right: 1px;
+}

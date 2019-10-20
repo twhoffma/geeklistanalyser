@@ -190,7 +190,7 @@ ul {
   bottom: 1em;
   right: 1em;
   border: 10px solid teal;
-  border-radius: 50%;
+  /* border-radius: 50%; */
   color: white;
   text-align: center;
   vertical-align: middle;

@@ -222,11 +222,11 @@ function init_ui(){
 			});
 			
 			linkparts.forEach(function(l, i){
-				let html = "<a style=\"background-color: #c9c9c9; margin: 2px;\" href=\"?";
+				let html = "<a class=\"btnUntoggle\" href=\"?";
 				if(h["id"]){
 					html += "id=" + h["id"] + "&";
 				}
-				html += linkparts.filter(e => l !== e).join('&') + "\">" + l + "</a>";
+				html += linkparts.filter(e => l !== e).join('&') + "\">" + l + "</a> ";
 				
 				$("#activefilters").append(html);
 			});

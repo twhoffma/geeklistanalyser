@@ -177,7 +177,7 @@ function getGeeklistFiltersComponents(geeklistid){
 }
 
 function getGeeklistFilters(geeklistid){
-	var url = db.getViewURL('geeklistfilters', 'geeklistfilters')+'?start_key=[{id}, {}]&end_key=[{id}]&include_docs=true&descending=true';
+	var url = db.getViewURL('geeklistfilters', 'geeklistfilters')+'?start_key=[{id}, {}]&end_key=[{id}]&include_docs=true&descending=true&stale=update_after';
 	url = url.replace(/\{id\}/g, geeklistid);
 	//console.log(url);	
 	return db.getDocs(url)	
