@@ -74,6 +74,7 @@ module.exports = function(grunt) {
 															'./js/templates.js',
 															'./js/sidenav_geeklists.js',
 															'./js/header.js',
+															'./js/graphs.js',
 										],
 										dest: '<%= dirs.outdir %>/js/',
 										filter: 'isFile'
