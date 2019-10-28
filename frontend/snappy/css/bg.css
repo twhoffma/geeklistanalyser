@@ -13,15 +13,45 @@
     margin-left: auto;
     margin-right: auto;
   }
+
+  #graphs {
+    display: none;
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+    float: left;
+  }
+
+  #geeklist {
+    width: 90%;
+    display: inline;
+    float: left; 
+  }
 }
 
 @media only screen and (min-width : 1200px) {
   .bg {
-    width: 40%;
+    width: 100%;
   }
   
   .listHeaderButton[data-glaze-show="charts"] {
     display: none;
+  }
+
+  .listHeaderButton[data-glaze-show="geeklist"] {
+    display: none;
+  }
+  
+  #geeklist {
+    width: 60%;
+    display: inline;
+    float: left;
+  }
+  
+  #graphs {
+    display: inline;
+    width: 20%;
+    float: left;
   }
 }
 .bg:last-child{

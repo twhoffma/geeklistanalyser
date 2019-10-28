@@ -913,7 +913,10 @@ function generateFilterValues(geeklist){
 			for(var j=0; j < comp.length; j++){
 				var f = comp[j].key[1];
 				var v = comp[j].key[2];
-
+				
+				v['value'] = comp[j].value;	
+				//console.log(comp[j]);
+				
 				filterValue[f].push(v);
 				
 				if(keys.indexOf(f) === -1){

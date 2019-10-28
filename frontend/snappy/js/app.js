@@ -11,6 +11,7 @@
 			data = init_data();
 			sidenav_geeklists = init_sidebar_geeklists();
 			hdr = init_header();
+			graphs = init_graphs();
 				
 			ui.clearErrorMessage();
 							
@@ -108,7 +109,11 @@
 				if(e.target.dataset.glazeShow == "sidebar_list"){
 					$('#sidenavGeeklists').toggle();
 				}else if(e.target.dataset.glazeShow == "geeklist"){
-					$('#sidenavGeeklists').hide();
+					$('#geeklist').show();
+					$('#graphs').hide();
+				}else if(e.target.dataset.glazeShow == "charts"){
+					$('#geeklist').hide();
+					$('#graphs').show();
 				}
 			});
 			
@@ -140,6 +145,11 @@
 							
 							console.log("All loaded");	
 							resolve();
+						}).then(function(r){
+							graphs.getGraphData(geeklistId).then(function(r){
+								graphs.renderGraph("graphMechanics", "Mechanics", r.boardgamemechanic);
+								graphs.renderGraph("graphCategories", "Categories", r.boardgamecategory);
+							}).finally(e => resolve());
 						});
 					}else{
 						console.log("Doing nothin'");

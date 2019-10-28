@@ -58,7 +58,37 @@ app.use('/data/getGeeklistDetails', function(req, res, next){
 	});
 });
 
-//app.use(uri + '/data/getGeeklistFilters', function(req, res, next){
+app.use('/data/getGeeklistGraphData', function(req, res, next){
+	var p = qs.parse(req._parsedUrl.query);
+	
+	if(c.devmode){	
+		res.setHeader("Access-Control-Allow-Origin", "*");
+	}
+
+	if(p.geeklistid != undefined){
+		//TODO: Add graphs for group of the geeklist..
+		datamgr.getGeeklistFilters(p.geeklistid).then(
+			function(val){
+				if(val.length > 0){
+					var r = JSON.stringify(val[0].doc);
+				
+					cacheResponse(req._parsedUrl.href, r);
+					
+					res.end(r);
+				}else{
+					res.end("{}");
+				}
+			}
+		).catch(function(e){
+			console.log("Error!");
+			console.log(e);
+			res.end("{\"msgtype\": \"error\", \"msg\": \"Fetching graph data failed!\"}");
+		});
+	}else{
+		res.end("{\"msgtype\": \"error\", \"msg\": \"No filters found!\"}");
+	}
+});
+
 app.use('/data/getGeeklistFilters', function(req, res, next){
 	var p = qs.parse(req._parsedUrl.query);
 	
