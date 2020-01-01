@@ -24,8 +24,7 @@ function init_graphs(){
 		},
 		
 		"renderGraph": function(divId, nm, data){
-			var d = data.map(e => ({"name": e.name, "y": e.value }));
-			console.log(d);	
+			d = data.map(e => ({"name": e.name, "y": e.value }));
 			Highcharts.chart(divId, {
 			    chart: {
 				plotBackgroundColor: null,

@@ -130,7 +130,6 @@
 						//Load geeklist info
 						console.log("get some data!");
 						data.getGeeklistDetails(geeklistId).then(function(r){
-							//return ui.renderGeeklistDetails(r);
 							let d = r[0];
 							d.stats = {};
 							hdr.setDetails(d);
@@ -147,6 +146,9 @@
 							resolve();
 						}).then(function(r){
 							graphs.getGraphData(geeklistId).then(function(r){
+								console.log(r);
+								r = r.filter(e => e.geeklist.objectid == geeklistId)[0];
+								r = r.graphdata;
 								graphs.renderGraph("graphMechanics", "Mechanics", r.boardgamemechanic);
 								graphs.renderGraph("graphCategories", "Categories", r.boardgamecategory);
 							}).finally(e => resolve());

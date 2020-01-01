@@ -66,24 +66,41 @@ app.use('/data/getGeeklistGraphData', function(req, res, next){
 	}
 
 	if(p.geeklistid != undefined){
-		//TODO: Add graphs for group of the geeklist..
-		datamgr.getGeeklistFilters(p.geeklistid).then(
-			function(val){
-				if(val.length > 0){
-					var r = JSON.stringify(val[0].doc);
+		//Get group for historical graphs..
+		datamgr.getGeeklists(false, true, p.geeklistId).then(function(geeklists){
+			var prom = [];
+			var matchGroup = geeklists.filter(e => e.objectid == p.geeklistid)[0].group;
+			
+			//console.log("Matching either " + g.objectid + " or group " + matchGroup);
+			geeklists.filter(e => (e.objectid == p.geeklistid || e.group == matchGroup)).forEach(function(g){
 				
-					cacheResponse(req._parsedUrl.href, r);
+				//TODO: Add graphs for group of the geeklist..
+				
+				//if(g.objectid == p.geeklistid || g.group == matchGroup){
+					//console.log("Fetching graph data for " + g.objectid + " (" + g.name + ")");
 					
-					res.end(r);
-				}else{
-					res.end("{}");
-				}
-			}
-		).catch(function(e){
-			console.log("Error!");
-			console.log(e);
-			res.end("{\"msgtype\": \"error\", \"msg\": \"Fetching graph data failed!\"}");
+					prom.push(datamgr.getGeeklistFilters(g.objectid).then(
+						function(val){
+							if(val.length > 0){
+								//logger.debug(val[0].doc);
+								return {geeklist: {objectid: g.objectid, group: g.group, year: g.year}, graphdata: val[0].doc}
+							}else{
+								return {geeklist: {objectid: g.objectid, group: g.group, year: g.year}, graphdata: {}}
+							}
+						}
+					));
+				//}
+			});
+			
+			return q.allSettled(prom).then(function(gd){
+				console.log("All settled");
+				//console.log(gd);
+				
+				var r = JSON.stringify(gd.map(e=>e.value));
+				res.end(r);
+			})
 		});
+		
 	}else{
 		res.end("{\"msgtype\": \"error\", \"msg\": \"No filters found!\"}");
 	}
