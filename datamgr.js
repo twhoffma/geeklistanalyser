@@ -164,16 +164,16 @@ function saveFilterRanges(filterValue){
 	return db.saveDocs(filterValue)
 }
 
-function getGeeklistFiltersMinMax(geeklistid){
-	var url = db.getViewURL('geeklistfilters', 'geeklistfilters_min_max')+'?reduce=true&group_level=2&start_key=[{id}]&end_key=[{id}, {}]';
+function getGeeklistFiltersMinMax(geeklistid, allowStale){
+	var url = db.getViewURL('geeklistfilters', 'geeklistfilters_min_max')+'?reduce=true&group_level=2&start_key=[{id}]&end_key=[{id}, {}]' + (allowStale ? '&stale=update_after' : '');
 	url = url.replace(/\{id\}/g, geeklistid);
 	return db.getDocs(url)	
 }
 
-function getGeeklistFiltersComponents(geeklistid){
-	var url = db.getViewURL('geeklistfilters', 'geeklistfilters_components')+'?reduce=true&group_level=3&start_key=[{id}]&end_key=[{id}, {}]';
+function getGeeklistFiltersComponents(geeklistid, allowStale){
+	var url = db.getViewURL('geeklistfilters', 'geeklistfilters_components')+'?reduce=true&group_level=3&start_key=[{id}]&end_key=[{id}, {}]' + (allowStale ? '&stale=update_after' : '');
 	url = url.replace(/\{id\}/g, geeklistid);
-	return db.getDocs(url)	
+	return db.getDocs(url)
 }
 
 function getGeeklistFilters(geeklistid){
