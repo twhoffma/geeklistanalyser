@@ -5,6 +5,7 @@ function init_graphs(){
 				url: url 
 			}).then(
 				function(data){
+					console.log(data);
 					var r = jQuery.parseJSON(data);
 			
 					resolve(r);

@@ -43,7 +43,7 @@ app.use(function onerror(err, req, res, next) {
 app.use('/data/getGeeklistDetails', function(req, res, next){
 	var p = qs.parse(req._parsedUrl.query);
 	
-	res.setHeader('Content-Type', 'text/json');
+	//res.setHeader('Content-Type', 'application/json');
 	
 	datamgr.getGeeklists(false, true, [parseInt(p["geeklistid"])]).then(
 		function(r){
@@ -67,7 +67,7 @@ app.use('/data/getGeeklistGraphData', function(req, res, next){
 		res.setHeader("Access-Control-Allow-Origin", "*");
 	}
 	
-	res.setHeader('Content-Type', 'text/json');
+	//res.setHeader('Content-Type', 'application/json');
 
 	if(p.geeklistid != undefined){
 		//Get group for historical graphs..
@@ -99,7 +99,8 @@ app.use('/data/getGeeklistGraphData', function(req, res, next){
 								//logger.debug(val[0].doc);
 								return {geeklist: {objectid: g.objectid, group: g.group, year: g.year}, graphdata: data}
 							}else{
-								return {geeklist: {objectid: g.objectid, group: g.group, year: g.year}, graphdata: {}}
+								return Q.reject("nothing found!")
+								//return {geeklist: {objectid: g.objectid, group: g.group, year: g.year}, graphdata: {}}
 							}
 						}
 					).catch(
@@ -116,7 +117,7 @@ app.use('/data/getGeeklistGraphData', function(req, res, next){
 				console.log("All settled");
 				//console.log(gd);
 				
-				var r = JSON.stringify(gd.map(e=>e.value));
+				var r = JSON.stringify(gd.filter(e=>(e.state === "fulfilled")).map(e=>e.value));
 				
 				cacheResponse(req._parsedUrl.href, r);
 				res.end(r);
@@ -139,7 +140,7 @@ app.use('/data/getGeeklistFilters', function(req, res, next){
 		res.setHeader("Access-Control-Allow-Origin", "*");
 	}
 	
-	res.setHeader('Content-Type', 'text/json');
+	//res.setHeader('Content-Type', 'application/json');
 	//TODO: Needs to clean incoming data.
 	
 	if(p.geeklistid != undefined){
@@ -200,7 +201,7 @@ app.use('/data/getGeeklist', function(req, res, next){
 		res.setHeader("Access-Control-Allow-Origin", "*");
 	}
 	
-	res.setHeader('Content-Type', 'text/json');
+	//res.setHeader('Content-Type', 'application/json');
 	
 	if(p.geeklistId != undefined){
 		var pagenum = p.page || 1;
