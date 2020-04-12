@@ -1014,5 +1014,33 @@
     "toDate": "2019-11-01",
     "excluded": [],
     "tradeLists": []
+  },
+  {
+    "_id": "24",
+    "type": "preview",
+    "name": "FIJ (Cannes) 2020 Preview",
+    "group": "FIJ",
+    "year": 2020,
+    "update": true,
+    "objectid": 24,
+    "visible": true,
+    "fromDate": "2020-01-01",
+    "toDate": "2020-03-01",
+    "excluded": [],
+    "tradeLists": []
+  },
+  {
+    "_id": "23",
+    "type": "preview",
+    "name": "Spielwarenmesse/NY Toy Fair 2020 Preview",
+    "group": "NY Toy Fair",
+    "year": 2020,
+    "update": true,
+    "objectid": 23,
+    "visible": true,
+    "fromDate": "2020-01-01",
+    "toDate": "2020-03-01",
+    "excluded": [],
+    "tradeLists": []
   }
 ]
