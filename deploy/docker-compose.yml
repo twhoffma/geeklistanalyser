@@ -2,10 +2,10 @@ version: '2'
 services:
   couchdb:
     container_name: couch01
-    image: couchdb:3.0
+    image: couchdb:3.0.0
     volumes:
       - couchdata:/usr/local/var/lib/couchdb
-      - ./local.ini:/opt/couchdb/etc/local.ini
+      - ./etc/couchdb:/opt/couchdb/etc/local.d
     ports:
       - "5984:5984"
   elasticsearch:
