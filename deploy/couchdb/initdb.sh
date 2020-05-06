@@ -7,11 +7,16 @@ read -p "ADMIN:" USR
 read -p "PW:" PW
 
 echo "setting up special dbs required by couch 3.0"
+
+echo "_users"
 curl -X PUT http://"$USR":"$PW"@127.0.0.1:5984/_users
 
+echo "_replicator"
 curl -X PUT http://"$USR":"$PW"@127.0.0.1:5984/_replicator
 
+echo "_global_changes"
 curl -X PUT http://"$USR":"$PW"@127.0.0.1:5984/_global_changes
+
 
 echo "deleting db"
 curl -X DELETE http://"$USR":"$PW"@127.0.0.1:5984/geeklistdb
@@ -38,27 +43,25 @@ curl -X PUT http://localhost:5984/geeklistdb/_security -u "$USR":"$PW" \
 #curl -d @data/geeklists.json -H "Content-type: application/json" -X POST http://127.0.0.1:5984/geeklistdb/_bulk_docs -d 'name=grog&password=kampai'
 
 echo "design_docs/geeklists.json (view)"
-curl -d @design_docs/geeklists.json -H "Content-type: application/json" -X PUT http://127.0.0.1:5984/geeklistdb/_design/geeklists -d 'name=grog&password=kampai'
+curl -d @design_docs/geeklists.json -H "Content-type: application/json" -X PUT http://127.0.0.1:5984/geeklistdb/_design/geeklists -u "grog":"kampai"
 
 
 echo "geeklist view"
-curl -d @design_docs/geeklist.json -H "Content-type: application/json" -X PUT http://127.0.0.1:5984/geeklistdb/_design/geeklist -d 'name=grog&password=kampai'
+curl -d @design_docs/geeklist.json -H "Content-type: application/json" -X PUT http://127.0.0.1:5984/geeklistdb/_design/geeklist -u "grog":"kampai"
 
 
 echo "boardgame view"
-curl -d @design_docs/boardgame.json -H "Content-type: application/json" -X PUT http://127.0.0.1:5984/geeklistdb/_design/boardgame  -d 'name=grog&password=kampai'
+curl -d @design_docs/boardgame.json -H "Content-type: application/json" -X PUT http://127.0.0.1:5984/geeklistdb/_design/boardgame -u "grog":"kampai"
 
-curl -d @design_docs/boardgame2.json -H "Content-type: application/json" -X PUT http://127.0.0.1:5984/geeklistdb/_design/boardgame2 -d 'name=grog&password=kampai'
-
-
+curl -d @design_docs/boardgame2.json -H "Content-type: application/json" -X PUT http://127.0.0.1:5984/geeklistdb/_design/boardgame2 -u "grog":"kampai"
 
 echo "boardgamestats view"
-curl -d @design_docs/boardgamestats.json -H "Content-type: application/json" -X PUT http://127.0.0.1:5984/geeklistdb/_design/boardgamestats -d 'name=grog&password=kampai'
+curl -d @design_docs/boardgamestats.json -H "Content-type: application/json" -X PUT http://127.0.0.1:5984/geeklistdb/_design/boardgamestats -u "grog":"kampai"
 
 
 echo "geekliststats view"
-curl -d @design_docs/geekliststats.json -H "Content-type: application/json" -X PUT http://127.0.0.1:5984/geeklistdb/_design/geekliststats -d 'name=grog&password=kampai'
+curl -d @design_docs/geekliststats.json -H "Content-type: application/json" -X PUT http://127.0.0.1:5984/geeklistdb/_design/geekliststats -u "grog":"kampai"
 
 
 echo "geeklistfilters view"
-curl -d @design_docs/geeklistfilters.json -H "Content-type: application/json" -X PUT http://127.0.0.1:5984/geeklistdb/_design/geeklistfilters -d 'name=grog&password=kampai'
+curl -d @design_docs/geeklistfilters.json -H "Content-type: application/json" -X PUT http://127.0.0.1:5984/geeklistdb/_design/geeklistfilters -u "grog":"kampai"

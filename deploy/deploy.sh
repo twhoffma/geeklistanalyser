@@ -9,9 +9,6 @@ sudo apt-get install nginx
 
 sudo apt-get update
 
-#Install inquisitor for debugging queries
-#sudo /usr/share/elasticsearch/bin/plugin -install polyfractal/elasticsearch-inquisitor
-
 #docker
 sudo docker-compose up -d
 
