@@ -2,14 +2,15 @@ version: '2'
 services:
   couchdb:
     container_name: couch01
-    image: couchdb:1.6
+    image: couchdb:3.0.0
     volumes:
       - couchdata:/usr/local/var/lib/couchdb
+      - ./etc/couchdb:/opt/couchdb/etc/local.d
     ports:
       - "5984:5984"
   elasticsearch:
     container_name: es01
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.3.0
+    image: elasticsearch:1.7.6-alpine
     volumes:
       - esdata:/usr/share/elasticsearch/data
     ports:

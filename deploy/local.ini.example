@@ -1,0 +1,3 @@
+[admins]
+;Change this before setting it in the etc/couchdb directory
+admin = prettydumbpassword
