@@ -1042,5 +1042,47 @@
     "toDate": "2019-12-08",
     "excluded": [],
     "tradeLists": []
+  },
+  {
+    "_id": "25",
+    "type": "preview",
+    "name": "New Game Releases - June-August 2020",
+    "group": "Special Previews",
+    "year": 2020,
+    "update": true,
+    "objectid": 25,
+    "visible": true,
+    "fromDate": "2020-06-01",
+    "toDate": "2020-08-31",
+    "excluded": [],
+    "tradeLists": []
+  },
+  {
+    "_id": "26",
+    "type": "preview",
+    "name": "New Game Releases - September-October 2020",
+    "group": "Special Previews",
+    "year": 2020,
+    "update": true,
+    "objectid": 26,
+    "visible": true,
+    "fromDate": "2020-06-01",
+    "toDate": "2020-12-31",
+    "excluded": [],
+    "tradeLists": []
+  },
+  {
+    "_id": "27",
+    "type": "preview",
+    "name": "New Game Releases - November-December 2020",
+    "group": "Special Previews",
+    "year": 2020,
+    "update": true,
+    "objectid": 27,
+    "visible": true,
+    "fromDate": "2020-06-01",
+    "toDate": "2020-12-31",
+    "excluded": [],
+    "tradeLists": []
   }
 ]
