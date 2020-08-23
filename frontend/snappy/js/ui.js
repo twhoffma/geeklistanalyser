@@ -37,10 +37,26 @@ function init_ui(){
 	var currentFilterDefaults = {};	
 	
 	//Handlebars
+	Handlebars.registerHelper('bgAttrFilterLink', function t(attr, val){
+		var addr = window.location.search || "?";
+		
+		var re = new RegExp('((\\?|&)?)' + attr + "=[^&]*", 'i');
+		
+		if(re.test(addr)){
+	  		var repl = '$1' + attr + "=" + val;
+	    
+			addr = addr.replace(re, repl);
+	  	}else{
+			addr += "&" + attr + "=" + val;
+		}
+		
+		return addr
+	});
+
 	Handlebars.registerPartial('render_attr', Handlebars.templates.bgattr);
 	Handlebars.registerPartial('sidenav_rangeslider', Handlebars.templates.sidenav_rangeslider);
 	Handlebars.registerPartial('sidenav_dropdown', Handlebars.templates.sidenav_dropdown);
-		
+	
 	function toggleDetails(e, op){
 	      var p = $(e.target).parent().parent().parent().parent(); //It's pretty far up there
 	      var c = p.children(".details");
