@@ -146,6 +146,13 @@ function getGeeklistStats(geeklistId, analysisDate){
 	//TODO: Cannot be done the way 'geekliststats' is set up. Need couch-lucene.
 }
 
+function getLatestGeeklistStats(geeklistId){
+	var url = db.getViewURL('geekliststats', 'geekliststats')+'?start_key=[{id}, {}]&end_key=[{id}, 0]&descending=true&include_docs=true&skip=0&limit=1';
+	url = url.replace(/\{id\}/g, geeklistId);
+	
+	return db.getDocs(url)
+}
+
 function saveGeeklistStats(geeklistStats){
 	return db.saveDocs(geeklistStats)
 }
@@ -306,6 +313,7 @@ module.exports.getGeeklists = getGeeklists
 module.exports.getGeeklist = getGeeklist
 module.exports.saveBoardgameStats = saveBoardgameStats
 module.exports.deleteBoardgameStats = deleteBoardgameStats
+module.exports.getLatestGeeklistStats = getLatestGeeklistStats
 module.exports.saveGeeklistStats = saveGeeklistStats
 module.exports.deleteGeeklistStats = deleteGeeklistStats
 module.exports.saveFilterRanges = saveFilterRanges

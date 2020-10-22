@@ -196,7 +196,7 @@ templates['list'] = template({"1":function(container,depth0,helpers,partials,dat
     + container.escapeExpression(((helper = (helper = helpers.update || (depth0 != null ? depth0.update : depth0)) != null ? helper : helpers.helperMissing),(typeof helper === "function" ? helper.call(depth0 != null ? depth0 : (container.nullContext || {}),{"name":"update","hash":{},"data":data}) : helper)))
     + "\"><span class=\"syncStatus syncInactive\" id=\"glaze-hdr-update\">INACTIVE</span></a>\r\n";
 },"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
-    var stack1, helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression;
+    var stack1, helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression, alias5=container.lambda;
 
   return "  <li class=\"gl\">\r\n    <div class=\"block header\">\r\n      	<span class=\"nm\"><a href=\"?id="
     + alias4(((helper = (helper = helpers.objectid || (depth0 != null ? depth0.objectid : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"objectid","hash":{},"data":data}) : helper)))
@@ -212,7 +212,13 @@ templates['list'] = template({"1":function(container,depth0,helpers,partials,dat
     + alias4(((helper = (helper = helpers.year || (depth0 != null ? depth0.year : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"year","hash":{},"data":data}) : helper)))
     + "\">"
     + alias4(((helper = (helper = helpers.year || (depth0 != null ? depth0.year : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"year","hash":{},"data":data}) : helper)))
-    + "</a></li>\r\n                <li><i class=\"far fa-thumbs-up\"></i> ? </li>\r\n                <li><i class=\"fas fa-buffer\"></i> ?  </li>\r\n                <li><i class=\"fas fa-hashtag\"></i> ?  </li>\r\n                <li><i class=\"fas fa-list\"></i> ?  </li>\r\n                <li><i class=\"far fa-object-group\"></i> <a href=\"?listgroup="
+    + "</a></li>\r\n                <li><i class=\"far fa-thumbs-up\"></i> ? </li>\r\n                <li><i class=\"fas fa-buffer\"></i> "
+    + alias4(alias5(((stack1 = (depth0 != null ? depth0.latest : depth0)) != null ? stack1.depth : stack1), depth0))
+    + " </li>\r\n                <li><i class=\"fas fa-hashtag\"></i> "
+    + alias4(alias5(((stack1 = (depth0 != null ? depth0.latest : depth0)) != null ? stack1.numBoardgames : stack1), depth0))
+    + " </li>\r\n                <li><i class=\"fas fa-list\"></i> "
+    + alias4(alias5(((stack1 = (depth0 != null ? depth0.latest : depth0)) != null ? stack1.numLists : stack1), depth0))
+    + " </li>\r\n                <li><i class=\"far fa-object-group\"></i> <a href=\"?listgroup="
     + alias4(((helper = (helper = helpers.group || (depth0 != null ? depth0.group : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"group","hash":{},"data":data}) : helper)))
     + "\">"
     + alias4(((helper = (helper = helpers.group || (depth0 != null ? depth0.group : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"group","hash":{},"data":data}) : helper)))

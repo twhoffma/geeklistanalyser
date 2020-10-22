@@ -166,15 +166,16 @@ app.use('/data/getGeeklistFilters', function(req, res, next){
 	}
 });
 
-//app.use(uri + '/data/getGeeklists', function(req, res, next){
-app.use('/data/getGeeklists', function(req, res, next){
-	if(c.devmode){
+app.use('/data/getGeeklistStats', function(req, res, next){
+	var p = qs.parse(req._parsedUrl.query);
+	
+	//if(c.devmode){
 		res.setHeader("Access-Control-Allow-Origin", "*");
-	}
+	//}
 	
 	
 	//db.getGeeklists(false, true).then(
-	datamgr.getGeeklists(false, true).then(
+	datamgr.getLatestGeeklistStats(p.geeklistId).then(
 			function(val){
 				var u = req._parsedUrl.href + '?';
 				var r = JSON.stringify(val);
@@ -186,6 +187,75 @@ app.use('/data/getGeeklists', function(req, res, next){
 				cacheResponse(u, r);
 				res.end(r);
     		}
+		).fail(
+			function(err){
+				res.end("Failed to get geeklists: " + err);
+			}
+		);
+});
+
+//app.use(uri + '/data/getGeeklists', function(req, res, next){
+app.use('/data/getGeeklists', function(req, res, next){
+	if(c.devmode){
+		res.setHeader("Access-Control-Allow-Origin", "*");
+	}
+	
+	
+	//db.getGeeklists(false, true).then(
+	datamgr.getGeeklists(false, true).then(
+			function(val){
+				var u = req._parsedUrl.href + '?';
+				var lists = [];
+				var p = [];
+					
+				for(let i = 0; i < val.length; i++){
+					//var gl = val[i];
+					
+					p.push(
+						datamgr.getLatestGeeklistStats(val[i].objectid).then(
+							function(v){
+								if(!v || v.length === 0){
+									//console.log("ERR");
+									//console.log(v);
+								}else{
+									Object.assign(val[i], {latest: v[0].doc});
+								}
+							}
+						).fail(
+							function(e){
+								console.log(e);
+								throw e
+							}
+						).catch(
+							function(e){
+								console.log(e);
+								throw e
+							}
+						)
+					);
+					
+					//val[i] = gl;
+					//lists.push(gl); 
+					//console.log(val[i]);
+				}
+				
+				//console.log("LISTS");	
+				//console.log(lists);
+				//console.log("/LISTS");	
+				
+				return q.allSettled(p).then(function(gd){
+					var r = JSON.stringify(val);
+				
+					if(verbose){
+						console.log("Asked database about" + u);	
+					}
+				
+					cacheResponse(u, r);
+					res.end(r);
+
+					return true
+				})
+    			}
 		).fail(
 			function(err){
 				res.end("Failed to get geeklists: " + err);
