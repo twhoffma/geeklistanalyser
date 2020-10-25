@@ -217,7 +217,7 @@ function syncLists(loadedGeeklists){
 					//Only run lists that are provided at the commandline, or all with update === true if none is given.
 					geeklists.push(geeklist);
 						
-					p.push(getGeeklistData(geeklist.type, geeklist.objectid, geeklist.objectid, new Set(), [], [], geeklist.excluded, geeklist.saveObservations, geeklist.excludedTitles || []));
+					p.push(getGeeklistData(geeklist.type, geeklist.objectid, geeklist.objectid, new Set(), [], [], geeklist.excluded, geeklist.saveObservations, geeklist.excludedTitles || [], 1));
 				});
 				
 					
@@ -542,7 +542,7 @@ function GeeklistStat(geeklistid, statDate){
 	this.crets = moment().format(c.format.dateandtime);
 	this.numLists =0;
 	this.type = "geekliststat";
-	this.depth = 0;
+	this.depth = 1;
 	this.numBoardgames = 0;
 	this.avgListLength = 0;
 	this.medListLength = 0;
@@ -780,7 +780,7 @@ function updateBoardgameStat(e, boardgameStats, rootGeeklistId, geeklistId, root
 }
 
 //XXX: Rewrite, should contain rootGeeklist, parentGeeklist, currentGeeklist, visitedGeeklists, boardgameStats, geeklistStats.
-function getGeeklistData(listtype, geeklistid, subgeeklistid, visitedGeeklists, boardgameStats, geeklistStats, excluded, saveObs, excludedTitles){
+function getGeeklistData(listtype, geeklistid, subgeeklistid, visitedGeeklists, boardgameStats, geeklistStats, excluded, saveObs, excludedTitles, depth){
 	var p = q.defer();
 	var promises = [];
 	
@@ -815,7 +815,7 @@ function getGeeklistData(listtype, geeklistid, subgeeklistid, visitedGeeklists, 
 	
 	//TODO: Most stats are broken.
 	//Populate geeklist stats
-	geeklistStat.depth += 1;
+	geeklistStat.depth = Math.max(depth, geeklistStat.depth);
 	
 	//Load the list from BGG
 	bgg.getGeeklist(listtype, subgeeklistid).then(
@@ -845,7 +845,7 @@ function getGeeklistData(listtype, geeklistid, subgeeklistid, visitedGeeklists, 
 						visitedGeeklists.add(e.objectid);
 							
 						promises.push(
-							getGeeklistData("geeklist", geeklistid, e.objectid, visitedGeeklists, boardgameStats, geeklistStats, excluded, saveObs, excludedTitles).then(
+							getGeeklistData("geeklist", geeklistid, e.objectid, visitedGeeklists, boardgameStats, geeklistStats, excluded, saveObs, excludedTitles, depth + 1).then(
 								function(v){
 									//("Promise resolved: " + e.objectid);
 									return q(v)

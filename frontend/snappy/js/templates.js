@@ -212,7 +212,7 @@ templates['list'] = template({"1":function(container,depth0,helpers,partials,dat
     + alias4(((helper = (helper = helpers.year || (depth0 != null ? depth0.year : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"year","hash":{},"data":data}) : helper)))
     + "\">"
     + alias4(((helper = (helper = helpers.year || (depth0 != null ? depth0.year : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"year","hash":{},"data":data}) : helper)))
-    + "</a></li>\r\n                <li><i class=\"far fa-thumbs-up\"></i> ? </li>\r\n                <li><i class=\"fas fa-buffer\"></i> "
+    + "</a></li>\r\n                <li><i class=\"far fa-thumbs-up\"></i> ? </li>\r\n                <li><i class=\"fas fa-arrows-alt-v\"></i> "
     + alias4(alias5(((stack1 = (depth0 != null ? depth0.latest : depth0)) != null ? stack1.depth : stack1), depth0))
     + " </li>\r\n                <li><i class=\"fas fa-hashtag\"></i> "
     + alias4(alias5(((stack1 = (depth0 != null ? depth0.latest : depth0)) != null ? stack1.numBoardgames : stack1), depth0))
