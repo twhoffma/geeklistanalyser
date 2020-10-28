@@ -17,7 +17,7 @@ fi
 
 if [ $ow = "Y" ]; then
   echo "Importing $ddoc"
-  if [ "$rev" != "null"]; then
+  if [ "$rev" != "null" ]; then
     cat design_docs/$ddoc.json | jq "._rev=$rev" | curl -d @- -H "Content-type: application/json" -X PUT "http://$dbip:$dbport/$db/_design/$ddoc"
   else
     cat design_docs/$ddoc.json | curl -d @- -H "Content-type: application/json" -X PUT "http://$dbip:$dbport/$db/_design/$ddoc"
