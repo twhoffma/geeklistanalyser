@@ -1,0 +1,10 @@
+{
+  "_id": "_design/geeklisthistograms",
+  "language": "javascript",
+  "views": {
+    "geeklisthistograms": {
+      "map": "function(doc) {\n  if(doc.type && doc.type == \"boardgame\" && doc.geeklists){\n    for(i = 0; i < doc.geeklists.length; i++){\n if(!isNaN(parseInt(doc.minplaytime)) && !isNaN(parseInt(doc.maxplaytime))){\n for(k=Math.ceil(parseInt(doc.minplaytime) / 5) * 5; k <= Math.ceil(parseInt(doc.maxplaytime) / 5) * 5; k += 5){\n emit([doc.geeklists[i].objectid, 'playtime', k], 1);\n\t}\n      }\n if(!isNaN(parseInt(doc.minplayers)) && !isNaN(parseInt(doc.maxplayers))){\n for(k=doc.minplayers; k<=doc.maxplayers; k++){emit([doc.geeklists[i].objectid, 'numplayers', k], 1);}\n} \n emit([doc.geeklists[i].objectid, 'yearpublished', doc.yearpublished], 1);}\n  }\n}",
+      "reduce": "_sum"
+    }
+  }
+}
