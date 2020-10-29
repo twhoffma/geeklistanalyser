@@ -72,6 +72,11 @@
 				//$('#sidenavGeeklists').toggle();	
 			}	
 			
+			$('select').on("change", function(){
+				guesstimate_obs();	
+				//FIXME: At some point add estimators for range sliders
+			});
+			
 			$('#loadmore').on("click", function(){
 				loadGeeklist(selectedGeeklist, false, false, false);
 			});
@@ -116,6 +121,29 @@
 					$('#graphs').show();
 				}
 			});
+			
+			function guesstimate_obs(){
+				var obs = Infinity;
+				
+				['boardgamedesigner', 'boardgameartist', 'boardgamemechanic', 'boardgamecategory', 'boardgamefamily', 'boardgamepublisher'].forEach(function(v, i){				
+					var e = document.getElementById('' + v);
+					
+					if(e.options[e.selectedIndex].text !== 'Any'){
+						
+						if(obs > parseInt(e.options[e.selectedIndex].dataset.obs)){
+							obs = parseInt(e.options[e.selectedIndex].dataset.obs);
+							console.log('' + parseInt(e.options[e.selectedIndex].dataset.obs));
+						}
+					}
+				});
+				
+				if(obs === Infinity){
+					document.getElementById('guesstimated_obs').innerHTML = "&lt;&infin;";
+				}else{
+					document.getElementById('guesstimated_obs').innerHTML = "&leq;" + obs;
+					console.log("N");
+				}
+			}
 			
 			function loadGeeklist(geeklistId, clearList, clearOptions, clearInfo){
 				if(geeklistId === undefined){

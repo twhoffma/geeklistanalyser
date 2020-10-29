@@ -322,7 +322,7 @@ function init_ui(){
 						el.append('<option value="">Any</option>');
 						
 						v.forEach(function(f){
-							el.append('<option value="' + f.objectid + '">' + f.name + '</option>');
+							el.append('<option value="' + f.objectid + '" data-obs="' + f.value + '">' + f.name + '</option>');
 						});
 						
 						if(e.type === 'selectpicker'){

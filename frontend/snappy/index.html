@@ -77,33 +77,35 @@
 			
     		<div class="modal-content">
       			<div class="modal-header">
-					<div>
+				<div>
         				<button type="button" class="close pull-right pull-up" data-dismiss="modal">&times;</button>
-					</div>
-					<button type="button" class="btn btn-default btn-block btn-primary" data-dismiss="modal" id="apply">Apply</button>
-      			</div>
-				<div class="modal-body">
+				</div>
+				
+				<button type="button" class="btn btn-default btn-block btn-primary" data-dismiss="modal" id="apply">Apply</button>
+      				</div>
+					<div class="modal-body">
+						<p id="guesstimated_obs" style="float: left;">&lt;&infin;</p>
     						<h3>Sorting</h3>
       						<div>
 							<form>
-            						<li>
-										<select id="sortby" class="form-control">
-											<option value="crets" selected>Addition time</option>
-											<option value="name">Name</option>
-											<option value="cnt">Count</option>
-											<option value="thumbs">Thumbs</option>
-											<option value="yearpublished">Year</option>
-										</select>
-									</li>	
-									<li>
-										<label class="radio-inline">
+            							<li>
+									<select id="sortby" class="form-control">
+										<option value="crets" selected>Addition time</option>
+										<option value="name">Name</option>
+										<option value="cnt">Count</option>
+										<option value="thumbs">Thumbs</option>
+										<option value="yearpublished">Year</option>
+									</select>
+								</li>	
+								<li>
+									<label class="radio-inline">
 										<input type="radio" name="sortby_asc" value="1">Ascending</input>
-										</label>
-										<label class="radio-inline">
+									</label>
+									<label class="radio-inline">
 										<input type="radio" name="sortby_asc" value="0" checked="checked">Descending</input>
-										</label>
-									</li>
-								</form>
+									</label>
+								</li>
+							</form>
       						</div>
 						<!-- </div>
   	  					<div id="tabFilters" class="tab-pane fade" role="tabpanel"> -->
