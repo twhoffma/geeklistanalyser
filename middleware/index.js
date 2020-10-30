@@ -60,6 +60,7 @@ app.use('/data/getGeeklistDetails', function(req, res, next){
 	});
 });
 
+//FIXME: There is no reason why this should be live.
 app.use('/data/getGeeklistGraphData', function(req, res, next){
 	var p = qs.parse(req._parsedUrl.query);
 	
@@ -81,36 +82,51 @@ app.use('/data/getGeeklistGraphData', function(req, res, next){
 				
 				//TODO: Add graphs for group of the geeklist..
 				
-				//if(g.objectid == p.geeklistid || g.group == matchGroup){
-					//console.log("Fetching graph data for " + g.objectid + " (" + g.name + ")");
+				prom.push(datamgr.getGeeklistFiltersComponents(g.objectid, true).then(
+					function(val){
+						var data = {'boardgamecategory': [], 'boardgamemechanic': []};
 						
-					//prom.push(datamgr.getGeeklistFilters(g.objectid).then(
-					prom.push(datamgr.getGeeklistFiltersComponents(g.objectid, true).then(
-						function(val){
-							var data = {'boardgamecategory': [], 'boardgamemechanic': []};
-							val.forEach(function(v){
-								//console.log(v.key[2]);	
-								if(data[v.key[1]]){
-									data[v.key[1]].push({'objectid': v.key[2].objectid, 'name': v.key[2].name, 'value': v.value});
-								}
-							});
-							
-							if(val.length > 0){
-								//logger.debug(val[0].doc);
-								return {geeklist: {objectid: g.objectid, group: g.group, year: g.year}, graphdata: data}
-							}else{
-								return Q.reject("nothing found!")
-								//return {geeklist: {objectid: g.objectid, group: g.group, year: g.year}, graphdata: {}}
+						val.forEach(function(v){
+							//console.log(v.key[2]);	
+							if(data[v.key[1]]){
+								data[v.key[1]].push({'objectid': v.key[2].objectid, 'name': v.key[2].name, 'value': v.value});
 							}
+						});
+						
+						if(val.length > 0){
+							//logger.debug(val[0].doc);
+							return {geeklist: {objectid: g.objectid, group: g.group, year: g.year}, graphdata: data}
+						}else{
+							return Q.reject("nothing found!")
+							//return {geeklist: {objectid: g.objectid, group: g.group, year: g.year}, graphdata: {}}
 						}
-					).catch(
-						function(e){
-							logger.error(e);
-							console.log(e);
-							return Q.reject(e);
-						}
-					));
-				//}
+					}
+				).then(
+					function(graphdata){
+						return datamgr.getGeeklistFiltersComponentsObs(graphdata.geeklist.objectid, true).then(
+							function(val){
+								val.forEach(function(v){
+									if(graphdata.graphdata[v.key[1]]){
+										var graph = graphdata.graphdata[v.key[1]].filter(e => e.objectid === v.key[2].objectid);
+										if(graph.length > 0){
+											graph[0]['obs_value'] = v.value;
+										}	
+									}
+								});
+
+								return graphdata
+							}
+						)
+					}
+				).catch(
+					function(e){
+						logger.error(e);
+						console.log(e);
+						return Q.reject(e);
+					}
+				));
+				
+				//TODO: Add datamgr.getGeeklistFiltersComponentsObs - which are scaled by observations rather than entries. Affects Lists of lists.
 			});
 			
 			return q.allSettled(prom).then(function(gd){

@@ -45,7 +45,14 @@ function getGeeklists(isUpdateable, isVisible, geeklistIds, staleOK = false){
 			lists.forEach(function(list, i){
 				//FIXME: Seems to be some room for improvement
 				let inSelection = !geeklistIds || (geeklistIds.filter(x => x === parseInt(list.objectid)).length > 0);
-				if((!geeklistIds || inSelection) && (!isUpdateable || list.update === true) && (!isVisible || list.visible === true)){
+				
+				/*	
+				console.log('selection=' + inSelection);
+				console.log('isUpdatable='+ isUpdateable);				
+				*/
+				
+				//if((!geeklistIds || inSelection) && (!isUpdateable || list.update === true) && (!isVisible || list.visible === true)){	
+				if((!geeklistIds || inSelection) && (!isUpdateable || list.update === true)){
 					//logger.debug("Found geeklist " + list.objectid + " in database.");
 					geeklists.push(list);
 				}
@@ -177,8 +184,21 @@ function getGeeklistFiltersMinMax(geeklistid, allowStale){
 	return db.getDocs(url)	
 }
 
+
+function getGeeklistFiltersHistograms(geeklistid, allowStale){
+	var url = db.getViewURL('geeklisthistograms', 'geeklisthistograms')+'?reduce=true&group_level=3&start_key=[{id}]&end_key=[{id}, {}]' + (allowStale ? '&stale=update_after' : '');
+	url = url.replace(/\{id\}/g, geeklistid);
+	return db.getDocs(url)	
+}
+
 function getGeeklistFiltersComponents(geeklistid, allowStale){
 	var url = db.getViewURL('geeklistfilters', 'geeklistfilters_components')+'?reduce=true&group_level=3&start_key=[{id}]&end_key=[{id}, {}]' + (allowStale ? '&stale=update_after' : '');
+	url = url.replace(/\{id\}/g, geeklistid);
+	return db.getDocs(url)
+}
+
+function getGeeklistFiltersComponentsObs(geeklistid, allowStale){
+	var url = db.getViewURL('geeklistfilters', 'geeklistfilters_components_by_obs')+'?reduce=true&group_level=3&start_key=[{id}]&end_key=[{id}, {}]' + (allowStale ? '&stale=update_after' : '');
 	url = url.replace(/\{id\}/g, geeklistid);
 	return db.getDocs(url)
 }
@@ -190,6 +210,7 @@ function getGeeklistFilters(geeklistid){
 	return db.getDocs(url)	
 }
 
+/*
 function getGeeklistFiltersLive(geeklistid){
 	function FilterValue(geeklistId){
 		this.type = 'filtervalue';
@@ -231,6 +252,7 @@ function getGeeklistFiltersLive(geeklistid){
 		}
 	);
 }
+*/
 
 function getBoardgameData(boardgameIds, priority="db"){
 	var boardgames = [];
@@ -320,9 +342,11 @@ module.exports.saveFilterRanges = saveFilterRanges
 module.exports.deleteFilterRanges = deleteFilterRanges
 module.exports.getGeeklistFilters = getGeeklistFilters
 module.exports.finalizeDb = finalizeDb
+module.exports.getGeeklistFiltersHistograms = getGeeklistFiltersHistograms
 module.exports.getGeeklistFiltersComponents = getGeeklistFiltersComponents
+module.exports.getGeeklistFiltersComponentsObs = getGeeklistFiltersComponentsObs
 module.exports.getGeeklistFiltersMinMax = getGeeklistFiltersMinMax
-module.exports.getGeeklistFiltersLive = getGeeklistFiltersLive
+//module.exports.getGeeklistFiltersLive = getGeeklistFiltersLive
 module.exports.updateBoardgameStats = updateBoardgameStats
 
 module.exports.updateSearch = srch.updateSearch
