@@ -175,10 +175,14 @@
 						}).then(function(r){
 							graphs.getGraphData(geeklistId).then(function(r){
 								console.log(r);
-								r = r.filter(e => e.geeklist.objectid == geeklistId)[0];
-								r = r.graphdata;
-								graphs.renderGraph("graphMechanics", "Mechanics", r.boardgamemechanic);
-								graphs.renderGraph("graphCategories", "Categories", r.boardgamecategory);
+								var gdList = r.filter(e => e.geeklist.objectid == geeklistId)[0];
+								//r = r.graphdata;
+								
+								graphs.renderGraph("graphMechanics", "Mechanics", gdList.graphdata.boardgamemechanic);
+								graphs.renderGroupGraph("graphGroupMechanics", "Mechanics", r, 5, parseInt(geeklistId), "boardgamemechanic", "value");
+								
+								graphs.renderGraph("graphCategories", "Categories", gdList.graphdata.boardgamecategory);
+								graphs.renderGroupGraph("graphGroupCategories", "Categories", r, 5, parseInt(geeklistId), "boardgamecategory", "value");
 							}).finally(e => resolve());
 						});
 					}else{
