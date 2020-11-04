@@ -159,40 +159,13 @@ function init_ui(){
 	}
 		
 	function getSliderValue(id){
-		//var filter = [];
-		
 		var s = document.getElementById(id);
 		var v = s.noUiSlider.get();	
 
-			
-		//filter.push({'name': id + 'min', 'value': parseInt(v[0])});
-		//filter.push({'name': id + 'max', 'value': parseInt(v[1])});
-		
-		//filter.push({'name': id, 'min': parseInt(v[0]), 'max': parseInt(v[1])});
-		
-		/*
-		TODO: Implement min/max check
-		//var s = $('input#' + id).slider();
-		var s = $('#' + id);
-		var val = s.slider("values");
-		//var val = s.slider('getValue');
-		var min = s.slider( "option", "min" );
-		var max = s.slider( "option", "max" );
-		//var max = s.slider('getAttribute', 'max');
-		
-		
-		if(val[0] > min){
-			filter.push({'name': id + 'min', 'value': val[0]});
-		}
-
-		if(val[1] < max){
-			filter.push({'name': id + 'max', 'value': val[1]});
-		}
-		*/
-		//return filter;
 		return {'name': id, 'min': parseInt(v[0]), 'max': parseInt(v[1])}
 	}
 	
+		
 	fn = {
 		'setLoadButtonState': setLoadButtonState,
 		'setHistory': function setHistory(geeklistid, limit, skip, filter, sorting){

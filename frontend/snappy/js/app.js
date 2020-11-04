@@ -5,7 +5,8 @@
 		var selectedGeeklist = 0;
 		var sorting;
 		var filter;
-		
+		var graphs;
+			
 		$(document).ready(function(){
 			ui = init_ui();
 			data = init_data();
@@ -105,7 +106,18 @@
 			$('#resetFilters').on('click', function(){
 				ui.resetFilters();
 			});
+			
+			$('input[name=graph_valattr]').on('click', function(e){
+				graphs.getGraphData(selectedGeeklist).then(function(r){
+					
+					var radios = document.querySelectorAll('input[name="graph_valattr"]:checked');
+					var valattr = (radios.length > 0 ? radios[0].value : "value");
+					
+					graphs.renderGraphs(r, selectedGeeklist, valattr);
 
+				});
+			});
+			
 			$('.listHeaderButton').on('click', function(e){
 				if(e.target.tagName.toUpperCase() === 'I'){
 					e = e.target.parentNode;
@@ -174,15 +186,12 @@
 							resolve();
 						}).then(function(r){
 							graphs.getGraphData(geeklistId).then(function(r){
-								console.log(r);
-								var gdList = r.filter(e => e.geeklist.objectid == geeklistId)[0];
-								//r = r.graphdata;
 								
-								graphs.renderGraph("graphMechanics", "Mechanics", gdList.graphdata.boardgamemechanic);
-								graphs.renderGroupGraph("graphGroupMechanics", "Mechanics", r, 5, parseInt(geeklistId), "boardgamemechanic", "value");
+								var radios = document.querySelectorAll('input[name="graph_valattr"]:checked');
+								var valattr = (radios.length > 0 ? radios[0].value : "value");
 								
-								graphs.renderGraph("graphCategories", "Categories", gdList.graphdata.boardgamecategory);
-								graphs.renderGroupGraph("graphGroupCategories", "Categories", r, 5, parseInt(geeklistId), "boardgamecategory", "value");
+								graphs.renderGraphs(r, geeklistId, valattr);
+
 							}).finally(e => resolve());
 						});
 					}else{
