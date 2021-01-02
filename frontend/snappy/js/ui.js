@@ -37,10 +37,26 @@ function init_ui(){
 	var currentFilterDefaults = {};	
 	
 	//Handlebars
+	Handlebars.registerHelper('bgAttrFilterLink', function t(attr, val){
+		var addr = window.location.search || "?";
+		
+		var re = new RegExp('((\\?|&)?)' + attr + "=[^&]*", 'i');
+		
+		if(re.test(addr)){
+	  		var repl = '$1' + attr + "=" + val;
+	    
+			addr = addr.replace(re, repl);
+	  	}else{
+			addr += "&" + attr + "=" + val;
+		}
+		
+		return addr
+	});
+
 	Handlebars.registerPartial('render_attr', Handlebars.templates.bgattr);
 	Handlebars.registerPartial('sidenav_rangeslider', Handlebars.templates.sidenav_rangeslider);
 	Handlebars.registerPartial('sidenav_dropdown', Handlebars.templates.sidenav_dropdown);
-		
+	
 	function toggleDetails(e, op){
 	      var p = $(e.target).parent().parent().parent().parent(); //It's pretty far up there
 	      var c = p.children(".details");
@@ -143,40 +159,13 @@ function init_ui(){
 	}
 		
 	function getSliderValue(id){
-		//var filter = [];
-		
 		var s = document.getElementById(id);
 		var v = s.noUiSlider.get();	
 
-			
-		//filter.push({'name': id + 'min', 'value': parseInt(v[0])});
-		//filter.push({'name': id + 'max', 'value': parseInt(v[1])});
-		
-		//filter.push({'name': id, 'min': parseInt(v[0]), 'max': parseInt(v[1])});
-		
-		/*
-		TODO: Implement min/max check
-		//var s = $('input#' + id).slider();
-		var s = $('#' + id);
-		var val = s.slider("values");
-		//var val = s.slider('getValue');
-		var min = s.slider( "option", "min" );
-		var max = s.slider( "option", "max" );
-		//var max = s.slider('getAttribute', 'max');
-		
-		
-		if(val[0] > min){
-			filter.push({'name': id + 'min', 'value': val[0]});
-		}
-
-		if(val[1] < max){
-			filter.push({'name': id + 'max', 'value': val[1]});
-		}
-		*/
-		//return filter;
 		return {'name': id, 'min': parseInt(v[0]), 'max': parseInt(v[1])}
 	}
 	
+		
 	fn = {
 		'setLoadButtonState': setLoadButtonState,
 		'setHistory': function setHistory(geeklistid, limit, skip, filter, sorting){
@@ -306,7 +295,7 @@ function init_ui(){
 						el.append('<option value="">Any</option>');
 						
 						v.forEach(function(f){
-							el.append('<option value="' + f.objectid + '">' + f.name + '</option>');
+							el.append('<option value="' + f.objectid + '" data-obs="' + f.value + '">' + f.name + '</option>');
 						});
 						
 						if(e.type === 'selectpicker'){

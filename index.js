@@ -21,26 +21,35 @@ var geeklistStats = [];
 var geeklists = [];
 
 /*MAIN*/
+args['incl_inactive'] = false;
+args['incl_visible_only'] = false;
+
 //Read args
 for(i = 2; i < process.argv.length; i++){
 	var arg = process.argv[i].split("=");
 	
 	if(arg.length > 1){
 		//All others are parameters
-		
-		if(arg[0].toLowerCase() === "lists"){
-			args[arg[0].toLowerCase()] = arg[1].toLowerCase().split(",").map(x=>parseInt(x));
-		}else{
-			args[arg[0].toLowerCase()] = arg[1].toLowerCase();
+		console.log(arg[0].toLowerCase());	
+		switch(arg[0].toLowerCase()){
+			case "lists":
+				args[arg[0].toLowerCase()] = arg[1].toLowerCase().split(",").map(x=>parseInt(x));
+				break;
+			default:
+				args[arg[0].toLowerCase()] = arg[1].toLowerCase();
 		}
 	}else{
-		//First arg is action
+		if(arg[0].substr(0, 2) === '--'){
+			arg[0] = arg[0].substring(2);
+		}	
+		
+		//First arg is action, others are boolean
 		args[arg[0].toLowerCase()] = true;
 	}
 }
 
 //Load geeklists and execute
-datamgr.getGeeklists(true, false, args['lists']).then(
+datamgr.getGeeklists(!args['incl_inactive'], args['incl_visible_only'], args['lists']).then(
 	function(geeklists){
 		var action = "";
 
@@ -217,7 +226,7 @@ function syncLists(loadedGeeklists){
 					//Only run lists that are provided at the commandline, or all with update === true if none is given.
 					geeklists.push(geeklist);
 						
-					p.push(getGeeklistData(geeklist.type, geeklist.objectid, geeklist.objectid, new Set(), [], [], geeklist.excluded, geeklist.saveObservations, geeklist.excludedTitles || []));
+					p.push(getGeeklistData(geeklist.type, geeklist.objectid, geeklist.objectid, new Set(), [], [], geeklist.excluded, geeklist.saveObservations, geeklist.excludedTitles || [], 1));
 				});
 				
 					
@@ -505,9 +514,11 @@ function FilterValue(analysisDate, geeklistId){
 	this.type = 'filtervalue';
 	this.analysisDate = analysisDate;
 	this.objectid = geeklistId;
+	this.playtimehist = [];
 	this.playingtime = {'min': Infinity, 'max': -Infinity}
+	this.numplayershist = [];
 	this.numplayers = {'min': Infinity, 'max': -Infinity}
-	//this.yearpublished = {'min': Infinity, 'max': -Infinity}
+	this.yearpublishedhist = [];
 	this.yearpublished = [];
 	this.boardgamedesigner = []; 
 	this.boardgameartist = [];
@@ -542,7 +553,7 @@ function GeeklistStat(geeklistid, statDate){
 	this.crets = moment().format(c.format.dateandtime);
 	this.numLists =0;
 	this.type = "geekliststat";
-	this.depth = 0;
+	this.depth = 1;
 	this.numBoardgames = 0;
 	this.avgListLength = 0;
 	this.medListLength = 0;
@@ -780,7 +791,7 @@ function updateBoardgameStat(e, boardgameStats, rootGeeklistId, geeklistId, root
 }
 
 //XXX: Rewrite, should contain rootGeeklist, parentGeeklist, currentGeeklist, visitedGeeklists, boardgameStats, geeklistStats.
-function getGeeklistData(listtype, geeklistid, subgeeklistid, visitedGeeklists, boardgameStats, geeklistStats, excluded, saveObs, excludedTitles){
+function getGeeklistData(listtype, geeklistid, subgeeklistid, visitedGeeklists, boardgameStats, geeklistStats, excluded, saveObs, excludedTitles, depth){
 	var p = q.defer();
 	var promises = [];
 	
@@ -815,7 +826,7 @@ function getGeeklistData(listtype, geeklistid, subgeeklistid, visitedGeeklists, 
 	
 	//TODO: Most stats are broken.
 	//Populate geeklist stats
-	geeklistStat.depth += 1;
+	geeklistStat.depth = Math.max(depth, geeklistStat.depth);
 	
 	//Load the list from BGG
 	bgg.getGeeklist(listtype, subgeeklistid).then(
@@ -845,7 +856,7 @@ function getGeeklistData(listtype, geeklistid, subgeeklistid, visitedGeeklists, 
 						visitedGeeklists.add(e.objectid);
 							
 						promises.push(
-							getGeeklistData("geeklist", geeklistid, e.objectid, visitedGeeklists, boardgameStats, geeklistStats, excluded, saveObs, excludedTitles).then(
+							getGeeklistData("geeklist", geeklistid, e.objectid, visitedGeeklists, boardgameStats, geeklistStats, excluded, saveObs, excludedTitles, depth + 1).then(
 								function(v){
 									//("Promise resolved: " + e.objectid);
 									return q(v)
@@ -913,7 +924,6 @@ function generateFilterValues(geeklist){
 				var v = comp[j].key[2];
 				
 				v['value'] = comp[j].value;	
-				//console.log(comp[j]);
 				
 				filterValue[f].push(v);
 				
@@ -926,7 +936,6 @@ function generateFilterValues(geeklist){
 			keys.forEach(function(k){
 				
 				if(filterValue[k].length > 0 && typeof filterValue[k][0] === "object"){
-					//console.log(filterValue[k]);
 					filterValue[k].sort(function(a, b){
 							if(a.name.toUpperCase() < b.name.toUpperCase()){
 								return -1
@@ -937,7 +946,43 @@ function generateFilterValues(geeklist){
 				}
 			});
 				
-			return datamgr.getGeeklistFiltersMinMax(geeklistid) 	
+			//return datamgr.getGeeklistFiltersMinMax(geeklistid) 
+			return datamgr.getGeeklistFiltersHistograms(geeklistid)	
+		}
+	).then(
+		function(comp){
+			var keys = [];
+			for(var j=0; j < comp.length; j++){
+				var f = comp[j].key[1] + 'hist';
+				var v = {};
+				
+				//FIXME: Doesn't contain all parts of composite keys..	
+				//console.log(comp[j].key);
+				v['key'] = parseInt(comp[j].key[2]);
+				v['value'] = comp[j].value;	
+				
+				filterValue[f].push(v);
+				
+				if(keys.indexOf(f) === -1){
+					keys.push(f);
+				}
+			}
+			
+			//Sorting
+			keys.forEach(function(k){
+				if(filterValue[k].length > 0 && typeof filterValue[k][0] === "object"){
+					filterValue[k].sort(function(a, b){
+							if(a.key < b.key){
+								return -1
+							}else{
+								return 1
+							}
+						});
+				}
+			});
+				
+			return datamgr.getGeeklistFiltersMinMax(geeklistid) 
+			//return filterValue
 		}
 	).then(
 		function(minmax){

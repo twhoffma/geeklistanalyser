@@ -1,6 +1,6 @@
   <li class="gl">
     <div class="block header">
-      	<span class="nm"><a href="https://glaze.hoffy.no?id={{objectid}}" target="_blank">{{name}}</a></span>
+      	<span class="nm"><a href="?id={{objectid}}">{{name}}</a></span>
     </div>
     <div class="block">
         <div style="float: left; text-align: left;">
@@ -9,26 +9,26 @@
             </div>
 	    </div class="block">
 		{{#if update}}
-	      		<a href="https://glaze.hoffy.no?active={{update}}" target="blank_"><span class="syncStatus syncActive" id="glaze-hdr-update">ACTIVE</span></a>
+	      		<a href="?active={{update}}"><span class="syncStatus syncActive" id="glaze-hdr-update">ACTIVE</span></a>
 		{{else}}
-	      		<a href="https://glaze.hoffy.no?active={{update}}" target="blank_"><span class="syncStatus syncInactive" id="glaze-hdr-update">INACTIVE</span></a>
+	      		<a href="?active={{update}}"><span class="syncStatus syncInactive" id="glaze-hdr-update">INACTIVE</span></a>
 		{{/if}}
 	    </div>
             <div class="block">
 		    <p>
-			<span class="smallbox tp tpExpansion"><a href="https://glaze.hoffy.no?listtype={{type}}" target="blank_">{{type}}</a></span>
+			<span class="smallbox tp tpExpansion"><a href="?listtype={{type}}">{{type}}</a></span>
 		    </p>
             </div>
 
             <div class="block">
               <ul>
 		<!-- Linking year should allow filtering on that -->
-                <li><i class="fas fa-calendar"></i> <a href="https://glaze.hoffy.no?listyear={{year}}" target="blank_">{{year}}</a></li>
+                <li><i class="fas fa-calendar"></i> <a href="?listyear={{year}}">{{year}}</a></li>
                 <li><i class="far fa-thumbs-up"></i> ? {{! thumbs}}</li>
-                <li><i class="fas fa-buffer"></i> ? {{! depth}} </li>
-                <li><i class="fas fa-hashtag"></i> ? {{! numgames}} </li>
-                <li><i class="fas fa-list"></i> ? {{! numlists}} </li>
-                <li><i class="far fa-object-group"></i> <a href="https://glaze.hoffy.no?listgroup={{group}}" target="blank_">{{group}}</a> </li>
+                <li><i class="fas fa-arrows-alt-v"></i> {{latest.depth}} </li>
+                <li><i class="fas fa-hashtag"></i> {{latest.numBoardgames}} </li>
+                <li><i class="fas fa-list"></i> {{latest.numLists}} </li>
+                <li><i class="far fa-object-group"></i> <a href="?listgroup={{group}}">{{group}}</a> </li>
               </ul>
             </div>
         </div>

@@ -3,28 +3,28 @@
   "language": "javascript",
   "views": {
     "geeklist": {
-      "map": "function(doc) {\n  if(doc.geeklists.length > 0 && doc.type === 'boardgame'){\n\tfor(idx = 0; idx < doc.geeklists.length; idx++){\n      \t  emit(doc.geeklists[idx].objectid, null);\n\t}\n  }\n}"
+      "map": "function(doc) {\n  if(doc.type === 'boardgame' && doc.geeklists.length > 0){\n\tfor(idx = 0; idx < doc.geeklists.length; idx++){\n      \t  emit(doc.geeklists[idx].objectid, null);\n\t}\n  }\n}"
     },
     "geeklist_by_crets": {
-      "map": "function(doc) {\n  if(doc.geeklists.length > 0 && doc.type === 'boardgame'){\n\tfor(idx = 0; idx < doc.geeklists.length; idx++){\n      \t  emit([doc.geeklists[idx].objectid, Date.parse(doc.geeklists[idx].crets)], null);\n\t}\n  }\n}"
+      "map": "function(doc) {\n  if(doc.type === 'boardgame' && doc.geeklists.length > 0){\n\tfor(idx = 0; idx < doc.geeklists.length; idx++){\n      \t  emit([doc.geeklists[idx].objectid, Date.parse(doc.geeklists[idx].crets)], null);\n\t}\n  }\n}"
     },
     "geeklist_by_thumbs": {
-      "map": "function(doc) {\n  if(doc.geeklists.length > 0 && doc.type === 'boardgame'){\n\tfor(idx = 0; idx < doc.geeklists.length; idx++){\n      \t  emit([doc.geeklists[idx].objectid, parseInt(doc.geeklists[idx].latest.thumbs)], null);\n\t}\n  }\n}"
+      "map": "function(doc) {\n  if(doc.type === 'boardgame' && doc.geeklists.length > 0){\n\tfor(idx = 0; idx < doc.geeklists.length; idx++){\n      \t  emit([doc.geeklists[idx].objectid, parseInt(doc.geeklists[idx].latest.thumbs)], null);\n\t}\n  }\n}"
     },
     "geeklist_by_name": {
-      "map": "function(doc) {\n  if(doc.geeklists.length > 0 && doc.type === 'boardgame'){\n\tvar name = doc.name.filter(function(e){return e.primary == \"true\"})[0].name;\n\tfor(idx = 0; idx < doc.geeklists.length; idx++){\n      \t  emit([doc.geeklists[idx].objectid, name], null);\n\t}\n  }\n}"
+      "map": "function(doc) {\n  if(doc.type === 'boardgame' && doc.geeklists.length > 0){\n\tvar name = doc.name.filter(function(e){return e.primary == \"true\"})[0].name;\n\tfor(idx = 0; idx < doc.geeklists.length; idx++){\n      \t  emit([doc.geeklists[idx].objectid, name], null);\n\t}\n  }\n}"
     },
     "geeklist_by_year": {
-      "map": "function(doc) {\n  if(doc.geeklists.length > 0 && doc.type === 'boardgame'){\n\tfor(idx = 0; idx < doc.geeklists.length; idx++){\n      \t  emit([doc.geeklists[idx].objectid, parseInt(doc.yearpublished)], null);\n\t}\n  }\n}"
+      "map": "function(doc) {\n  if(doc.type === 'boardgame' && doc.geeklists.length > 0){\n\tfor(idx = 0; idx < doc.geeklists.length; idx++){\n      \t  emit([doc.geeklists[idx].objectid, parseInt(doc.yearpublished)], null);\n\t}\n  }\n}"
     },
     "geeklist_by_cnt": {
-      "map": "function(doc) {\n  if(doc.geeklists.length > 0 && doc.type === 'boardgame'){\n\tfor(idx = 0; idx < doc.geeklists.length; idx++){\n      \t  emit([doc.geeklists[idx].objectid, parseInt(doc.geeklists[idx].latest.cnt)], null);\n\t}\n  }\n}"
+      "map": "function(doc) {\n  if(doc.type === 'boardgame' && doc.geeklists.length > 0){\n\tfor(idx = 0; idx < doc.geeklists.length; idx++){\n      \t  emit([doc.geeklists[idx].objectid, parseInt(doc.geeklists[idx].latest.cnt)], null);\n\t}\n  }\n}"
     },
     "geeklist_by_wants": {
-      "map": "function(doc) {\n  if(doc.geeklists.length > 0 && doc.type === 'boardgame'){\n\tfor(idx = 0; idx < doc.geeklists.length; idx++){\n      \t  emit([doc.geeklists[idx].objectid, parseInt(doc.geeklists[idx].latest.wants || 0)], null);\n\t}\n  }\n}"
+      "map": "function(doc) {\n  if(doc.type === 'boardgame' && doc.geeklists.length > 0){\n\tfor(idx = 0; idx < doc.geeklists.length; idx++){\n      \t  emit([doc.geeklists[idx].objectid, parseInt(doc.geeklists[idx].latest.wants || 0)], null);\n\t}\n  }\n}"
     },
     "geeklist_by_chgts": {
-      "map": "function(doc) {\n  if(doc.geeklists.length > 0 && doc.type === 'boardgame'){\n\tfor(idx = 0; idx < doc.geeklists.length; idx++){\n      \t  emit([doc.geeklists[idx].objectid, Date.parse(doc.geeklists[idx].latest.chgts)], null);\n\t}\n  }\n}"
+      "map": "function(doc) {\n  if(doc.type === 'boardgame' && doc.geeklists.length > 0){\n\tfor(idx = 0; idx < doc.geeklists.length; idx++){\n      \t  emit([doc.geeklists[idx].objectid, Date.parse(doc.geeklists[idx].latest.chgts)], null);\n\t}\n  }\n}"
     }
   }
 }

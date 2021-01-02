@@ -5,7 +5,8 @@
 		var selectedGeeklist = 0;
 		var sorting;
 		var filter;
-		
+		var graphs;
+			
 		$(document).ready(function(){
 			ui = init_ui();
 			data = init_data();
@@ -72,6 +73,11 @@
 				//$('#sidenavGeeklists').toggle();	
 			}	
 			
+			$('select').on("change", function(){
+				guesstimate_obs();	
+				//FIXME: At some point add estimators for range sliders
+			});
+			
 			$('#loadmore').on("click", function(){
 				loadGeeklist(selectedGeeklist, false, false, false);
 			});
@@ -100,7 +106,18 @@
 			$('#resetFilters').on('click', function(){
 				ui.resetFilters();
 			});
+			
+			$('input[name=graph_valattr]').on('click', function(e){
+				graphs.getGraphData(selectedGeeklist).then(function(r){
+					
+					var radios = document.querySelectorAll('input[name="graph_valattr"]:checked');
+					var valattr = (radios.length > 0 ? radios[0].value : "value");
+					
+					graphs.renderGraphs(r, selectedGeeklist, valattr);
 
+				});
+			});
+			
 			$('.listHeaderButton').on('click', function(e){
 				if(e.target.tagName.toUpperCase() === 'I'){
 					e = e.target.parentNode;
@@ -116,6 +133,29 @@
 					$('#graphs').show();
 				}
 			});
+			
+			function guesstimate_obs(){
+				var obs = Infinity;
+				
+				['boardgamedesigner', 'boardgameartist', 'boardgamemechanic', 'boardgamecategory', 'boardgamefamily', 'boardgamepublisher'].forEach(function(v, i){				
+					var e = document.getElementById('' + v);
+					
+					if(e.options[e.selectedIndex].text !== 'Any'){
+						
+						if(obs > parseInt(e.options[e.selectedIndex].dataset.obs)){
+							obs = parseInt(e.options[e.selectedIndex].dataset.obs);
+							console.log('' + parseInt(e.options[e.selectedIndex].dataset.obs));
+						}
+					}
+				});
+				
+				if(obs === Infinity){
+					document.getElementById('guesstimated_obs').innerHTML = "&lt;&infin;";
+				}else{
+					document.getElementById('guesstimated_obs').innerHTML = "&leq;" + obs;
+					console.log("N");
+				}
+			}
 			
 			function loadGeeklist(geeklistId, clearList, clearOptions, clearInfo){
 				if(geeklistId === undefined){
@@ -146,11 +186,12 @@
 							resolve();
 						}).then(function(r){
 							graphs.getGraphData(geeklistId).then(function(r){
-								console.log(r);
-								r = r.filter(e => e.geeklist.objectid == geeklistId)[0];
-								r = r.graphdata;
-								graphs.renderGraph("graphMechanics", "Mechanics", r.boardgamemechanic);
-								graphs.renderGraph("graphCategories", "Categories", r.boardgamecategory);
+								
+								var radios = document.querySelectorAll('input[name="graph_valattr"]:checked');
+								var valattr = (radios.length > 0 ? radios[0].value : "value");
+								
+								graphs.renderGraphs(r, geeklistId, valattr);
+
 							}).finally(e => resolve());
 						});
 					}else{
