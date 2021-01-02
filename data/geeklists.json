@@ -1084,5 +1084,19 @@
     "toDate": "2020-12-31",
     "excluded": [],
     "tradeLists": []
+  },
+  {
+    "_id": "42",
+    "type": "preview",
+    "name": "New Game Releases - January-February 2021",
+    "group": "Special Previews",
+    "year": 2021,
+    "update": true,
+    "objectid": 42,
+    "visible": true,
+    "fromDate": "2021-01-01",
+    "toDate": "2021-12-31",
+    "excluded": [],
+    "tradeLists": []
   }
 ]
