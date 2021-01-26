@@ -1,6 +1,7 @@
 function init_graphs(){
 	var graphDataCache = [];
 	
+	/*	
 	function requestJSON(url){
 		return new Promise(function(resolve, reject){
 			jQuery.ajax({
@@ -18,6 +19,7 @@ function init_graphs(){
 			);
 		})
 	}
+	*/
 	
 	function renderGraph(divId, nm, data, valattr){
 		d = data.map(e => ({"name": e.name, "y": e[valattr] }));
@@ -165,7 +167,8 @@ function init_graphs(){
 			var data = graphDataCache.find(e => e.geeklistId === geeklistId);
 			
 			if(data === undefined){
-				return requestJSON(url).then(function(r){
+				//return requestJSON(url).then(function(r){
+				return fetch(url).then(r => r.json()).then(function(r){
 					graphDataCache.push({'geeklistId': geeklistId, 'data': r});
 					
 					return Promise.resolve(r)
