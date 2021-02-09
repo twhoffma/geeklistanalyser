@@ -165,6 +165,51 @@ function init_ui(){
 		return {'name': id, 'min': parseInt(v[0]), 'max': parseInt(v[1])}
 	}
 	
+	function renderSliderHistogram(svg, d, widthScaling, min, max){
+		  var maxValue = Math.max(...d.map(e => e.value));
+		  
+		  var n = d.length;
+		  
+		  
+		  while (svg.firstChild) {
+		      svg.firstChild.remove()
+		  }
+		  
+		  
+		  let w = 100 / n; 
+		  let numObs = 0;
+		  let totObs = 0
+		  
+		  d.forEach(function(v, i){
+		    let e = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+		    let h = v.value / maxValue * 100;
+		    
+		    e.setAttribute('x', '' +(w * i) + "%");
+		    e.setAttribute('y', (100 - h) + '%');
+		    e.setAttribute('width', '' + w * widthScaling + '%');
+		    e.setAttribute('height', '' + h + '%');
+		    
+		    /* FIXME: Move to different function 
+		    if(parseInt(v.key) >= min && parseInt(v.key) <= max){
+			e.setAttribute('style', 'fill:rgb(255,0,0)');
+		      numObs = numObs + parseInt(v.value);
+		    }else{
+			e.setAttribute('style', 'fill:rgb(168,168,168)');
+		    }
+		    */
+		    
+                    e.setAttribute('style', 'fill:rgb(0,128,128)');
+		    
+		    totObs = totObs + parseInt(v.value);
+		    
+		    e.setAttribute('data-bucket', v.key);
+		    e.setAttribute('data-bucket-obs', v.value);
+		    
+		    e.addEventListener("click", function(){console.log(this.dataset.bucket);});
+		    
+		    svg.appendChild(e);
+		  });
+	}	
 		
 	fn = {
 		'setLoadButtonState': setLoadButtonState,
@@ -303,6 +348,7 @@ function init_ui(){
 						}
 					}else if(e.type === 'slider'){
 						var s = document.getElementById(e.name);
+						var h = document.getElementById(e.name + 'hist');
 						
 						if(s.noUiSlider){
 							s.noUiSlider.destroy();
@@ -328,7 +374,6 @@ function init_ui(){
 								}
 							}
 
-							//console.log(rng);
 							
 							noUiSlider.create(s, {
 								start: [rng['min'], rng['max']],
@@ -354,6 +399,16 @@ function init_ui(){
 							
 							defaults = {'min': Math.min.apply(null, v), 'max': Math.max.apply(null, v)};
 						}
+
+						var histnm = e.name + 'hist';
+						
+						//What was I thinking? :)	
+						if(e.name === 'playingtime'){
+							histnm = 'playtimehist';
+						}
+						
+						renderSliderHistogram(h, r[histnm], 0.9, defaults.min, defaults.max);
+						
 						
 						currentFilterDefaults[e.name] = defaults;
 						 
