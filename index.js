@@ -515,7 +515,7 @@ function FilterValue(analysisDate, geeklistId){
 	this.analysisDate = analysisDate;
 	this.objectid = geeklistId;
 	this.playtimehist = [];
-	this.playingtime = {'min': Infinity, 'max': -Infinity}
+	this.playtime = {'min': Infinity, 'max': -Infinity}
 	this.numplayershist = [];
 	this.numplayers = {'min': Infinity, 'max': -Infinity}
 	this.yearpublishedhist = [];
@@ -1003,7 +1003,14 @@ function generateFilterValues(geeklist){
 	).then(
 		function(fv){
 			//logger.info("Saving new filter values");
-			return datamgr.saveFilterRanges([fv]).then(function(){return true})
+			return datamgr.saveFilterRanges([fv]).then(function(){return fv})
+		}
+	).then(
+		function(fv){
+			var fn = '/var/www/glaze.hoffy.no/staticdata/filters-' + fv.objectid + '.txt';
+			var p = q.defer();
+			fs.writeFile(fn, JSON.stringify(fv), err => (err ? p.reject(err) : p.resolve()));
+			return p 	
 		}
 	).catch(
 		function(err){

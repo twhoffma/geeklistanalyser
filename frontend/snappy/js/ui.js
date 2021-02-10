@@ -165,6 +165,18 @@ function init_ui(){
 		return {'name': id, 'min': parseInt(v[0]), 'max': parseInt(v[1])}
 	}
 	
+	function markHistogramRange(svg, min, max){
+		svg.childNodes.forEach(function(n, i){
+			let v = parseInt(n.dataset.bucket);
+			
+			if(v >= min && v <= max){
+				n.setAttribute('style', 'fill:rgb(0,128,128)');
+			}else{
+				n.setAttribute('style', 'fill:rgb(128,128,128)');
+			}
+		});
+	}	
+	
 	function renderSliderHistogram(svg, d, widthScaling, min, max){
 		  var maxValue = Math.max(...d.map(e => e.value));
 		  
@@ -189,15 +201,6 @@ function init_ui(){
 		    e.setAttribute('width', '' + w * widthScaling + '%');
 		    e.setAttribute('height', '' + h + '%');
 		    
-		    /* FIXME: Move to different function 
-		    if(parseInt(v.key) >= min && parseInt(v.key) <= max){
-			e.setAttribute('style', 'fill:rgb(255,0,0)');
-		      numObs = numObs + parseInt(v.value);
-		    }else{
-			e.setAttribute('style', 'fill:rgb(168,168,168)');
-		    }
-		    */
-		    
                     e.setAttribute('style', 'fill:rgb(0,128,128)');
 		    
 		    totObs = totObs + parseInt(v.value);
@@ -209,6 +212,8 @@ function init_ui(){
 		    
 		    svg.appendChild(e);
 		  });
+		
+		  markHistogramRange(svg, min, max);
 	}	
 		
 	fn = {
@@ -407,8 +412,9 @@ function init_ui(){
 							histnm = 'playtimehist';
 						}
 						
-						renderSliderHistogram(h, r[histnm], 0.9, defaults.min, defaults.max);
-						
+						if(h && r[histnm]){	
+							renderSliderHistogram(h, r[histnm], 0.9, defaults.min, defaults.max);
+						}
 						
 						currentFilterDefaults[e.name] = defaults;
 						 
@@ -416,14 +422,16 @@ function init_ui(){
 							var v = s.noUiSlider.get();
 							$(s).parent().find("input.min").val(parseInt(v[0]));
 							$(s).parent().find("input.max").val(parseInt(v[1]));
-							//$(s).parent().children("input.min").val(parseInt(v[0]));
-							//$(s).parent().children("input.max").val(parseInt(v[1]));
+							//XXX
+							markHistogramRange($(s).parent().find("svg")[0], parseInt(v[0]), parseInt(v[1]));
+							
 						});
 
 						$(s).parent().find("input").on('change', function(e){
 							var min = parseInt($(s).parent().find("input.min").val());
 							var max = parseInt($(s).parent().find("input.max").val());
 							s.noUiSlider.set([min,max]);
+							markHistogramRange($(s).parent().find("svg")[0], min, min);
 						});
 						
 						
