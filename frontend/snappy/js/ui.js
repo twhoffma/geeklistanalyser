@@ -8,11 +8,11 @@ function init_ui(){
 		{'name': 'boardgamepublisher',  'type': 'selectpicker'},
 		{'name': 'boardgamefamily',  'type': 'selectpicker'},
 		{'name': 'releasetype', 'type': 'dropdown'},
-		{'name': 'playingtime', 'type': 'slider', 'method': 'range'},
+		{'name': 'playtime', 'type': 'slider', 'method': 'range'},
 		{'name': 'numplayers', 'type': 'slider', 'method': 'range'},
 		{'name': 'yearpublished', 'type': 'slider', 'method': 'pips'},
-		{'name': 'playingtimemin', 'type': 'sliderValue', 'related': 'playingtime'},
-		{'name': 'playingtimemax', 'type': 'sliderValue', 'related': 'playingtime'},
+		{'name': 'playtimemin', 'type': 'sliderValue', 'related': 'playtime'},
+		{'name': 'playtimemax', 'type': 'sliderValue', 'related': 'playtime'},
 		{'name': 'numplayersmin', 'type': 'sliderValue', 'related': 'numplayers'},
 		{'name': 'numplayersmax', 'type': 'sliderValue', 'related': 'numplayers'},
 		{'name': 'yearpublishedmin', 'type': 'sliderValue', 'related': 'yearpublished'},
@@ -166,6 +166,7 @@ function init_ui(){
 	}
 	
 	function markHistogramRange(svg, min, max){
+		console.log("Coloring range min-max: " + min + " - " + max);
 		svg.childNodes.forEach(function(n, i){
 			let v = parseInt(n.dataset.bucket);
 			
@@ -407,11 +408,6 @@ function init_ui(){
 
 						var histnm = e.name + 'hist';
 						
-						//What was I thinking? :)	
-						if(e.name === 'playingtime'){
-							histnm = 'playtimehist';
-						}
-						
 						if(h && r[histnm]){	
 							renderSliderHistogram(h, r[histnm], 0.9, defaults.min, defaults.max);
 						}
@@ -431,7 +427,7 @@ function init_ui(){
 							var min = parseInt($(s).parent().find("input.min").val());
 							var max = parseInt($(s).parent().find("input.max").val());
 							s.noUiSlider.set([min,max]);
-							markHistogramRange($(s).parent().find("svg")[0], min, min);
+							markHistogramRange($(s).parent().find("svg")[0], min, max);
 						});
 						
 						

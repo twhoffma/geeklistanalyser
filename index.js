@@ -418,15 +418,6 @@ function syncLists(loadedGeeklists){
 	).then(
 		function(){
 			return generateFilters(geeklists)
-			/*
-			logger.info("Generating static filter values.");
-			return q.allSettled(geeklists.map(generateFilterValues)).then(
-				function(){ 
-					logger.info("Done saving filtervalues");	
-					return true 
-				}
-			)
-			*/
 		}
 	).then(
 		function(v) { 
@@ -1007,9 +998,16 @@ function generateFilterValues(geeklist){
 		}
 	).then(
 		function(fv){
-			var fn = '/var/www/glaze.hoffy.no/staticdata/filters-' + fv.objectid + '.txt';
+			var fn = '/var/www/glaze.hoffy.no/staticdata/filters-' + fv.objectid + '.json';
 			var p = q.defer();
-			fs.writeFile(fn, JSON.stringify(fv), err => (err ? p.reject(err) : p.resolve()));
+			fs.writeFile(fn, JSON.stringify(fv), function(err){
+				if(err){
+				  	p.reject(err) 
+				}else{
+					p.resolve()
+				}
+			});
+			
 			return p 	
 		}
 	).catch(

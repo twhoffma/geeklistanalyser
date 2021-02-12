@@ -28,7 +28,8 @@ function init_data(){
 		},
 		
 		'getGeeklistFilters': function getGeeklistFilters(geeklistid){
-			var url = "./data/getGeeklistFilters?geeklistid=" + parseInt(geeklistid);
+			//var url = "./data/getGeeklistFilters?geeklistid=" + parseInt(geeklistid);
+			var url = "./staticdata/filters-" + parseInt(geeklistid) + '.json';
 			
 			return requestJSON(url) 
 		},
