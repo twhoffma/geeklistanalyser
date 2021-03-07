@@ -1154,5 +1154,33 @@
     "toDate": "2021-12-31",
     "excluded": [],
     "tradeLists": []
+  },
+  {
+    "_id": "46",
+    "type": "preview",
+    "name": "New Game Releases • May-June 2021",
+    "group": "Special Previews",
+    "year": 2021,
+    "update": true,
+    "objectid": 46,
+    "visible": true,
+    "fromDate": "2021-01-01",
+    "toDate": "2021-12-31",
+    "excluded": [],
+    "tradeLists": []
+  },
+  {
+    "_id": "47",
+    "type": "preview",
+    "name": "New Game Releases • July-August 2021",
+    "group": "Special Previews",
+    "year": 2021,
+    "update": true,
+    "objectid": 47,
+    "visible": true,
+    "fromDate": "2021-01-01",
+    "toDate": "2021-12-31",
+    "excluded": [],
+    "tradeLists": []
   }
 ]
