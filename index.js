@@ -57,6 +57,8 @@ datamgr.getGeeklists(!args['incl_inactive'], args['incl_visible_only'], args['li
 			action = "update_search";
 		}else if(args['generate_filters']){
 			action = "generate_filters";
+		}else if(args['generate_stats']){
+			action = "generate_stats";
 		}else if(args['update_static']){
 			action = "update_static";
 		}else if(args['sync_lists']){
@@ -79,6 +81,9 @@ function runAction(action, geeklists){
 			break;
 		case 'generate_filters':
 			return generateFilters(geeklists)
+			break;
+		case 'generate_stats':
+			return generateStats(geeklists)
 			break;
 		case 'update_static':
 			return updateStatic(geeklists)
@@ -106,6 +111,53 @@ function updateSearch(){
 			return q.reject(err)
 		}
 	)
+}
+
+function generateStats(){
+	datamgr.getGeeklists(false, true).then(l => l.map(e => e.objectid)).then(
+		function(listIds){
+			var lists = [];
+			var p = [];
+				
+			for(let i = 0; i < listIds.length; i++){
+				p.push(
+					datamgr.getLatestGeeklistStats(listIds[i]).then(
+					function(v){
+						if(v.length === 0){
+							throw "No stats found for " + listIds[i]	
+						}else{
+							return v[0].doc
+						}
+					}).catch(
+						function(e){
+							console.log(e);
+							throw e
+						}
+					)
+				);
+			}
+				
+			return q.allSettled(p).then(function(stats){
+				let s = stats.filter(e => (e.state === 'fulfilled')).map(e => e.value);
+				var fn = '/var/www/glaze.hoffy.no/staticdata/stats.json';
+				var p = q.defer();
+				fs.writeFile(fn, JSON.stringify(s), function(err){
+					if(err){
+				  		p.reject(err) 
+					}else{
+						p.resolve()
+					}
+				});
+			
+				return p 	
+			});
+		}
+	).fail(
+		function(err){
+			console.log(e);
+			throw e
+		}
+	);
 }
 
 function generateFilters(geeklists){

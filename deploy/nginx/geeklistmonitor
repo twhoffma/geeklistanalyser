@@ -11,7 +11,7 @@ server {
     listen [::]:443 ssl http2;
     include snippets/ssl-glaze.hoffy.no.conf;
     include snippets/ssl-params.conf;
-
+    
     root /var/www/glaze.hoffy.no/;
     error_log /var/log/nginx/glaze.hoffy.no-error_log;
     access_log /var/log/nginx/glaze.hoffy.no-access_log;
@@ -26,9 +26,9 @@ server {
         set            $memcached_key "$uri?$args";
         memcached_pass 127.0.0.1:11211;
         error_page     404 502 504 = @fallback;
-	default_type   application/json;
-	gzip on;
-	gzip_types application/json;
+        default_type   application/json;
+        gzip on;
+        gzip_types application/json;
     }
     
     location @fallback {
