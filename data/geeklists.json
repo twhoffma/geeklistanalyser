@@ -216,12 +216,13 @@
     "name": "Essen 2015 collection of lists",
     "group": "Essen - List of lists",
     "year": 2015,
-    "update": false,
+    "update": true,
     "objectid": 187433,
     "visible": false,
     "excluded": [],
     "fromDate": "2016-12-31",
     "toDate": "2017-10-29",
+    "excludedTitles": [".*no-shipping.*", ".*auction.*", ".*no shipping.*", ".*carpool.*", ".*trainpool.*", ".*mule.*", ".*the hunt for 2nd hand games.*", ".*trade.*", ".*roll call.*", ".*Most Thumbed Games.*", "Rahdo Runs Through.*"],
     "tradeLists": []
   },
   {
@@ -265,6 +266,7 @@
       209967,
       209968
     ],
+    "excludedTitles": [".*no-shipping.*", ".*auction.*", ".*no shipping.*", ".*carpool.*", ".*trainpool.*", ".*mule.*", ".*the hunt for 2nd hand games.*", ".*trade.*", ".*roll call.*", ".*Most Thumbed Games.*", "Rahdo Runs Through.*"],
     "fromDate": "2016-12-31",
     "toDate": "2017-10-29",
     "tradeLists": []
@@ -658,6 +660,7 @@
       225205,
       219857
     ],
+    "excludedTitles": [".*no-shipping.*", ".*auction.*", ".*no shipping.*", ".*carpool.*", ".*trainpool.*", ".*mule.*", ".*the hunt for 2nd hand games.*", ".*trade.*", ".*roll call.*", ".*Most Thumbed Games.*", "Rahdo Runs Through.*"],
     "fromDate": "2016-12-31",
     "toDate": "2017-10-29",
     "tradeLists": []
@@ -1251,7 +1254,82 @@
     "fromDate": "2021-06-01",
     "toDate": "2021-11-01",
     "excluded": [],
-    "excludedTitles": [".*no-shipping.*", ".*auction.*", ".*no shipping.*", ".*carpool.*", ".*trainpool.*", ".*mule.*", ".*the hunt for 2nd hand games.*", ".*trade.*"],
+    "excludedTitles": [".*no-shipping.*", ".*auction.*", ".*no shipping.*", ".*carpool.*", ".*trainpool.*", ".*mule.*", ".*the hunt for 2nd hand games.*", ".*trade.*", ".*roll call.*", ".*Most Thumbed Games.*", "Rahdo Runs Through.*"],
+    "tradeLists": []
+  },
+  {
+    "_id": "173597",
+    "type": "geeklist",
+    "name": "Essen 2014 collection of lists",
+    "group": "Essen - List of lists",
+    "year": 2014,
+    "update": false,
+    "objectid": 173597,
+    "visible": true,
+    "fromDate": "2014-06-01",
+    "toDate": "2014-11-01",
+    "excluded": [],
+    "excludedTitles": [".*no-shipping.*", ".*auction.*", ".*no shipping.*", ".*carpool.*", ".*trainpool.*", ".*mule.*", ".*the hunt for 2nd hand games.*", ".*trade.*", ".*roll call.*", ".*Most Thumbed Games.*", "Rahdo Runs Through.*"],
+    "tradeLists": []
+  },
+  {
+    "_id": "162102",
+    "type": "geeklist",
+    "name": "Essen 2013 collection of lists",
+    "group": "Essen - List of lists",
+    "year": 2013,
+    "update": false,
+    "objectid": 162102,
+    "visible": true,
+    "fromDate": "2013-06-01",
+    "toDate": "2013-11-01",
+    "excluded": [],
+    "excludedTitles": [".*no-shipping.*", ".*auction.*", ".*no shipping.*", ".*carpool.*", ".*trainpool.*", ".*mule.*", ".*the hunt for 2nd hand games.*", ".*trade.*", ".*roll call.*", ".*Most Thumbed Games.*", "Rahdo Runs Through.*", ".*math trade.*"],
+    "tradeLists": []
+  },
+  {
+    "_id": "139290",
+    "type": "geeklist",
+    "name": "Essen 2012 collection of lists",
+    "group": "Essen - List of lists",
+    "year": 2012,
+    "update": false,
+    "objectid": 139290,
+    "visible": true,
+    "fromDate": "2012-06-01",
+    "toDate": "2012-11-01",
+    "excluded": [],
+    "excludedTitles": [".*no-shipping.*", ".*auction.*", ".*no shipping.*", ".*carpool.*", ".*trainpool.*", ".*mule.*", ".*the hunt for 2nd hand games.*", ".*trade.*", ".*roll call.*", ".*Most Thumbed Games.*", "Rahdo Runs Through.*", ".*math trade.*"],
+    "tradeLists": []
+  },
+  {
+    "_id": "70582",
+    "type": "geeklist",
+    "name": "Essen 2011 collection of lists",
+    "group": "Essen - List of lists",
+    "year": 2011,
+    "update": false,
+    "objectid": 70582,
+    "visible": true,
+    "fromDate": "2011-06-01",
+    "toDate": "2011-11-01",
+    "excluded": [],
+    "excludedTitles": [".*no-shipping.*", ".*auction.*", ".*no shipping.*", ".*carpool.*", ".*trainpool.*", ".*mule.*", ".*the hunt for 2nd hand games.*", ".*trade.*", ".*roll call.*", ".*Most Thumbed Games.*", "Rahdo Runs Through.*", ".*math trade.*"],
+    "tradeLists": []
+  },
+  {
+    "_id": "57758",
+    "type": "geeklist",
+    "name": "Essen 2010 collection of lists",
+    "group": "Essen - List of lists",
+    "year": 2010,
+    "update": false,
+    "objectid": 57758,
+    "visible": true,
+    "fromDate": "2010-06-01",
+    "toDate": "2011-11-01",
+    "excluded": [],
+    "excludedTitles": [".*no-shipping.*", ".*auction.*", ".*no shipping.*", ".*carpool.*", ".*trainpool.*", ".*mule.*", ".*the hunt for 2nd hand games.*", ".*trade.*", ".*roll call.*", ".*Most Thumbed Games.*", "Rahdo Runs Through.*", ".*math trade.*", ".*game exchange.*"],
     "tradeLists": []
   }
 ]
