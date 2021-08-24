@@ -192,6 +192,7 @@ function updateStatic(geeklists){
 		resolve(
 			q.all(geeklists.map(l => datamgr.getGeeklist(l.objectid, 0, 10000).then(x=>x.map(y=>y.doc)))).then(
 				function(boardgames){
+					//FIXME: May be a bug here where we get conflicts on update? 
 					return boardgames.reduce(function(a,b){
 						
 						b.forEach(function(y){
