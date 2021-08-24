@@ -59,6 +59,8 @@ datamgr.getGeeklists(!args['incl_inactive'], args['incl_visible_only'], args['li
 			action = "generate_filters";
 		}else if(args['generate_stats']){
 			action = "generate_stats";
+		}else if(args['generate_graphs']){
+			action = "generate_graphs";
 		}else if(args['update_static']){
 			action = "update_static";
 		}else if(args['sync_lists']){
@@ -81,6 +83,9 @@ function runAction(action, geeklists){
 			break;
 		case 'generate_filters':
 			return generateFilters(geeklists)
+			break;
+		case 'generate_graphs':
+			return generateGraphData2(geeklists)
 			break;
 		case 'generate_stats':
 			return generateStats(geeklists)
@@ -496,6 +501,105 @@ function syncLists(loadedGeeklists){
 }
 
 /* END OF MAIN */
+
+function getGeeklistGraphData(g){
+	//console.log("getGeeklistGraphData(" + g.objectid + ")");
+	
+	return datamgr.getGeeklistFiltersComponents(g.objectid, true).then(
+		function(val){
+			var data = {'boardgamecategory': [], 'boardgamemechanic': []};
+			
+			val.forEach(function(v){
+				if(data[v.key[1]]){
+					data[v.key[1]].push({'objectid': v.key[2].objectid, 'name': v.key[2].name, 'value': v.value});
+				}
+			});
+						
+			if(val.length > 0){
+				return {geeklist: {objectid: g.objectid, group: g.group, year: g.year}, graphdata: data}
+			}else{
+				return Q.reject("nothing found!")
+			}
+		}
+	).then(
+		function(graphdata){
+			return datamgr.getGeeklistFiltersComponentsObs(graphdata.geeklist.objectid, true).then(
+				function(val){
+					val.forEach(function(v){
+						if(graphdata.graphdata[v.key[1]]){
+							var graph = graphdata.graphdata[v.key[1]].filter(e => e.objectid === v.key[2].objectid);
+			
+							if(graph.length > 0){
+								graph[0]['obs_value'] = v.value;
+							}	
+						}
+					})
+			
+					return graphdata
+				}
+			)
+		}
+	).catch(function(e){
+			return Q.reject(e)
+	});
+}
+
+function generateGraphData2(geeklistIds){
+	var ps = [];
+	
+	geeklistIds.map(e => e.objectid).forEach(function(geeklistId){
+		//Get group for historical graphs..
+		//console.log(geeklistId);
+	  
+		var p2 = datamgr.getGeeklists(false, true).then(function(geeklists){
+			console.log("Generating graph data for " + geeklistId);
+			var prom = [];
+			var matchGroup = geeklists.filter(e => e.objectid == geeklistId)[0].group;
+			
+			//console.log(matchGroup);
+				
+			geeklists.filter(e => (e.objectid == geeklistId || e.group == matchGroup)).forEach(function(g){
+				prom.push(getGeeklistGraphData(g));
+			});
+			
+			return q.allSettled(prom).then(function(gd){
+				console.log("All settled");
+				
+				var r = JSON.stringify(gd.filter(e=>(e.state === "fulfilled")).map(e=>e.value));
+				var fn = '/var/www/glaze.hoffy.no/staticdata/graphs-' + geeklistId + '.json';
+				var p = q.defer();
+				
+				fs.writeFile(fn, r, function(err){
+					if(err){
+							p.reject(err) 
+					}else{
+							console.log("Graph data saved for " + geeklistId);
+							p.resolve()
+					}
+				});
+							
+				return p 	
+			}).catch(
+				function(err){
+					logger.error("Failed to save graphdata");
+					logger.error(err);
+			
+					return Q.reject(err);
+			});
+		}).catch(function(e){
+					logger.error(e);
+			
+					return Q.reject(e);
+
+		});
+		
+		ps.push(p2);
+	});
+	
+	return q.allSettled(ps).then(function(){
+		console.log("Graph data saved!");
+	})
+}
 
 function generateGraphData(boardgames){
 	var gd = {

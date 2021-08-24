@@ -72,7 +72,7 @@ app.use('/data/getGeeklistGraphData', function(req, res, next){
 
 	if(p.geeklistid != undefined){
 		//Get group for historical graphs..
-		datamgr.getGeeklists(false, true, p.geeklistId).then(function(geeklists){
+		datamgr.getGeeklists(false, true).then(function(geeklists){
 			var prom = [];
 			var matchGroup = geeklists.filter(e => e.objectid == p.geeklistid)[0].group;
 			

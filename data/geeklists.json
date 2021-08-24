@@ -1329,7 +1329,22 @@
     "fromDate": "2010-06-01",
     "toDate": "2011-11-01",
     "excluded": [],
-    "excludedTitles": [".*no-shipping.*", ".*auction.*", ".*no shipping.*", ".*carpool.*", ".*trainpool.*", ".*mule.*", ".*the hunt for 2nd hand games.*", ".*trade.*", ".*roll call.*", ".*Most Thumbed Games.*", "Rahdo Runs Through.*", ".*math trade.*", ".*game exchange.*"],
+    "excludedTitles": [".*no-shipping.*", ".*auction.*", ".*no shipping.*", ".*carpool.*", ".*trainpool.*", ".*mule.*", ".*the hunt for 2nd hand games.*", ".*trade.*", ".*roll call.*", ".*Most Thumbed Games.*", "Rahdo Runs Through.*", ".*math trade.*", ".*game exchange.*", ".*most wanted games tracker.*"],
+    "tradeLists": []
+  },
+  {
+    "_id": "286154",
+    "type": "geeklist",
+    "name": "Essen 2021 no-shipping auction list",
+    "group": "Essen - Trade lists",
+    "year": 2021,
+    "update": true,
+    "objectid": 286154,
+    "visible": true,
+    "fromDate": "2021-08-01",
+    "toDate": "2021-11-01",
+    "excluded": [],
+    "excludedTitles": [],
     "tradeLists": []
   }
 ]
