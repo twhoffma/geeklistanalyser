@@ -456,8 +456,8 @@ function syncLists(loadedGeeklists){
 			return boardgames
 		}
 	//Some issue with empty lists. Definitively should at the very least be non-blocking if it fails..
-	).then(
-		boardgames => generateGraphData(boardgames).finally(x =>boardgames)
+	//).then(
+	//	boardgames => generateGraphData(boardgames).finally(x =>boardgames)
 	).then(
 		function(boardgames){
 			logger.info("Updating search engine");
@@ -475,6 +475,10 @@ function syncLists(loadedGeeklists){
 	).then(
 		function(){
 			return generateFilters(geeklists)
+		}
+	).then(
+		function(){
+			return generateGraphData2(geeklists)
 		}
 	).then(
 		function(v) { 
@@ -544,26 +548,23 @@ function getGeeklistGraphData(g){
 	});
 }
 
-function generateGraphData2(geeklistIds){
+function generateGraphData2(gl){
 	var ps = [];
 	
-	geeklistIds.map(e => e.objectid).forEach(function(geeklistId){
-		//Get group for historical graphs..
-		//console.log(geeklistId);
+	gl.map(e => e.objectid).forEach(function(geeklistId){
 	  
 		var p2 = datamgr.getGeeklists(false, true).then(function(geeklists){
-			console.log("Generating graph data for " + geeklistId);
+			logger.debug("Generating graph data for " + geeklistId);
 			var prom = [];
 			var matchGroup = geeklists.filter(e => e.objectid == geeklistId)[0].group;
 			
-			//console.log(matchGroup);
 				
 			geeklists.filter(e => (e.objectid == geeklistId || e.group == matchGroup)).forEach(function(g){
 				prom.push(getGeeklistGraphData(g));
 			});
 			
 			return q.allSettled(prom).then(function(gd){
-				console.log("All settled");
+				logger.debug("generateGraphData2(): All settled");
 				
 				var r = JSON.stringify(gd.filter(e=>(e.state === "fulfilled")).map(e=>e.value));
 				var fn = '/var/www/glaze.hoffy.no/staticdata/graphs-' + geeklistId + '.json';
@@ -573,7 +574,7 @@ function generateGraphData2(geeklistIds){
 					if(err){
 							p.reject(err) 
 					}else{
-							console.log("Graph data saved for " + geeklistId);
+							logger.debug("Graph data saved for " + geeklistId);
 							p.resolve()
 					}
 				});
@@ -597,10 +598,11 @@ function generateGraphData2(geeklistIds){
 	});
 	
 	return q.allSettled(ps).then(function(){
-		console.log("Graph data saved!");
+		logger.info("Generated graph data");
 	})
 }
 
+/*
 function generateGraphData(boardgames){
 	var gd = {
 		objectid: 0, //geeklistid
@@ -656,6 +658,8 @@ function generateGraphData(boardgames){
 function genereateRSS(){
 	
 }
+
+*/
 
 function FilterValue(analysisDate, geeklistId){
 	this.type = 'filtervalue';
