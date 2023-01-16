@@ -89,14 +89,16 @@ function getDocs(viewURL){
 	return qrequest.qrequest("GET", viewURL, null, null).then(
 		function(val){
 			var data = JSON.parse(val);
+			
+			logger.debug("getDocs: " + data.rows.length)
 			return data.rows
 		},
 		function(){
 			logger.error("No doc found for " + viewURL);
 		}
 	).catch(
-		function(){
-			console.log("now what=");
+		function(e){
+			logger.error(e);
 		}
 	);
 }

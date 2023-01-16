@@ -106,6 +106,7 @@ function updateSearch(){
 	
 	return datamgr.getBoardgames().then(
 		function(boardgames){
+			//console.log(boardgames[0]);
 			return datamgr.updateSearch(boardgames.map(r => r.doc))
 		}
 	).catch(
@@ -135,7 +136,8 @@ function generateStats(){
 						}
 					}).catch(
 						function(e){
-							console.log(e);
+							//console.log(e);
+							logger.error(e);
 							throw e
 						}
 					)
@@ -159,7 +161,8 @@ function generateStats(){
 		}
 	).fail(
 		function(err){
-			console.log(e);
+			//console.log(e);
+			logger.error(e);
 			throw e
 		}
 	);
@@ -187,7 +190,7 @@ function updateStatic(geeklists){
 			resolve(datamgr.getGeeklist(args['lists'], 0, 10000).then(x=>x.map(y=>y.doc)));
 		}
 		*/
-		console.log(geeklists.map(x=>x.objectid));
+		//console.log(geeklists.map(x=>x.objectid));
 			
 		resolve(
 			q.all(geeklists.map(l => datamgr.getGeeklist(l.objectid, 0, 10000).then(x=>x.map(y=>y.doc)))).then(
@@ -252,7 +255,8 @@ function updateStatic(geeklists){
 						}
 					).fail(
 						function(e){
-							console.log(e)
+							//console.log(e)
+							logger.error(e);
 						}
 					)
 				}
@@ -296,10 +300,13 @@ function syncLists(loadedGeeklists){
 	).then(
 		//TODO: We do not atm use stats for anything, so might as well not save them?
 		function(results){
-			logger.debug("Saving stats");
+			//console.log(results);
+				
+			
+			logger.debug("Saving stats for " + results.length + " games.");
 			
 			//The previous step return several promises, so filter out the ones that resolved.
-			return saveStats(results.filter((v) => v.value).map((v) => v.value))
+			return saveStats(results.filter(e => (e.state === "fulfilled")).map((v) => v.value))
 		},
 		function(err){
 			logger.error("Error occurred:");
@@ -462,7 +469,8 @@ function syncLists(loadedGeeklists){
 	).then(
 		function(boardgames){
 			logger.info("Updating search engine");
-			
+			//console.log(boardgames);
+	
 			return datamgr.updateSearch(boardgames).then(b=>b).catch(
 				function(err){
 					logger.error("Failed in saving db/search engine step.");
@@ -497,7 +505,7 @@ function syncLists(loadedGeeklists){
 		}
 	).catch(
 		function(e){
-			return q.reject(err)
+			return q.reject(e)
 			//throw e
 			//logger.error("Failure using sync_lists");
 			//logger.error(e);
@@ -751,7 +759,8 @@ function loadBoardgames(boardgameIdList, bgStats){
 function addBoardgameStats(boardgames, boardgamesStats){
 	logger.info("Adding most recent stats to boardgame data");
 	return q.Promise(function(resolve, reject){
-		console.log("Appending stats to " + boardgames.length + " boardgames");
+		logger.info("Appending stats to " + boardgames.length + " boardgames");
+		
 		boardgames.forEach(function(boardgame){
 			let boardgameStats = boardgamesStats.filter(e => (parseInt(e.objectid) === parseInt(boardgame.objectid)));
 			
@@ -790,7 +799,7 @@ function saveStats(stats){
 	var bgStats = [];
 	var n = 0;
 	
-	logger.info("Saving stats");
+	logger.info("Saving stats (" + stats.length + ")");
 	stats.forEach(function(r){
 		var geeklistId = r.glStats[0].objectid;
 		var analysisDate = r.glStats[0].statDate;
@@ -830,13 +839,13 @@ function saveStats(stats){
 	
 	return q.all(p).then(
 		function(){
-			console.log("Done saving stats");
+			logger.info("Done saving stats");
 			return bgStats
 		}
 	).catch(
 		function(err){
-			console.log("Error in stats saving");
-			console.log(err);
+			logger.error("Error in stats saving");
+			//console.log(err);
 			
 			return q.reject(err)
 			//throw err
@@ -983,6 +992,8 @@ function getGeeklistData(listtype, geeklistid, subgeeklistid, visitedGeeklists, 
 	//Load the list from BGG
 	bgg.getGeeklist(listtype, subgeeklistid).then(
 		function(res){
+			logger.debug("getGeeklist() returned " + res.length + " results");
+			
 			res.forEach(function(e){
 				if(e.objecttype === 'thing'){
 					if(e.subtype === 'boardgame'){
