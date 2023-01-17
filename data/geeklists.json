@@ -1488,5 +1488,33 @@
     "toDate": "2022-12-31",
     "excluded": [],
     "tradeLists": []
+  },
+  {
+    "_id": "23",
+    "type": "preview",
+    "name": "Spielwarenmesse/NY Toy Fair 2020 Preview",
+    "group": "Nürnberg",
+    "year": 2020,
+    "update": true,
+    "objectid": 23,
+    "visible": true,
+    "fromDate": "2020-01-01",
+    "toDate": "2020-03-31",
+    "excluded": [],
+    "tradeLists": []
+  },
+  {
+    "_id": "54",
+    "type": "preview",
+    "name": "Spielwarenmesse/NY Toy Fair/FIJ/GAMA Expo 2022 Preview",
+    "group": "Nürnberg",
+    "year": 2022,
+    "update": true,
+    "objectid": 54,
+    "visible": true,
+    "fromDate": "2022-01-01",
+    "toDate": "2022-03-31",
+    "excluded": [],
+    "tradeLists": []
   }
 ]
