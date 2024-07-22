@@ -288,6 +288,8 @@ function getBoardgameData(boardgameIds, priority="db"){
 		p.push(Promise.resolve());
 	}
 	
+	var bggBgBatchSize = 20;
+	
 	return q.allSettled(p).then(
 		function(){
 			var p = [];
@@ -296,9 +298,9 @@ function getBoardgameData(boardgameIds, priority="db"){
 			for(i = 0; i < bggList.length; i++){
 				idList.push(bggList[i]);
 					
-				if(idList.length === 100 || (bggList.length-1) === i){
-					var idBatch = Math.floor(i / 100);
-					console.info("Looking up boardgames " + (idBatch * 100 + 1) + " - " + ((idBatch + 1)*100));
+				if(idList.length === bggBgBatchSize || (bggList.length-1) === i){
+					var idBatch = Math.floor(i / bggBgBatchSize);
+					console.info("Looking up boardgames " + (idBatch * bggBgBatchSize + 1) + " - " + ((idBatch + 1)*bggBgBatchSize));
 						
 					p.push(bgg.getBoardgame(idList.join(",")));
 					idList = [];
