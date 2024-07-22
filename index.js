@@ -806,6 +806,8 @@ function saveStats(stats){
 		
 		bgStats = bgStats.concat(r.bgStats);
 		
+		//Disabled while we try to figure out the best way to save bgStats (probably one object per list per game with all history)
+		/*	
 		p.push(
 			datamgr.deleteBoardgameStats(geeklistId, analysisDate).then(
 				function(){
@@ -819,7 +821,8 @@ function saveStats(stats){
 				}
 			)
 		);
-		
+		*/
+
 		//TODO: Implement median calculation for geeklists
 		p.push(
 			datamgr.deleteGeeklistStats(geeklistId, analysisDate).then(
