@@ -39,3 +39,4 @@ public
 localconfig.json
 
 *.netrc
+*.env
