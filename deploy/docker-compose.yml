@@ -4,13 +4,13 @@ services:
     container_name: couch01
     image: couchdb:3.0.0
     ports:
-      - "5984:5984"
+      - "127.0.0.1:5984:5984"
     env_file: "couchdb.env"
   elasticsearch:
     container_name: es01
     image: elasticsearch:1.7.6-alpine
     ports:
-      - "9200:9200"
+      - "127.0.0.1:9200:9200"
     environment:
       - node.name=es01
       - discovery.type=single-node

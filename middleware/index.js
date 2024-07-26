@@ -39,14 +39,14 @@ app.use(function onerror(err, req, res, next) {
   console.log(err);
 });
 
-//app.use(uri + '/data/getGeeklistDetails', function(req, res, next){
 app.use('/data/getGeeklistDetails', function(req, res, next){
 	var p = qs.parse(req._parsedUrl.query);
 	
-	//res.setHeader('Content-Type', 'application/json');
+	res.setHeader('Content-Type', 'application/json');
 	
 	datamgr.getGeeklists(false, true, [parseInt(p["geeklistid"])]).then(
 		function(r){
+			cacheResponse(req._parsedUrl.href, JSON.stringify(r));
 			res.end(JSON.stringify(r));
 			
 			return true
@@ -72,7 +72,7 @@ app.use('/data/getGeeklistGraphData', function(req, res, next){
 
 	if(p.geeklistid != undefined){
 		//Get group for historical graphs..
-		datamgr.getGeeklists(false, true, p.geeklistId).then(function(geeklists){
+		datamgr.getGeeklists(false, true).then(function(geeklists){
 			var prom = [];
 			var matchGroup = geeklists.filter(e => e.objectid == p.geeklistid)[0].group;
 			
@@ -156,7 +156,7 @@ app.use('/data/getGeeklistFilters', function(req, res, next){
 		res.setHeader("Access-Control-Allow-Origin", "*");
 	}
 	
-	//res.setHeader('Content-Type', 'application/json');
+	res.setHeader('Content-Type', 'application/json');
 	//TODO: Needs to clean incoming data.
 	
 	if(p.geeklistid != undefined){
@@ -185,10 +185,11 @@ app.use('/data/getGeeklistFilters', function(req, res, next){
 app.use('/data/getGeeklistStats', function(req, res, next){
 	var p = qs.parse(req._parsedUrl.query);
 	
-	//if(c.devmode){
+	if(c.devmode){
 		res.setHeader("Access-Control-Allow-Origin", "*");
-	//}
+	}
 	
+	res.setHeader('Content-Type', 'application/json');
 	
 	//db.getGeeklists(false, true).then(
 	datamgr.getLatestGeeklistStats(p.geeklistId).then(
@@ -216,8 +217,8 @@ app.use('/data/getGeeklists', function(req, res, next){
 		res.setHeader("Access-Control-Allow-Origin", "*");
 	}
 	
+	res.setHeader('Content-Type', 'application/json');
 	
-	//db.getGeeklists(false, true).then(
 	datamgr.getGeeklists(false, true).then(
 			function(val){
 				var u = req._parsedUrl.href + '?';
@@ -287,7 +288,7 @@ app.use('/data/getGeeklist', function(req, res, next){
 		res.setHeader("Access-Control-Allow-Origin", "*");
 	}
 	
-	//res.setHeader('Content-Type', 'application/json');
+	res.setHeader('Content-Type', 'application/json');
 	
 	if(p.geeklistId != undefined){
 		var pagenum = p.page || 1;

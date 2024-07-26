@@ -42,6 +42,8 @@ function Boardgame(boardgameId){
 
 function getGeeklist(listtype, geeklistId){
 	//Look up a geeklist - use queueing
+	logger.info("Getting geeklist " + geeklistId + " of type " + listtype);
+	
 	if(listtype === "preview"){
 		return qrequest.qrequest("GET", `https://api.geekdo.com/api/geekpreviews?nosession=1&previewid=${geeklistId}`, null, null, true, 0, true).then(
 			function(results){
@@ -54,9 +56,7 @@ function getGeeklist(listtype, geeklistId){
 							function(convPreview){
 								return JSON.parse(convPreview).map(
 									function(x){
-										//logger.warn("" + x.itemid + " " + x.geekitem.item.objectid + "=>" + parseInt(x.geekitem.item.objectid));
-									//x => (
-									return	{
+										return	{
 											'id': x.itemid, 
 											'objecttype':x.objecttype, 
 											'subtype': 'boardgame', 
@@ -68,14 +68,16 @@ function getGeeklist(listtype, geeklistId){
 											//'postdate': new Date(Date.parse(x.date_created)).toISOString(),
 											//'editdate': new Date(Date.parse(x.date_updated)).toISOString(),
 											'postdate': moment(x.date_created).toDate().toISOString(),
-											'editdate': moment(x.date_updated).toDate().toISOString(),
+											'editdate': x.date_updated ? moment(x.date_updated).toDate().toISOString() : moment(x.date_created).toDate().toISOString(),
 											'thumbs': parseInt(x.reactions.thumbs),
 											'imageid': parseInt(x.geekitem.item.imageid),
 											'wants': parseInt(x.stats.interested || 0) + parseInt(x.stats.musthave || 0)
 										}
-									//)
 									}
 								)
+							}
+						).catch(function(e){
+								return q.reject(e)
 							}
 						)
 					);
@@ -84,7 +86,8 @@ function getGeeklist(listtype, geeklistId){
 				return q.allSettled(p);
 			}).then(
 				function(r){
-					let l = r.map(e => e.value).reduce(
+					//console.log(r);
+					let l = r.filter(function(e){return (e.state === "fulfilled")}).map(e => e.value).reduce(
 						function(prev, curr){
 							if(prev.indexOf(curr) === -1){
 								return prev.concat(curr)
@@ -98,7 +101,7 @@ function getGeeklist(listtype, geeklistId){
 					return l	
 				}
 			)
-	}else{
+	}else if(listtype === "geeklist"){
 		//New possibility: 
 		//First one can read number of items, then spawn enough page requests to load the entire list. Depends on the size of the list.
 		function parseBGGXML(results){
@@ -227,6 +230,8 @@ function getGeeklist(listtype, geeklistId){
 				})
 			}
 		);
+	}else{
+		logger.error("Unknown geeklisttype: " + listtype);
 	}
 }
 

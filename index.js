@@ -57,6 +57,10 @@ datamgr.getGeeklists(!args['incl_inactive'], args['incl_visible_only'], args['li
 			action = "update_search";
 		}else if(args['generate_filters']){
 			action = "generate_filters";
+		}else if(args['generate_stats']){
+			action = "generate_stats";
+		}else if(args['generate_graphs']){
+			action = "generate_graphs";
 		}else if(args['update_static']){
 			action = "update_static";
 		}else if(args['sync_lists']){
@@ -80,6 +84,12 @@ function runAction(action, geeklists){
 		case 'generate_filters':
 			return generateFilters(geeklists)
 			break;
+		case 'generate_graphs':
+			return generateGraphData2(geeklists)
+			break;
+		case 'generate_stats':
+			return generateStats(geeklists)
+			break;
 		case 'update_static':
 			return updateStatic(geeklists)
 			break;
@@ -96,6 +106,7 @@ function updateSearch(){
 	
 	return datamgr.getBoardgames().then(
 		function(boardgames){
+			//console.log(boardgames[0]);
 			return datamgr.updateSearch(boardgames.map(r => r.doc))
 		}
 	).catch(
@@ -106,6 +117,55 @@ function updateSearch(){
 			return q.reject(err)
 		}
 	)
+}
+
+function generateStats(){
+	datamgr.getGeeklists(false, true).then(l => l.map(e => e.objectid)).then(
+		function(listIds){
+			var lists = [];
+			var p = [];
+				
+			for(let i = 0; i < listIds.length; i++){
+				p.push(
+					datamgr.getLatestGeeklistStats(listIds[i]).then(
+					function(v){
+						if(v.length === 0){
+							throw "No stats found for " + listIds[i]	
+						}else{
+							return v[0].doc
+						}
+					}).catch(
+						function(e){
+							//console.log(e);
+							logger.error(e);
+							throw e
+						}
+					)
+				);
+			}
+				
+			return q.allSettled(p).then(function(stats){
+				let s = stats.filter(e => (e.state === 'fulfilled')).map(e => e.value);
+				var fn = '/var/www/glaze.hoffy.no/staticdata/stats.json';
+				var p = q.defer();
+				fs.writeFile(fn, JSON.stringify(s), function(err){
+					if(err){
+				  		p.reject(err) 
+					}else{
+						p.resolve()
+					}
+				});
+			
+				return p 	
+			});
+		}
+	).fail(
+		function(err){
+			//console.log(e);
+			logger.error(e);
+			throw e
+		}
+	);
 }
 
 function generateFilters(geeklists){
@@ -130,11 +190,12 @@ function updateStatic(geeklists){
 			resolve(datamgr.getGeeklist(args['lists'], 0, 10000).then(x=>x.map(y=>y.doc)));
 		}
 		*/
-		console.log(geeklists.map(x=>x.objectid));
+		//console.log(geeklists.map(x=>x.objectid));
 			
 		resolve(
 			q.all(geeklists.map(l => datamgr.getGeeklist(l.objectid, 0, 10000).then(x=>x.map(y=>y.doc)))).then(
 				function(boardgames){
+					//FIXME: May be a bug here where we get conflicts on update? 
 					return boardgames.reduce(function(a,b){
 						
 						b.forEach(function(y){
@@ -194,7 +255,8 @@ function updateStatic(geeklists){
 						}
 					).fail(
 						function(e){
-							console.log(e)
+							//console.log(e)
+							logger.error(e);
 						}
 					)
 				}
@@ -238,10 +300,13 @@ function syncLists(loadedGeeklists){
 	).then(
 		//TODO: We do not atm use stats for anything, so might as well not save them?
 		function(results){
-			logger.debug("Saving stats");
+			//console.log(results);
+				
+			
+			logger.debug("Saving stats for " + results.length + " games.");
 			
 			//The previous step return several promises, so filter out the ones that resolved.
-			return saveStats(results.filter((v) => v.value).map((v) => v.value))
+			return saveStats(results.filter(e => (e.state === "fulfilled")).map((v) => v.value))
 		},
 		function(err){
 			logger.error("Error occurred:");
@@ -399,12 +464,13 @@ function syncLists(loadedGeeklists){
 			return boardgames
 		}
 	//Some issue with empty lists. Definitively should at the very least be non-blocking if it fails..
-	).then(
-		boardgames => generateGraphData(boardgames).finally(x =>boardgames)
+	//).then(
+	//	boardgames => generateGraphData(boardgames).finally(x =>boardgames)
 	).then(
 		function(boardgames){
 			logger.info("Updating search engine");
-			
+			//console.log(boardgames);
+	
 			return datamgr.updateSearch(boardgames).then(b=>b).catch(
 				function(err){
 					logger.error("Failed in saving db/search engine step.");
@@ -418,15 +484,10 @@ function syncLists(loadedGeeklists){
 	).then(
 		function(){
 			return generateFilters(geeklists)
-			/*
-			logger.info("Generating static filter values.");
-			return q.allSettled(geeklists.map(generateFilterValues)).then(
-				function(){ 
-					logger.info("Done saving filtervalues");	
-					return true 
-				}
-			)
-			*/
+		}
+	).then(
+		function(){
+			return generateGraphData2(geeklists)
 		}
 	).then(
 		function(v) { 
@@ -444,7 +505,7 @@ function syncLists(loadedGeeklists){
 		}
 	).catch(
 		function(e){
-			return q.reject(err)
+			return q.reject(e)
 			//throw e
 			//logger.error("Failure using sync_lists");
 			//logger.error(e);
@@ -454,6 +515,103 @@ function syncLists(loadedGeeklists){
 
 /* END OF MAIN */
 
+function getGeeklistGraphData(g){
+	//console.log("getGeeklistGraphData(" + g.objectid + ")");
+	
+	return datamgr.getGeeklistFiltersComponents(g.objectid, true).then(
+		function(val){
+			var data = {'boardgamecategory': [], 'boardgamemechanic': []};
+			
+			val.forEach(function(v){
+				if(data[v.key[1]]){
+					data[v.key[1]].push({'objectid': v.key[2].objectid, 'name': v.key[2].name, 'value': v.value});
+				}
+			});
+						
+			if(val.length > 0){
+				return {geeklist: {objectid: g.objectid, group: g.group, year: g.year}, graphdata: data}
+			}else{
+				return Q.reject("nothing found!")
+			}
+		}
+	).then(
+		function(graphdata){
+			return datamgr.getGeeklistFiltersComponentsObs(graphdata.geeklist.objectid, true).then(
+				function(val){
+					val.forEach(function(v){
+						if(graphdata.graphdata[v.key[1]]){
+							var graph = graphdata.graphdata[v.key[1]].filter(e => e.objectid === v.key[2].objectid);
+			
+							if(graph.length > 0){
+								graph[0]['obs_value'] = v.value;
+							}	
+						}
+					})
+			
+					return graphdata
+				}
+			)
+		}
+	).catch(function(e){
+			return Q.reject(e)
+	});
+}
+
+function generateGraphData2(gl){
+	var ps = [];
+	
+	gl.map(e => e.objectid).forEach(function(geeklistId){
+	  
+		var p2 = datamgr.getGeeklists(false, true).then(function(geeklists){
+			logger.debug("Generating graph data for " + geeklistId);
+			var prom = [];
+			var matchGroup = geeklists.filter(e => e.objectid == geeklistId)[0].group;
+			
+				
+			geeklists.filter(e => (e.objectid == geeklistId || e.group == matchGroup)).forEach(function(g){
+				prom.push(getGeeklistGraphData(g));
+			});
+			
+			return q.allSettled(prom).then(function(gd){
+				logger.debug("generateGraphData2(): All settled");
+				
+				var r = JSON.stringify(gd.filter(e=>(e.state === "fulfilled")).map(e=>e.value));
+				var fn = '/var/www/glaze.hoffy.no/staticdata/graphs-' + geeklistId + '.json';
+				var p = q.defer();
+				
+				fs.writeFile(fn, r, function(err){
+					if(err){
+							p.reject(err) 
+					}else{
+							logger.debug("Graph data saved for " + geeklistId);
+							p.resolve()
+					}
+				});
+							
+				return p 	
+			}).catch(
+				function(err){
+					logger.error("Failed to save graphdata");
+					logger.error(err);
+			
+					return Q.reject(err);
+			});
+		}).catch(function(e){
+					logger.error(e);
+			
+					return Q.reject(e);
+
+		});
+		
+		ps.push(p2);
+	});
+	
+	return q.allSettled(ps).then(function(){
+		logger.info("Generated graph data");
+	})
+}
+
+/*
 function generateGraphData(boardgames){
 	var gd = {
 		objectid: 0, //geeklistid
@@ -510,12 +668,14 @@ function genereateRSS(){
 	
 }
 
+*/
+
 function FilterValue(analysisDate, geeklistId){
 	this.type = 'filtervalue';
 	this.analysisDate = analysisDate;
 	this.objectid = geeklistId;
 	this.playtimehist = [];
-	this.playingtime = {'min': Infinity, 'max': -Infinity}
+	this.playtime = {'min': Infinity, 'max': -Infinity}
 	this.numplayershist = [];
 	this.numplayers = {'min': Infinity, 'max': -Infinity}
 	this.yearpublishedhist = [];
@@ -599,7 +759,8 @@ function loadBoardgames(boardgameIdList, bgStats){
 function addBoardgameStats(boardgames, boardgamesStats){
 	logger.info("Adding most recent stats to boardgame data");
 	return q.Promise(function(resolve, reject){
-		console.log("Appending stats to " + boardgames.length + " boardgames");
+		logger.info("Appending stats to " + boardgames.length + " boardgames");
+		
 		boardgames.forEach(function(boardgame){
 			let boardgameStats = boardgamesStats.filter(e => (parseInt(e.objectid) === parseInt(boardgame.objectid)));
 			
@@ -638,13 +799,15 @@ function saveStats(stats){
 	var bgStats = [];
 	var n = 0;
 	
-	logger.info("Saving stats");
+	logger.info("Saving stats (" + stats.length + ")");
 	stats.forEach(function(r){
 		var geeklistId = r.glStats[0].objectid;
 		var analysisDate = r.glStats[0].statDate;
 		
 		bgStats = bgStats.concat(r.bgStats);
 		
+		//Disabled while we try to figure out the best way to save bgStats (probably one object per list per game with all history)
+		/*	
 		p.push(
 			datamgr.deleteBoardgameStats(geeklistId, analysisDate).then(
 				function(){
@@ -658,7 +821,8 @@ function saveStats(stats){
 				}
 			)
 		);
-		
+		*/
+
 		//TODO: Implement median calculation for geeklists
 		p.push(
 			datamgr.deleteGeeklistStats(geeklistId, analysisDate).then(
@@ -678,13 +842,13 @@ function saveStats(stats){
 	
 	return q.all(p).then(
 		function(){
-			console.log("Done saving stats");
+			logger.info("Done saving stats");
 			return bgStats
 		}
 	).catch(
 		function(err){
-			console.log("Error in stats saving");
-			console.log(err);
+			logger.error("Error in stats saving");
+			//console.log(err);
 			
 			return q.reject(err)
 			//throw err
@@ -831,6 +995,8 @@ function getGeeklistData(listtype, geeklistid, subgeeklistid, visitedGeeklists, 
 	//Load the list from BGG
 	bgg.getGeeklist(listtype, subgeeklistid).then(
 		function(res){
+			logger.debug("getGeeklist() returned " + res.length + " results");
+			
 			res.forEach(function(e){
 				if(e.objecttype === 'thing'){
 					if(e.subtype === 'boardgame'){
@@ -1003,7 +1169,21 @@ function generateFilterValues(geeklist){
 	).then(
 		function(fv){
 			//logger.info("Saving new filter values");
-			return datamgr.saveFilterRanges([fv]).then(function(){return true})
+			return datamgr.saveFilterRanges([fv]).then(function(){return fv})
+		}
+	).then(
+		function(fv){
+			var fn = '/var/www/glaze.hoffy.no/staticdata/filters-' + fv.objectid + '.json';
+			var p = q.defer();
+			fs.writeFile(fn, JSON.stringify(fv), function(err){
+				if(err){
+				  	p.reject(err) 
+				}else{
+					p.resolve()
+				}
+			});
+			
+			return p 	
 		}
 	).catch(
 		function(err){
