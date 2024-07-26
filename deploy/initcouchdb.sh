@@ -27,41 +27,40 @@ echo "creating db"
 curl -X PUT "http://${COUCHDB_USER}:${COUCHDB_PASSWORD}@$DB_IP:$DB_PORT/${COUCHDB_DB}"
 
 #Add a read/write user
-echo "Add user ${COUCHDB_RO_USER}"
-curl -X PUT "http://${COUCHDB_USER}:${COUCHDB_PASSWORD}@$DB_IP:$DB_PORT/_users/org.couchdb.user:${COUCHDB_RO_USER}" \
+echo "Add user ${COUCHDB_RW_USER}"
+curl -X PUT "http://${COUCHDB_USER}:${COUCHDB_PASSWORD}@$DB_IP:$DB_PORT/_users/org.couchdb.user:${COUCHDB_RW_USER}" \
      -H "Accept: application/json" \
      -H "Content-Type: application/json" \
-     -d '{"name":"'"${COUCHDB_RO_USER}"', "roles":[], "type":"user", "password":"'"${COUCHDB_RO_PASSWORD}}"'"' \
+     -d '{"name":"'"${COUCHDB_RW_USER}"'", "roles":[], "type":"user", "password":"'"${COUCHDB_RW_PASSWORD}"'"}'
 
 echo "Assign grog as member to geeklistdb"
 curl -X PUT "http://${COUCHDB_USER}:${COUCHDB_PASSWORD}@$DB_IP:$DB_PORT/${COUCHDB_DB}/_security" \
   -H "Content-Type: application/json" \
-  -d '{"admins": { "names": [], "roles": [] }, "members": { "names": ["'"${COUCHDB_RO_USER}"'"], "roles": [] } }'
+  -d '{"admins": { "names": [], "roles": [] }, "members": { "names": ["'"${COUCHDB_RW_USER}"'"], "roles": [] } }'
 
-exit 0;
 #echo "geeklist docs"
 #curl -d @data/geeklists.json -H "Content-type: application/json" -X POST http://$DB_IP:$DB_PORT/geeklistdb/_bulk_docs
 
 echo "design_docs/geeklists.json (view)"
-curl -d @design_docs/geeklists.json -H "Content-type: application/json" -X PUT "http://${COUCHDB_USER}:${COUCHDB_PASSWORD}@$DB_IP:$DB_PORT/geeklistdb/_design/geeklists"
+curl -d @couchdb/design_docs/geeklists.json -H "Content-type: application/json" -X PUT "http://${COUCHDB_USER}:${COUCHDB_PASSWORD}@$DB_IP:$DB_PORT/geeklistdb/_design/geeklists"
 
 
 echo "geeklist view"
-curl --netrc-file ../couch-usr.netrc -d @design_docs/geeklist.json -H "Content-type: application/json" -X PUT http://$DB_IP:$DB_PORT/geeklistdb/_design/geeklist
+curl -d @couchdb/design_docs/geeklist.json -H "Content-type: application/json" -X PUT "http://${COUCHDB_USER}:${COUCHDB_PASSWORD}@$DB_IP:$DB_PORT/geeklistdb/_design/geeklist"
 
 
 echo "boardgame view"
-curl --netrc-file ../couch-usr.netrc -d @design_docs/boardgame.json -H "Content-type: application/json" -X PUT http://$DB_IP:$DB_PORT/geeklistdb/_design/boardgame
+curl -d @couchdb/design_docs/boardgame.json -H "Content-type: application/json" -X PUT "http://${COUCHDB_USER}:${COUCHDB_PASSWORD}@$DB_IP:$DB_PORT/geeklistdb/_design/boardgame"
 
-curl --netrc-file ../couch-usr.netrc -d @design_docs/boardgame2.json -H "Content-type: application/json" -X PUT http://$DB_IP:$DB_PORT/geeklistdb/_design/boardgame2
+#curl -d @couchdb/design_docs/boardgame2.json -H "Content-type: application/json" -X PUT http://${COUCHDB_USER}:${COUCHDB_PASSWORD}@$DB_IP:$DB_PORT/geeklistdb/_design/boardgame2
 
 echo "boardgamestats view"
-curl --netrc-file ../couch-usr.netrc -d @design_docs/boardgamestats.json -H "Content-type: application/json" -X PUT http://$DB_IP:$DB_PORT/geeklistdb/_design/boardgamestats
+curl -d @couchdb/design_docs/boardgamestats.json -H "Content-type: application/json" -X PUT "http://${COUCHDB_USER}:${COUCHDB_PASSWORD}@$DB_IP:$DB_PORT/geeklistdb/_design/boardgamestats"
 
 
 echo "geekliststats view"
-curl --netrc-file ../couch-usr.netrc -d @design_docs/geekliststats.json -H "Content-type: application/json" -X PUT http://$DB_IP:$DB_PORT/geeklistdb/_design/geekliststats
+curl -d @couchdb/design_docs/geekliststats.json -H "Content-type: application/json" -X PUT "http://${COUCHDB_USER}:${COUCHDB_PASSWORD}@$DB_IP:$DB_PORT/geeklistdb/_design/geekliststats"
 
 
 echo "geeklistfilters view"
-curl --netrc-file ../couch-usr.netrc -d @design_docs/geeklistfilters.json -H "Content-type: application/json" -X PUT http://$DB_IP:$DB_PORT/geeklistdb/_design/geeklistfilters
+curl -d @couchdb/design_docs/geeklistfilters.json -H "Content-type: application/json" -X PUT "http://${COUCHDB_USER}:${COUCHDB_PASSWORD}@$DB_IP:$DB_PORT/geeklistdb/_design/geeklistfilters"
