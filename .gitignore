@@ -37,3 +37,4 @@ public
 *.out
 *.dump
 localconfig.json
+*.env

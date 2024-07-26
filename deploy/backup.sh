@@ -10,7 +10,7 @@ function glazebackup(){
 	curl -sS "http://127.0.0.1:5984/geeklistdb/_design/boardgame/_view/boardgame?include_docs=true" -o "${dest}"
 
 	echo "stripping ._rev and compressing"
-	cat "${dest}"|jq '.rows[].doc|del(._rev)'|jq -s '.' | xz > "${dest}.xz"
+	cat "${dest}"|jq '.rows[].doc|del(._rev)'|jq -s '{docs: .}' | xz > "${dest}.xz"
 
 	echo "pushing to s3"
 	s3cmd --no-progress put "${dest}.xz" s3://hoffy-geeklistdb 
