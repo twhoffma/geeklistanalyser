@@ -12,9 +12,7 @@ sudo apt-get update
 #docker
 sudo docker-compose up -d
 
-cd couchdb
-
-./initdb.sh
+./initcouchdb.sh
 
 #Set services to start on boot - systemd
 sudo /bin/systemctl daemon-reload
