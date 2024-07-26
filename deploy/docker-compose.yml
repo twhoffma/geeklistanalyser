@@ -6,6 +6,8 @@ services:
     ports:
       - "127.0.0.1:5984:5984"
     env_file: "couchdb.env"
+    volumes:
+      - couchdata1:/opt/couchdb/data
   elasticsearch:
     container_name: es01
     image: elasticsearch:1.7.6-alpine
@@ -16,7 +18,17 @@ services:
       - discovery.type=single-node
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms51m -Xmx512m"
+    volumes:
+      - esdata1:/usr/share/elasticsearch/data
     ulimits:
       memlock:
         soft: -1
         hard: -1
+  memcached:
+      container_name: mc01
+      image: memcached:latest
+      ports:
+          - "127.0.0.1:11211:11211"
+volumes:
+  esdata1:
+  couchdata1:
